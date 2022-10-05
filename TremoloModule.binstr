@@ -1,0 +1,413 @@
+<instrument type='blue.orchestra.BlueSynthBuilder' editEnabled='true'>
+  <name>Tremolo_adsr140_MONO</name>
+  <comment>Tremolo Module
+needs the 3 UDOs: adsr140_calc_coef, adsr140 and k_Tremolo_adsr140_MONO
+
+
+---
+
+version 1, October 2022
+- initial version</comment>
+  <globalOrc>;[once]{ 
+gisine      ftgen 0, 0, 16384, 10, 1                                                ; sine
+gisaw       ftgen 0, 0, 16384, 10, 1, 0.5, 0.3, 0.25, 0.2, 0.167, 0.14, 0.125, .111 ; Sawtooth
+gisquare    ftgen 0, 0, 16384, 10, 1, 0, 0.3, 0, 0.2, 0, 0.14, 0, .111              ; Square
+gipulse     ftgen 0, 0, 16384, 10, 1, 1, 1, 1, 0.7, 0.5, 0.3, 0.1                   ; Pulse
+;}</globalOrc>
+  <globalSco/>
+  <instrumentText>
+;--------------------------------tremolo Module---------------------------------
+
+aout    k_Tremolo_adsr140_MONO    &lt;tremolo trigger&gt;, asig, &lt;tremolo attack&gt;, &lt;tremolo decay&gt;, &lt;tremolo sustain&gt;, &lt;tremolo release&gt;, &lt;tremolo envelope speed&gt;, &lt;mix tremolo&gt;       
+
+</instrumentText>
+  <alwaysOnInstrumentText></alwaysOnInstrumentText>
+  <graphicInterface editEnabled='false'>
+    <gridSettings>
+      <width>5</width>
+      <height>5</height>
+      <gridStyle>DOT</gridStyle>
+      <snapGridEnabled>true</snapGridEnabled>
+    </gridSettings>
+    <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+      <objectName></objectName>
+      <x>0</x>
+      <y>0</y>
+      <groupName>Group</groupName>
+      <backgroundColor>0x00000033</backgroundColor>
+      <borderColor>0x000000ff</borderColor>
+      <labelTextColor>0xffffffff</labelTextColor>
+      <titleEnabled>true</titleEnabled>
+      <width>20</width>
+      <height>20</height>
+      <font>
+        <name>Roboto</name>
+        <size>12.0</size>
+        <style>0</style>
+      </font>
+      <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+        <objectName></objectName>
+        <x>0</x>
+        <y>0</y>
+        <comment>trigger for tremolo envelope</comment>
+        <groupName>tremolo </groupName>
+        <backgroundColor>0x59853eff</backgroundColor>
+        <borderColor>0x000000ff</borderColor>
+        <labelTextColor>0xffffffff</labelTextColor>
+        <titleEnabled>true</titleEnabled>
+        <width>20</width>
+        <height>20</height>
+        <font>
+          <name>Roboto</name>
+          <size>12.0</size>
+          <style>2</style>
+        </font>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBVSlider' version='2'>
+          <objectName>tremolo envelope speed</objectName>
+          <x>5</x>
+          <y>40</y>
+          <comment>speed of retriggering</comment>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>60.0</maximum>
+          <bdresolution>0.01</bdresolution>
+          <value>7.38</value>
+          <sliderHeight>145</sliderHeight>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+          <objectName></objectName>
+          <x>77</x>
+          <y>23</y>
+          <comment>4 envelopes for amplitude</comment>
+          <groupName>Group</groupName>
+          <backgroundColor>0x00000033</backgroundColor>
+          <borderColor>0x000000ff</borderColor>
+          <labelTextColor>0xffffffff</labelTextColor>
+          <titleEnabled>false</titleEnabled>
+          <width>20</width>
+          <height>20</height>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+            <objectName>tremolo release</objectName>
+            <x>7</x>
+            <y>134</y>
+            <automationAllowed>true</automationAllowed>
+            <minimum>0.0</minimum>
+            <maximum>1.0</maximum>
+            <value>0.0</value>
+            <knobWidth>31</knobWidth>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>false</valueDisplayEnabled>
+            <label>release</label>
+            <labelEnabled>true</labelEnabled>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+            <objectName>tremolo sustain</objectName>
+            <x>7</x>
+            <y>90</y>
+            <automationAllowed>true</automationAllowed>
+            <minimum>0.0</minimum>
+            <maximum>1.0</maximum>
+            <value>0.0</value>
+            <knobWidth>31</knobWidth>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>false</valueDisplayEnabled>
+            <label>sustain</label>
+            <labelEnabled>true</labelEnabled>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+            <objectName>tremolo decay</objectName>
+            <x>10</x>
+            <y>45</y>
+            <automationAllowed>true</automationAllowed>
+            <minimum>0.0</minimum>
+            <maximum>1.0</maximum>
+            <value>0.22426713118284478</value>
+            <knobWidth>31</knobWidth>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>false</valueDisplayEnabled>
+            <label>decay</label>
+            <labelEnabled>true</labelEnabled>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+            <objectName>tremolo attack</objectName>
+            <x>10</x>
+            <y>0</y>
+            <automationAllowed>true</automationAllowed>
+            <minimum>0.0</minimum>
+            <maximum>1.0</maximum>
+            <value>0.0</value>
+            <knobWidth>31</knobWidth>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>false</valueDisplayEnabled>
+            <label>attack</label>
+            <labelEnabled>true</labelEnabled>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>7</x>
+          <y>260</y>
+          <label>direct</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>12</x>
+          <y>28</y>
+          <label>speed</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>89</x>
+          <y>260</y>
+          <label>ADSR</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+          <objectName>tremolo trigger</objectName>
+          <x>0</x>
+          <y>0</y>
+          <comment>active retriggering of ADSR</comment>
+          <automationAllowed>true</automationAllowed>
+          <label>trigger</label>
+          <selected>false</selected>
+          <randomizable>true</randomizable>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>mix tremolo</objectName>
+          <x>41</x>
+          <y>218</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>1.0</maximum>
+          <value>0.9838727436195477</value>
+          <knobWidth>50</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>false</valueDisplayEnabled>
+          <label>mix</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+      </bsbObject>
+    </bsbObject>
+  </graphicInterface>
+  <parameterList>
+    <parameter uniqueId='-1490021387' name='tremolo envelope speed' label='' min='0.0' max='60.0' bdresolution='0.01' automationEnabled='false' value='7.38'>
+      <line name='' version='2' max='60.0' min='0.0' bdresolution='0.01' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='7.38'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-1490021385' name='tremolo release' label='' min='0.0' max='1.0' bdresolution='-1' automationEnabled='false' value='0.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-1490021383' name='tremolo sustain' label='' min='0.0' max='1.0' bdresolution='-1' automationEnabled='false' value='0.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-1490021381' name='tremolo decay' label='' min='0.0' max='1.0' bdresolution='-1' automationEnabled='false' value='0.22426713118284478'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.22426713118284478'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-1490021379' name='tremolo attack' label='' min='0.0' max='1.0' bdresolution='-1' automationEnabled='false' value='0.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-1490021377' name='tremolo trigger' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='0.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-1490021375' name='mix tremolo' label='' min='0.0' max='1.0' bdresolution='-1' automationEnabled='false' value='0.9838727436195477'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.9838727436195477'/>
+      </line>
+    </parameter>
+  </parameterList>
+  <presetGroup name='Presets'/>
+  <opcodeList>
+    <udo>
+      <opcodeName>adsr140_calc_coef</opcodeName>
+      <outTypes>k</outTypes>
+      <inTypes>kk</inTypes>
+      <codeBody>  
+  knum_samps, kratio xin
+  xout exp( -log((1.0 + kratio) / kratio) / knum_samps)
+    
+</codeBody>
+      <comments></comments>
+    </udo>
+    <udo>
+      <opcodeName>adsr140</opcodeName>
+      <outTypes>a</outTypes>
+      <inTypes>aakkkk</inTypes>
+      <codeBody>agate, aretrig, kattack, kdecay, ksustain, krelease xin
+kstate init 0  ; 0 = attack, 1 = decay, 2 = sustain
+klasttrig init -1
+kval init 0.0
+asig init 0
+kindx = 0
+kattack_base init 0
+kdecay_base init 0
+krelease_base init 0
+kattack_samps init 0
+kdecay_samps init 0
+krelease_samps init 0
+kattack_coef init 0
+kdecay_coef init 0
+ksustain_coef init 0
+klast_attack init -1
+klast_decay init -1
+klast_release init -1
+if (klast_attack != kattack) then
+  klast_attack = kattack
+  if(kattack &gt; 0) then
+    kattack_samps = kattack * sr
+    kattack_coef = adsr140_calc_coef(kattack_samps, 0.3)
+    kattack_base = (1.0 + 0.3) * (1 - kattack_coef)
+  else 
+    kattack_samps = 0 
+    kattack_coef = 0 
+    kattack_base = 0 
+  endif
+endif
+if (klast_decay != kdecay) then
+  klast_decay = kdecay
+  kdecay_samps = kdecay * sr
+  kdecay_coef = adsr140_calc_coef(kdecay_samps, 0.0001)
+  kdecay_base = (ksustain - 0.0001) * (1.0 - kdecay_coef)
+endif
+if (klast_release != krelease) then
+  klast_release = krelease
+  krelease_samps = krelease * sr
+  krelease_coef = adsr140_calc_coef(krelease_samps, 0.0001)
+  krelease_base =  -0.0001 * (1.0 - krelease_coef)
+endif
+while (kindx &lt; ksmps) do
+  if (agate[kindx] &gt; 0) then
+    kretrig = aretrig[kindx]
+    if (kretrig &gt; 0 &amp;&amp; klasttrig &lt;= 0) then
+      kstate = 0
+    endif
+    klasttrig = kretrig
+    if (kstate == 0) then
+      if(kattack &lt;= 0) then
+        kval = 1.0
+        kstate = 1
+      else
+        kval = kattack_base + (kval * kattack_coef)
+        if(kval &gt;= 1.0) then
+          kval = 1.0
+          kstate = 1
+        endif
+        asig[kindx] = kval
+      endif
+    elseif (kstate == 1) then
+      kval = kdecay_base + (kval * kdecay_coef)
+      if(kval &lt;= ksustain) then
+        kval = ksustain
+        kstate = 2
+      endif
+      asig[kindx] = kval 
+    else
+      asig[kindx] = ksustain
+    endif
+  else ; in a release state
+    kstate = 0
+    if (kval == 0.0) then
+      asig[kindx] = 0
+    else 
+    ; releasing
+      kval = krelease_base + (kval * krelease_coef)
+    if(kval &lt;= 0.0) then
+      kval = 0.0
+    endif
+    asig[kindx] = kval  
+    endif
+  endif
+  kindx += 1
+od
+xout asig
+</codeBody>
+      <comments></comments>
+    </udo>
+    <udo>
+      <opcodeName>k_Tremolo_adsr140_MONO</opcodeName>
+      <outTypes>a</outTypes>
+      <inTypes>kakkkkkk</inTypes>
+      <codeBody>kon, ain, katt, kdec, ksus, krel, kspeed, kmix xin        ; tremolo ON, in, attack, decay, sustain, release, speed, mix effect 
+
+if (kon == 1) then                                                
+    if (kspeed &gt; 0) then
+        agate = lfo(1, kspeed)
+        aretrig init 1
+        aadsr adsr140 agate, aretrig, katt, kdec, ksus, krel    ; retriggering envelope 1
+        aadsr *= 1.2
+    else
+        aretrig init 1
+        agate = linseg:a(1, p3 - i(krel), 1, .001, 0, i(krel), 0)
+        aadsr adsr140 agate, aretrig, katt, kdec, ksus, krel    ; envelope 2
+    endif
+else                                                                            ; no tremolo at all
+    aadsr    =   1
+endif
+
+ares  =  ain * aadsr                                                          ; impose tremolo on incoming audio 
+aout    ntrpol  ain, ares, kmix                                              ; mix incoming audio with treated audio
+
+xout    aout</codeBody>
+      <comments>This Module takes in a stereo signal, outputs a stereo signal with tremolo and/or mixed with the original signal.
+Needs other UDOs: adsr140_calc_coef and adsr140 (in that order)
+
+</comments>
+    </udo>
+  </opcodeList>
+</instrument>
