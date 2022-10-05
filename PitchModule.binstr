@@ -1,0 +1,110 @@
+<instrument type='blue.orchestra.BlueSynthBuilder' editEnabled='true'>
+  <name>PitchModule</name>
+  <comment>Pitch Module
+1 UDO: k_SCORE_format_Sampler
+How to treat P4 pitch information: as Frequency or as MIDI note pitch
+P5 is for amplitude (defaults to 1 as a maximum)
+
+
+---
+
+version 1, October 2022
+- initial version</comment>
+  <globalOrc></globalOrc>
+  <globalSco/>
+  <instrumentText>;-------------------P4 and P5 from score----------------------------------------
+
+ipitch, iamp k_SCORE_format_Sampler i(&lt;SCORE_format_Sampler&gt;), p4, p5           ; choose between Frequency or Midi option
+
+</instrumentText>
+  <alwaysOnInstrumentText></alwaysOnInstrumentText>
+  <graphicInterface editEnabled='false'>
+    <gridSettings>
+      <width>5</width>
+      <height>5</height>
+      <gridStyle>DOT</gridStyle>
+      <snapGridEnabled>true</snapGridEnabled>
+    </gridSettings>
+    <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+      <objectName></objectName>
+      <x>0</x>
+      <y>0</y>
+      <groupName>Group</groupName>
+      <backgroundColor>0x00000033</backgroundColor>
+      <borderColor>0x000000ff</borderColor>
+      <labelTextColor>0xffffffff</labelTextColor>
+      <titleEnabled>true</titleEnabled>
+      <width>20</width>
+      <height>20</height>
+      <font>
+        <name>Roboto</name>
+        <size>12.0</size>
+        <style>0</style>
+      </font>
+      <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+        <objectName></objectName>
+        <x>0</x>
+        <y>0</y>
+        <comment>4 envelopes for amplitude</comment>
+        <groupName>pitch</groupName>
+        <backgroundColor>0x59853eff</backgroundColor>
+        <borderColor>0x000000ff</borderColor>
+        <labelTextColor>0xffffffff</labelTextColor>
+        <titleEnabled>true</titleEnabled>
+        <width>20</width>
+        <height>20</height>
+        <font>
+          <name>Roboto</name>
+          <size>12.0</size>
+          <style>2</style>
+        </font>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBDropdown' version='2'>
+          <objectName>SCORE_format_Sampler</objectName>
+          <x>5</x>
+          <y>5</y>
+          <comment>choose for pitch between midi notes/real values</comment>
+          <automationAllowed>true</automationAllowed>
+          <selectedIndex>0</selectedIndex>
+          <fontSize>12</fontSize>
+          <randomizable>true</randomizable>
+          <bsbDropdownItemList>
+            <bsbDropdownItem uniqueId='-1490017987'>
+              <name>P4 = frequency</name>
+              <value>0</value>
+            </bsbDropdownItem>
+            <bsbDropdownItem uniqueId='-1490017986'>
+              <name>P4 = MIDI pitch</name>
+              <value>1</value>
+            </bsbDropdownItem>
+          </bsbDropdownItemList>
+        </bsbObject>
+      </bsbObject>
+    </bsbObject>
+  </graphicInterface>
+  <parameterList>
+    <parameter uniqueId='-1490017984' name='SCORE_format_Sampler' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='0.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.0'/>
+      </line>
+    </parameter>
+  </parameterList>
+  <presetGroup name='Presets'/>
+  <opcodeList>
+    <udo>
+      <opcodeName>k_SCORE_format_Sampler</opcodeName>
+      <outTypes>ii</outTypes>
+      <inTypes>iii</inTypes>
+      <codeBody>iscore, ipitch, iamp  xin
+
+if (iscore == 0) then                                                           ; frequency mode
+    ipitch  *=  .0038222
+else
+    ipitch = semitone(ipitch - 48)
+
+endif
+
+xout ipitch, iamp</codeBody>
+      <comments></comments>
+    </udo>
+  </opcodeList>
+</instrument>
