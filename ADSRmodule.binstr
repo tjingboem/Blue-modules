@@ -8,12 +8,7 @@ needs the 3 UDOs: adsr140_calc_coef, adsr140 and k_adsr140
 
 version 1, October 2022
 - initial version</comment>
-  <globalOrc>;[once]{ 
-gisine      ftgen 0, 0, 16384, 10, 1                                                ; sine
-gisaw       ftgen 0, 0, 16384, 10, 1, 0.5, 0.3, 0.25, 0.2, 0.167, 0.14, 0.125, .111 ; Sawtooth
-gisquare    ftgen 0, 0, 16384, 10, 1, 0, 0.3, 0, 0.2, 0, 0.14, 0, .111              ; Square
-gipulse     ftgen 0, 0, 16384, 10, 1, 1, 1, 1, 0.7, 0.5, 0.3, 0.1                   ; Pulse
-;}</globalOrc>
+  <globalOrc></globalOrc>
   <globalSco/>
   <instrumentText>;--------------------------ADSR amplitude Module--------------------------------
 
