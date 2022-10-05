@@ -1,0 +1,86 @@
+<instrument type='blue.orchestra.BlueSynthBuilder' editEnabled='true'>
+  <name>AutopanModule</name>
+  <comment>Autopan Module
+no UDO
+Autopans a mono signal quite slowly in the stereo field, to be more interesting
+
+
+---
+
+version 1, October 2022
+- initial version</comment>
+  <globalOrc></globalOrc>
+  <globalSco></globalSco>
+  <instrumentText>;----------------------------------autopan if mono------------------------------
+
+if ichnls == 1 &amp;&amp; (&lt;autopanning if mono&gt; == 1) then                             ; autopan mono sample
+    krandP randi 1, 1, 1
+    krandP =   (krandP +1)*.5
+    asigL, asigR   pan2 aoutL, krandP, 0                                                                             
+else
+    asigL   =   aoutL
+    asigR   =   aoutR
+endif</instrumentText>
+  <alwaysOnInstrumentText></alwaysOnInstrumentText>
+  <graphicInterface editEnabled='false'>
+    <gridSettings>
+      <width>10</width>
+      <height>10</height>
+      <gridStyle>DOT</gridStyle>
+      <snapGridEnabled>true</snapGridEnabled>
+    </gridSettings>
+    <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+      <objectName></objectName>
+      <x>0</x>
+      <y>0</y>
+      <groupName>Group</groupName>
+      <backgroundColor>0x00000033</backgroundColor>
+      <borderColor>0x000000ff</borderColor>
+      <labelTextColor>0xffffffff</labelTextColor>
+      <titleEnabled>true</titleEnabled>
+      <width>20</width>
+      <height>20</height>
+      <font>
+        <name>Roboto</name>
+        <size>12.0</size>
+        <style>0</style>
+      </font>
+      <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+        <objectName></objectName>
+        <x>0</x>
+        <y>0</y>
+        <groupName>autopan</groupName>
+        <backgroundColor>0x59853eff</backgroundColor>
+        <borderColor>0x000000ff</borderColor>
+        <labelTextColor>0xffffffff</labelTextColor>
+        <titleEnabled>true</titleEnabled>
+        <width>139</width>
+        <height>52</height>
+        <font>
+          <name>Roboto</name>
+          <size>12.0</size>
+          <style>0</style>
+        </font>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+          <objectName>autopanning if mono</objectName>
+          <x>10</x>
+          <y>10</y>
+          <comment>if SF is mono, proovides some stereo panning</comment>
+          <automationAllowed>true</automationAllowed>
+          <label>autopan if  mono</label>
+          <selected>true</selected>
+          <randomizable>true</randomizable>
+        </bsbObject>
+      </bsbObject>
+    </bsbObject>
+  </graphicInterface>
+  <parameterList>
+    <parameter uniqueId='-1490017706' name='autopanning if mono' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='1.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='1.0'/>
+      </line>
+    </parameter>
+  </parameterList>
+  <presetGroup name='Presets'/>
+  <opcodeList/>
+</instrument>
