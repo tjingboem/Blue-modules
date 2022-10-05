@@ -1,0 +1,167 @@
+<instrument type='blue.orchestra.BlueSynthBuilder' editEnabled='true'>
+  <name>CrescendoModule</name>
+  <comment>Zwel Module
+1 UDO: k_Zwel
+Crescendo or decrescendo (louder or softer when playing) in a note.
+
+
+---
+
+version 1, October 2022
+- initial version
+
+</comment>
+  <globalOrc></globalOrc>
+  <globalSco/>
+  <instrumentText>;----------------------------Zwel----------------------------------------------
+
+kswell k_Zwel &lt;Swell ON&gt;, &lt;Swell position&gt;, &lt;Swell amplitude&gt;                   ; UDO k_Zwel
+;aenv    *= kswell
+</instrumentText>
+  <alwaysOnInstrumentText></alwaysOnInstrumentText>
+  <graphicInterface editEnabled='true'>
+    <gridSettings>
+      <width>5</width>
+      <height>5</height>
+      <gridStyle>DOT</gridStyle>
+      <snapGridEnabled>true</snapGridEnabled>
+    </gridSettings>
+    <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+      <objectName></objectName>
+      <x>0</x>
+      <y>0</y>
+      <groupName>Group</groupName>
+      <backgroundColor>0x00000033</backgroundColor>
+      <borderColor>0x000000ff</borderColor>
+      <labelTextColor>0xffffffff</labelTextColor>
+      <titleEnabled>true</titleEnabled>
+      <width>20</width>
+      <height>20</height>
+      <font>
+        <name>Roboto</name>
+        <size>12.0</size>
+        <style>0</style>
+      </font>
+      <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+        <objectName></objectName>
+        <x>0</x>
+        <y>0</y>
+        <comment>place accent in amplitude on the note</comment>
+        <groupName>Swell</groupName>
+        <backgroundColor>0x669966ff</backgroundColor>
+        <borderColor>0x000000ff</borderColor>
+        <labelTextColor>0xffffffff</labelTextColor>
+        <titleEnabled>true</titleEnabled>
+        <width>120</width>
+        <height>79</height>
+        <font>
+          <name>Roboto</name>
+          <size>12.0</size>
+          <style>2</style>
+        </font>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
+          <objectName>Swell amplitude</objectName>
+          <x>20</x>
+          <y>40</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>2.0</maximum>
+          <bdresolution>0.01</bdresolution>
+          <value>1.28</value>
+          <sliderWidth>125</sliderWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>false</valueDisplayEnabled>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+          <objectName>Swell ON</objectName>
+          <x>5</x>
+          <y>10</y>
+          <automationAllowed>true</automationAllowed>
+          <label/>
+          <selected>false</selected>
+          <randomizable>true</randomizable>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
+          <objectName>Swell position</objectName>
+          <x>20</x>
+          <y>10</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>1.0E-5</minimum>
+          <maximum>0.96</maximum>
+          <bdresolution>0.1</bdresolution>
+          <value>0.6000099999999999</value>
+          <sliderWidth>130</sliderWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>false</valueDisplayEnabled>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>55</x>
+          <y>35</y>
+          <label>amplitude</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>40</x>
+          <y>5</y>
+          <label>position in note</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+      </bsbObject>
+    </bsbObject>
+  </graphicInterface>
+  <parameterList>
+    <parameter uniqueId='-1452809284' name='Swell amplitude' label='' min='0.0' max='2.0' bdresolution='0.01' automationEnabled='false' value='1.28'>
+      <line name='' version='2' max='2.0' min='0.0' bdresolution='0.01' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='1.28'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-1452809282' name='Swell ON' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='0.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-1452809280' name='Swell position' label='' min='1.0E-5' max='0.96' bdresolution='0.1' automationEnabled='false' value='0.6000099999999999'>
+      <line name='' version='2' max='0.96' min='1.0E-5' bdresolution='0.1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.6000099999999999'/>
+      </line>
+    </parameter>
+  </parameterList>
+  <presetGroup name='Presets'/>
+  <opcodeList>
+    <udo>
+      <opcodeName>k_Zwel</opcodeName>
+      <outTypes>K</outTypes>
+      <inTypes>KKK</inTypes>
+      <codeBody>kOnSwell,kposition, ksw xin
+ 
+if kOnSwell == 1 then                                                           ; switch Swell on/off
+       irise  = p3 * i(kposition)                                               ; relative position 0 &gt; position &lt; 1 inside note
+       ifall = p3 - irise
+       kswell linseg 1, irise, i(ksw) , ifall, 1 
+else
+        kswell = 1                                                              ; if switch = OFF, no effect
+endif
+
+	xout kswell
+</codeBody>
+      <comments>use to put a amplitude accent inside the note
+
+- switch to activate
+- where to position the amp accent
+- amount of amplitude for accent
+
+to be used with amplitude envelope generator like this: envelope * k_Zwell_m
+Because of depenedency on the note duration (p3), use it with envelope type of the r type or madsr. Ohterwise it is okay to use k_Zwell</comments>
+    </udo>
+  </opcodeList>
+</instrument>
