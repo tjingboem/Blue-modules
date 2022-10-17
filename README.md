@@ -1,8 +1,8 @@
 # Blue-modules
 Modules (ready-mades) for use in Blue.
 
-These Blue Modules are Blue Instruments. They can be imported in the Orchestra by right-clicking and choosing 'Import'.
-The Instrument normally contains code and UDOs, that should be copied along with the BSB GUI in the Instument you are working on.
+These Blue Modules are Blue Instruments.
+Most of these Module Instruments consists of code and UDOs and the BSB GUI. They should be imported in the Orchestra by right-clicking and choosing 'Import'. These Modules (instruments really) have the suffix .binstr. From there, the BSB, code and UDO's should be copied to the Instrument you are working on.
 
-There some final adjustments in your code are probably needed to fully integrate the Module into your Blue Instrument.
+There some minor and final adjustments in the code of your Instrument are probably needed to fully integrate the Module into your Blue Instrument.
 
