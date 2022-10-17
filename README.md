@@ -6,3 +6,5 @@ Most of these Module Instruments consists of code and UDOs and the BSB GUI. They
 
 There some minor and final adjustments in the code of your Instrument are probably needed to fully integrate the Module into your Blue Instrument.
 
+
+![TremoloStereo](https://user-images.githubusercontent.com/6670911/196256178-f894df19-3645-430b-a25e-8754337a4369.png)
