@@ -1,0 +1,102 @@
+<instrument type='blue.orchestra.BlueSynthBuilder' editEnabled='true'>
+  <name>FilecheckModule</name>
+  <comment></comment>
+  <globalOrc/>
+  <globalSco/>
+  <instrumentText>
+Suf     StrSuf    &lt;file&gt;, 1
+iok1    strcmp     &quot;wav&quot;, Suf                                                   ; specify wanted file extensions
+iok2    strcmp     &quot;flac&quot;, Suf
+iok3    strcmp     &quot;ogg&quot;, Suf
+iok4    strcmp     &quot;mp3&quot;, Suf
+iok5    strcmp     &quot;aif&quot;, Suf
+iok6    strcmp     &quot;aiff&quot;, Suf
+
+if (iok1 == 0) || (iok2 == 0) ||(iok1 == 0) || (iok3 == 0) ||(iok4 == 0) || (iok5 == 0) ||(iok6 == 0) then
+else
+          prints    &quot;\nnot an audiofile!\n&quot;                                     ; not the suffix from the list
+          goto nosound                                                          ; jump to label
+endif
+
+asig    diskin2     &lt;file&gt;, 1
+
+nosound:                                                                        ; label
+
+aout = 0
+
+blueMixerOut asig, asig</instrumentText>
+  <alwaysOnInstrumentText></alwaysOnInstrumentText>
+  <graphicInterface editEnabled='false'>
+    <gridSettings>
+      <width>10</width>
+      <height>10</height>
+      <gridStyle>DOT</gridStyle>
+      <snapGridEnabled>true</snapGridEnabled>
+    </gridSettings>
+    <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+      <objectName></objectName>
+      <x>0</x>
+      <y>0</y>
+      <groupName>Group</groupName>
+      <backgroundColor>0x00000033</backgroundColor>
+      <borderColor>0x000000ff</borderColor>
+      <labelTextColor>0xffffffff</labelTextColor>
+      <titleEnabled>true</titleEnabled>
+      <width>20</width>
+      <height>20</height>
+      <font>
+        <name>Roboto</name>
+        <size>12.0</size>
+        <style>0</style>
+      </font>
+      <bsbObject type='blue.orchestra.blueSynthBuilder.BSBFileSelector'>
+        <objectName>file</objectName>
+        <x>86</x>
+        <y>20</y>
+        <comment>import sample to use</comment>
+        <fileName>/media/menno/datae/EigenWerk/samples3/accKlankM/accKlankM01.wav</fileName>
+        <textFieldWidth>500</textFieldWidth>
+        <stringChannelEnabled>true</stringChannelEnabled>
+      </bsbObject>
+      <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+        <objectName></objectName>
+        <x>10</x>
+        <y>21</y>
+        <label>sample</label>
+        <font>
+          <name>Roboto</name>
+          <size>20.0</size>
+          <style>0</style>
+        </font>
+      </bsbObject>
+    </bsbObject>
+  </graphicInterface>
+  <parameterList/>
+  <presetGroup name='Presets'/>
+  <opcodeList>
+    <udo>
+      <opcodeName>StrSuf</opcodeName>
+      <outTypes>S</outTypes>
+      <inTypes>So</inTypes>
+      <codeBody>  ;returns the suffix of a filename or path, optional in lower case 
+Spath,ilow xin
+ipos      strrindex Spath, &quot;.&quot;
+Suf       strsub    Spath, ipos+1
+ if ilow != 0 then
+Suf       strlower  Suf 
+ endif
+          xout      Suf
+</codeBody>
+      <comments>/****************************************************************************
+Suf StrSuf Spath [,ilow]
+Returns the suffix of a filename or path, optional in lower case 
+
+Returns the suffix (extension) of a filename or a full path, optional in lower case.
+written by joachim heintz
+
+Spath - full pathname (or filename) as string
+ilow - return ensuring lower case (1) or return as in Spath (0 = default)
+****************************************************************************/</comments>
+    </udo>
+  </opcodeList>
+</instrument>
