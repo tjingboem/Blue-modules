@@ -1,0 +1,297 @@
+<instrument type='blue.orchestra.BlueSynthBuilder' editEnabled='true'>
+  <name>untitled</name>
+  <comment>
+DESCRIPTION:
+
+The Vibrato Module vibrato to the audio signal
+- to be added to pitch of opcode
+- 6 different wave forms that can be switched to in realtime
+- fade in option so that vibrato does not kick in at the start of the note
+</comment>
+  <globalOrc></globalOrc>
+  <globalSco></globalSco>
+  <instrumentText>;===========================vibrato=============================================
+
+if (&lt;VibratoON&gt; == 1)  then
+    if i(&lt;vibrato fade in&gt;) == 1 then
+        kvibfade_in   expseg 0.01, p3, 1                                        ; fade in vibrato
+    else
+        kvibfade_in =   1                                                       ; vibrato starts right away
+    endif
+
+    kvib = lfo3(&lt;vibrato speed&gt;, &lt;vibrato wave&gt;)
+    kvib    *=  &lt;vibrato depth&gt; * kvibfade_in
+endif
+
+;==============================================================================</instrumentText>
+  <alwaysOnInstrumentText></alwaysOnInstrumentText>
+  <graphicInterface editEnabled='false'>
+    <gridSettings>
+      <width>10</width>
+      <height>10</height>
+      <gridStyle>DOT</gridStyle>
+      <snapGridEnabled>true</snapGridEnabled>
+    </gridSettings>
+    <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+      <objectName></objectName>
+      <x>0</x>
+      <y>0</y>
+      <groupName>Group</groupName>
+      <backgroundColor>0x00000033</backgroundColor>
+      <borderColor>0x000000ff</borderColor>
+      <labelTextColor>0xffffffff</labelTextColor>
+      <titleEnabled>true</titleEnabled>
+      <width>20</width>
+      <height>20</height>
+      <font>
+        <name>Roboto</name>
+        <size>12.0</size>
+        <style>0</style>
+      </font>
+      <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+        <objectName></objectName>
+        <x>0</x>
+        <y>0</y>
+        <groupName>vibrato</groupName>
+        <backgroundColor>0x282828ff</backgroundColor>
+        <borderColor>0x000000ff</borderColor>
+        <labelTextColor>0xffffffff</labelTextColor>
+        <titleEnabled>true</titleEnabled>
+        <width>212</width>
+        <height>100</height>
+        <font>
+          <name>Roboto</name>
+          <size>12.0</size>
+          <style>2</style>
+        </font>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+          <objectName>vibrato fade in</objectName>
+          <x>10</x>
+          <y>55</y>
+          <comment>vibrato sets in slowly and is at full at the end of the note event</comment>
+          <automationAllowed>true</automationAllowed>
+          <label>fade in</label>
+          <selected>false</selected>
+          <randomizable>true</randomizable>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>185</x>
+          <y>96</y>
+          <label>5</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>1</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>57</x>
+          <y>96</y>
+          <label>0</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>1</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
+          <objectName>vibrato wave</objectName>
+          <x>50</x>
+          <y>80</y>
+          <comment>sine, triangle, square x 2, saw up, saw down </comment>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>5.0</maximum>
+          <bdresolution>1</bdresolution>
+          <value>4.0</value>
+          <sliderWidth>150</sliderWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>false</valueDisplayEnabled>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>159</x>
+          <y>96</y>
+          <label>4</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>1</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>107</x>
+          <y>96</y>
+          <label>2</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>1</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>vibrato depth</objectName>
+          <x>102</x>
+          <y>8</y>
+          <comment>depth of the vibrato</comment>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>0.15</maximum>
+          <value>0.15</value>
+          <knobWidth>40</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+          <label>depth</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>vibrato speed</objectName>
+          <x>152</x>
+          <y>8</y>
+          <comment>frequency rate of vibrato</comment>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>20.0</maximum>
+          <value>7.875705646603469</value>
+          <knobWidth>40</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+          <label>speed</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+          <objectName>VibratoON</objectName>
+          <x>10</x>
+          <y>10</y>
+          <comment>switch for Vibrato ON or OFF</comment>
+          <automationAllowed>true</automationAllowed>
+          <label>vibrato</label>
+          <selected>true</selected>
+          <randomizable>true</randomizable>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>17</x>
+          <y>85</y>
+          <label>waves</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>133</x>
+          <y>96</y>
+          <label>3</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>1</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>83</x>
+          <y>96</y>
+          <label>1</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>1</style>
+          </font>
+        </bsbObject>
+      </bsbObject>
+    </bsbObject>
+  </graphicInterface>
+  <parameterList>
+    <parameter uniqueId='-1585864591' name='vibrato fade in' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='0.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-1585864589' name='vibrato wave' label='' min='0.0' max='5.0' bdresolution='1' automationEnabled='false' value='4.0'>
+      <line name='' version='2' max='5.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='4.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-1585864587' name='vibrato depth' label='' min='0.0' max='0.15' bdresolution='-1' automationEnabled='false' value='0.15'>
+      <line name='' version='2' max='0.15' min='0.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.15'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-1585864585' name='vibrato speed' label='' min='0.0' max='20.0' bdresolution='-1' automationEnabled='false' value='7.875705646603469'>
+      <line name='' version='2' max='20.0' min='0.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='7.875705646603469'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-1585864583' name='VibratoON' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='1.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='1.0'/>
+      </line>
+    </parameter>
+  </parameterList>
+  <presetGroup name='Presets'/>
+  <opcodeList>
+    <udo>
+      <opcodeName>lfo3</opcodeName>
+      <outTypes>k</outTypes>
+      <inTypes>kk</inTypes>
+      <codeBody>kcps, ktype xin
+
+iSineTable	chnget	&quot;lfo2_sine&quot;
+
+if (iSineTable == 0) then
+	iSineTable	ftgen 	0, 0, 65536, 10, 1 ; sine wave
+	chnset	iSineTable, &quot;lfo2_sine&quot;
+endif
+
+kout init 0
+
+if (ktype == 0) then ;SINE
+	kout 	oscil3 1, kcps, iSineTable
+
+elseif (ktype == 1) then ;TRIANGLE
+	aout	vco2 1, kcps, 12
+	kout downsamp aout
+
+elseif (ktype == 2) then ;SQUARE (BI-POLAR)
+	aout	vco2 1, kcps, 10
+	kout downsamp aout
+
+elseif (ktype == 3) then ;SQUARE (UNI-POLAR)
+	aout	vco2 1, kcps, 10
+	kout downsamp aout
+	kout = (kout + 1) / 2
+
+elseif (ktype == 4) then ;SAW TOOTH (UP)
+	aout	vco2 1, kcps, 0
+	kout downsamp aout
+
+
+elseif (ktype == 5) then ;SAW TOOTH (DOWN)
+	aout	vco2 1, kcps, 0
+	kout downsamp aout
+	kout = kout * -1
+
+endif
+
+xout kout</codeBody>
+      <comments></comments>
+    </udo>
+  </opcodeList>
+</instrument>

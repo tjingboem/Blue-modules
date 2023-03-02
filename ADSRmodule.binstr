@@ -1,0 +1,286 @@
+<instrument type='blue.orchestra.BlueSynthBuilder' editEnabled='true'>
+  <name>untitled</name>
+  <comment>
+DESCRIPTION:
+
+The Tremolo Module works in realtime.
+- multiply an Attack Decay Sustain Release envelope to the soundsignal.</comment>
+  <globalOrc></globalOrc>
+  <globalSco></globalSco>
+  <instrumentText>;============================ADSR amplitude Module==============================
+ 
+if (&lt;ADSR ON&gt; == 1) then
+    aret init 1
+    agte = linseg:a(1, p3 - i(&lt;ADSR release&gt;), 1, 0, 0, i(&lt;ADSR release&gt;), 0)
+    aampdsr    adsr140    agte, aret, &lt;ADSR attack&gt;, &lt;ADSR decay&gt;, &lt;ADSR sustain&gt;, &lt;ADSR release&gt;
+else
+    aampdsr  =   1
+endif         
+
+;;==============================================================================</instrumentText>
+  <alwaysOnInstrumentText></alwaysOnInstrumentText>
+  <graphicInterface editEnabled='false'>
+    <gridSettings>
+      <width>10</width>
+      <height>10</height>
+      <gridStyle>DOT</gridStyle>
+      <snapGridEnabled>true</snapGridEnabled>
+    </gridSettings>
+    <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+      <objectName></objectName>
+      <x>0</x>
+      <y>0</y>
+      <groupName>Group</groupName>
+      <backgroundColor>0x00000033</backgroundColor>
+      <borderColor>0x000000ff</borderColor>
+      <labelTextColor>0xffffffff</labelTextColor>
+      <titleEnabled>true</titleEnabled>
+      <width>20</width>
+      <height>20</height>
+      <font>
+        <name>Roboto</name>
+        <size>12.0</size>
+        <style>0</style>
+      </font>
+      <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+        <objectName></objectName>
+        <x>0</x>
+        <y>0</y>
+        <comment>4 envelopes for amplitude</comment>
+        <groupName>ADSR</groupName>
+        <backgroundColor>0x282828ff</backgroundColor>
+        <borderColor>0x000000ff</borderColor>
+        <labelTextColor>0xffffffff</labelTextColor>
+        <titleEnabled>true</titleEnabled>
+        <width>20</width>
+        <height>117</height>
+        <font>
+          <name>Roboto</name>
+          <size>12.0</size>
+          <style>2</style>
+        </font>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>ADSR sustain</objectName>
+          <x>155</x>
+          <y>10</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>1.0</maximum>
+          <value>0.9993813053987427</value>
+          <knobWidth>50</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+          <label>sustain</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>ADSR release</objectName>
+          <x>225</x>
+          <y>10</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>1.0</maximum>
+          <value>0.25149683596018546</value>
+          <knobWidth>50</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+          <label>release</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+          <objectName>ADSR ON</objectName>
+          <x>5</x>
+          <y>10</y>
+          <comment>ON/OFF</comment>
+          <automationAllowed>true</automationAllowed>
+          <label/>
+          <selected>true</selected>
+          <randomizable>true</randomizable>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>ADSR decay</objectName>
+          <x>90</x>
+          <y>10</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>2.0</maximum>
+          <value>0.47579679080059833</value>
+          <knobWidth>50</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+          <label>decay</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>ADSR attack</objectName>
+          <x>25</x>
+          <y>10</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>3.0</maximum>
+          <value>0.0</value>
+          <knobWidth>50</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+          <label>attack</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+      </bsbObject>
+    </bsbObject>
+  </graphicInterface>
+  <parameterList>
+    <parameter uniqueId='-1585864625' name='ADSR sustain' label='' min='0.0' max='1.0' bdresolution='-1' automationEnabled='false' value='0.9993813053987427'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.9993813053987427'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-1585864623' name='ADSR release' label='' min='0.0' max='1.0' bdresolution='-1' automationEnabled='false' value='0.25149683596018546'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.25149683596018546'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-1585864621' name='ADSR ON' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='1.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='1.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-1585864619' name='ADSR decay' label='' min='0.0' max='2.0' bdresolution='-1' automationEnabled='false' value='0.47579679080059833'>
+      <line name='' version='2' max='2.0' min='0.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.47579679080059833'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-1585864617' name='ADSR attack' label='' min='0.0' max='3.0' bdresolution='-1' automationEnabled='false' value='0.0'>
+      <line name='' version='2' max='3.0' min='0.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.0'/>
+      </line>
+    </parameter>
+  </parameterList>
+  <presetGroup name='Presets'/>
+  <opcodeList>
+    <udo>
+      <opcodeName>adsr140_calc_coef</opcodeName>
+      <outTypes>k</outTypes>
+      <inTypes>kk</inTypes>
+      <codeBody>  
+  knum_samps, kratio xin
+  xout exp( -log((1.0 + kratio) / kratio) / knum_samps)
+    
+</codeBody>
+      <comments></comments>
+    </udo>
+    <udo>
+      <opcodeName>adsr140</opcodeName>
+      <outTypes>a</outTypes>
+      <inTypes>aakkkk</inTypes>
+      <codeBody>agate, aretrig, kattack, kdecay, ksustain, krelease xin
+kstate init 0  ; 0 = attack, 1 = decay, 2 = sustain
+klasttrig init -1
+kval init 0.0
+asig init 0
+kindx = 0
+kattack_base init 0
+kdecay_base init 0
+krelease_base init 0
+kattack_samps init 0
+kdecay_samps init 0
+krelease_samps init 0
+kattack_coef init 0
+kdecay_coef init 0
+ksustain_coef init 0
+klast_attack init -1
+klast_decay init -1
+klast_release init -1
+if (klast_attack != kattack) then
+  klast_attack = kattack
+  if(kattack &gt; 0) then
+    kattack_samps = kattack * sr
+    kattack_coef = adsr140_calc_coef(kattack_samps, 0.3)
+    kattack_base = (1.0 + 0.3) * (1 - kattack_coef)
+  else 
+    kattack_samps = 0 
+    kattack_coef = 0 
+    kattack_base = 0 
+  endif
+endif
+if (klast_decay != kdecay) then
+  klast_decay = kdecay
+  kdecay_samps = kdecay * sr
+  kdecay_coef = adsr140_calc_coef(kdecay_samps, 0.0001)
+  kdecay_base = (ksustain - 0.0001) * (1.0 - kdecay_coef)
+endif
+if (klast_release != krelease) then
+  klast_release = krelease
+  krelease_samps = krelease * sr
+  krelease_coef = adsr140_calc_coef(krelease_samps, 0.0001)
+  krelease_base =  -0.0001 * (1.0 - krelease_coef)
+endif
+while (kindx &lt; ksmps) do
+  if (agate[kindx] &gt; 0) then
+    kretrig = aretrig[kindx]
+    if (kretrig &gt; 0 &amp;&amp; klasttrig &lt;= 0) then
+      kstate = 0
+    endif
+    klasttrig = kretrig
+    if (kstate == 0) then
+      if(kattack &lt;= 0) then
+        kval = 1.0
+        kstate = 1
+      else
+        kval = kattack_base + (kval * kattack_coef)
+        if(kval &gt;= 1.0) then
+          kval = 1.0
+          kstate = 1
+        endif
+        asig[kindx] = kval
+      endif
+    elseif (kstate == 1) then
+      kval = kdecay_base + (kval * kdecay_coef)
+      if(kval &lt;= ksustain) then
+        kval = ksustain
+        kstate = 2
+      endif
+      asig[kindx] = kval 
+    else
+      asig[kindx] = ksustain
+    endif
+  else ; in a release state
+    kstate = 0
+    if (kval == 0.0) then
+      asig[kindx] = 0
+    else 
+    ; releasing
+      kval = krelease_base + (kval * krelease_coef)
+    if(kval &lt;= 0.0) then
+      kval = 0.0
+    endif
+    asig[kindx] = kval  
+    endif
+  endif
+  kindx += 1
+od
+xout asig
+</codeBody>
+      <comments></comments>
+    </udo>
+  </opcodeList>
+</instrument>

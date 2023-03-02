@@ -1,0 +1,217 @@
+<instrument type='blue.orchestra.BlueSynthBuilder' editEnabled='true'>
+  <name>untitled</name>
+  <comment>
+DESCRIPTION:
+
+The Pitch Module controles the Pitch envelope in different ways
+- multiply the envelopes up to 20x
+- option to add jitter
+- to be added to the pitch of the opcode
+</comment>
+  <globalOrc></globalOrc>
+  <globalSco></globalSco>
+  <instrumentText>;================================pitch envelope=================================
+
+if (&lt;envelope pitch bend ON&gt;) == 1 then                                         ; envelope pitchbend
+    kenvpitchbend  loopxseg     &lt;envelope pitch rate&gt;/p3, 0, 0, &lt;envelope_pitch bend envelope&gt;, 0  ; exponential envelope
+    kenvpitchbend   *=  &lt;pitchbend depth&gt;
+    kjitpitch jitter &lt;pitch jitter depth&gt;, &lt;pitch jitter min&gt;, &lt;pitch jitter max&gt;   ; create some pitch jitter  
+    ktuning  =   (ktuning + kjitpitch) + kenvpitchbend  
+else
+    kenvpitchbend   =   0
+endif
+
+;==============================================================================</instrumentText>
+  <alwaysOnInstrumentText></alwaysOnInstrumentText>
+  <graphicInterface editEnabled='false'>
+    <gridSettings>
+      <width>10</width>
+      <height>10</height>
+      <gridStyle>DOT</gridStyle>
+      <snapGridEnabled>true</snapGridEnabled>
+    </gridSettings>
+    <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+      <objectName></objectName>
+      <x>0</x>
+      <y>0</y>
+      <groupName>Group</groupName>
+      <backgroundColor>0x00000033</backgroundColor>
+      <borderColor>0x000000ff</borderColor>
+      <labelTextColor>0xffffffff</labelTextColor>
+      <titleEnabled>true</titleEnabled>
+      <width>20</width>
+      <height>20</height>
+      <font>
+        <name>Roboto</name>
+        <size>12.0</size>
+        <style>0</style>
+      </font>
+      <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+        <objectName></objectName>
+        <x>0</x>
+        <y>0</y>
+        <groupName>pitch envelope</groupName>
+        <backgroundColor>0x282828ff</backgroundColor>
+        <borderColor>0x000000ff</borderColor>
+        <labelTextColor>0xffffffff</labelTextColor>
+        <titleEnabled>true</titleEnabled>
+        <width>215</width>
+        <height>77</height>
+        <font>
+          <name>Roboto</name>
+          <size>12.0</size>
+          <style>2</style>
+        </font>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>pitch jitter min</objectName>
+          <x>130</x>
+          <y>10</y>
+          <comment>minimum value for randomness</comment>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>100.0</maximum>
+          <value>1.0</value>
+          <knobWidth>35</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+          <label>min</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>10</x>
+          <y>85</y>
+          <label>scaledepth</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>pitch jitter depth</objectName>
+          <x>90</x>
+          <y>10</y>
+          <comment>adds randomness to pitch envelope</comment>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>0.3</maximum>
+          <value>0.03672122174701832</value>
+          <knobWidth>35</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+          <label>jitter</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>pitch jitter max</objectName>
+          <x>170</x>
+          <y>10</y>
+          <comment>maximum value for randomness</comment>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>100.0</maximum>
+          <value>39.34409104083782</value>
+          <knobWidth>35</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+          <label>max</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>envelope pitch rate</objectName>
+          <x>40</x>
+          <y>10</y>
+          <comment>repeat pitch envelope</comment>
+          <automationAllowed>true</automationAllowed>
+          <minimum>1.0</minimum>
+          <maximum>20.0</maximum>
+          <value>5.065104148969178</value>
+          <knobWidth>35</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+          <label>scale</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+          <objectName>envelope pitch bend ON</objectName>
+          <x>10</x>
+          <y>10</y>
+          <comment>on/off</comment>
+          <automationAllowed>true</automationAllowed>
+          <label/>
+          <selected>false</selected>
+          <randomizable>true</randomizable>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
+          <objectName>pitchbend depth</objectName>
+          <x>60</x>
+          <y>80</y>
+          <comment>depth of scaling</comment>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>1.0</maximum>
+          <bdresolution>0.01</bdresolution>
+          <value>0.0</value>
+          <sliderWidth>150</sliderWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>false</valueDisplayEnabled>
+        </bsbObject>
+      </bsbObject>
+    </bsbObject>
+  </graphicInterface>
+  <parameterList>
+    <parameter uniqueId='-1585864603' name='pitch jitter min' label='' min='0.0' max='100.0' bdresolution='-1' automationEnabled='false' value='1.0'>
+      <line name='' version='2' max='100.0' min='0.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='1.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-1585864601' name='pitch jitter depth' label='' min='0.0' max='0.3' bdresolution='-1' automationEnabled='false' value='0.03672122174701832'>
+      <line name='' version='2' max='0.3' min='0.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.03672122174701832'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-1585864599' name='pitch jitter max' label='' min='0.0' max='100.0' bdresolution='-1' automationEnabled='false' value='39.34409104083782'>
+      <line name='' version='2' max='100.0' min='0.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='39.34409104083782'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-1585864597' name='envelope pitch rate' label='' min='1.0' max='20.0' bdresolution='-1' automationEnabled='false' value='5.065104148969178'>
+      <line name='' version='2' max='20.0' min='1.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='5.065104148969178'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-1585864595' name='envelope pitch bend ON' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='0.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-1585864593' name='pitchbend depth' label='' min='0.0' max='1.0' bdresolution='0.01' automationEnabled='false' value='0.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='0.01' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.0'/>
+      </line>
+    </parameter>
+  </parameterList>
+  <presetGroup name='Presets'/>
+  <opcodeList/>
+</instrument>

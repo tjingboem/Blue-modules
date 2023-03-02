@@ -1,0 +1,215 @@
+<instrument type='blue.orchestra.BlueSynthBuilder' editEnabled='true'>
+  <name>untitled</name>
+  <comment>
+DESCRIPTION:
+
+The Amplitude Module controles the Amplitude envelope in different ways
+- multiply the envelopes up to 20x
+- option to add jitter
+- linear vs. exponential envelope</comment>
+  <globalOrc></globalOrc>
+  <globalSco></globalSco>
+  <instrumentText>;;=========================amplitude envelope===================================
+
+if &lt;envelope amplitude ON&gt; == 1 then
+    if i(&lt;amplitude exponential switch&gt;) == 1 then                              ; create amplitude envelope
+        kenvamp loopxseg    &lt;envelope amplitude rate&gt;/p3, 0, 0, &lt;envelope_amplitude envelope&gt;, 0    ; exponential envelope
+    else
+        kenvamp loopseg     &lt;envelope amplitude rate&gt;/p3, 0, 0, &lt;envelope_amplitude envelope&gt;, 0    ; or linear envelepe
+    endif
+
+    kjitamp jitter &lt;amplitude jitter depth&gt;, &lt;amplitude jitter min&gt;, &lt;amplitude jitter max&gt;         ; create some amplitude jitter     
+    aampenv =   (kenvamp + kjitamp) * &lt;SF pregain&gt;                              ; pregain for loaded sample + jitter                                                
+else
+    aampenv = &lt;SF pregain&gt;                                                      ; no amplitude envelope, only pregain
+endif
+
+;==============================================================================</instrumentText>
+  <alwaysOnInstrumentText></alwaysOnInstrumentText>
+  <graphicInterface editEnabled='false'>
+    <gridSettings>
+      <width>10</width>
+      <height>10</height>
+      <gridStyle>DOT</gridStyle>
+      <snapGridEnabled>true</snapGridEnabled>
+    </gridSettings>
+    <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+      <objectName></objectName>
+      <x>0</x>
+      <y>0</y>
+      <groupName>Group</groupName>
+      <backgroundColor>0x00000033</backgroundColor>
+      <borderColor>0x000000ff</borderColor>
+      <labelTextColor>0xffffffff</labelTextColor>
+      <titleEnabled>true</titleEnabled>
+      <width>20</width>
+      <height>20</height>
+      <font>
+        <name>Roboto</name>
+        <size>12.0</size>
+        <style>0</style>
+      </font>
+      <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+        <objectName></objectName>
+        <x>0</x>
+        <y>0</y>
+        <groupName>amplitude envelope</groupName>
+        <backgroundColor>0x282828ff</backgroundColor>
+        <borderColor>0x000000ff</borderColor>
+        <labelTextColor>0xffffffff</labelTextColor>
+        <titleEnabled>true</titleEnabled>
+        <width>215</width>
+        <height>122</height>
+        <font>
+          <name>Roboto</name>
+          <size>12.0</size>
+          <style>2</style>
+        </font>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>11</x>
+          <y>58</y>
+          <label>exp</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+          <objectName>amplitude exponential switch</objectName>
+          <x>10</x>
+          <y>44</y>
+          <automationAllowed>true</automationAllowed>
+          <label/>
+          <selected>false</selected>
+          <randomizable>true</randomizable>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+          <objectName>envelope amplitude ON</objectName>
+          <x>10</x>
+          <y>8</y>
+          <comment>ON/OFF</comment>
+          <automationAllowed>true</automationAllowed>
+          <label/>
+          <selected>false</selected>
+          <randomizable>true</randomizable>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>amplitude jitter min</objectName>
+          <x>125</x>
+          <y>10</y>
+          <comment>minimum value for randomness</comment>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>38.0</maximum>
+          <value>20.14</value>
+          <knobWidth>35</knobWidth>
+          <randomizable>false</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+          <label>min</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>amplitude jitter max</objectName>
+          <x>165</x>
+          <y>10</y>
+          <comment>maximum value for randomness</comment>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>40.0</maximum>
+          <value>40.0</value>
+          <knobWidth>35</knobWidth>
+          <randomizable>false</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+          <label>max</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>amplitude jitter depth</objectName>
+          <x>85</x>
+          <y>10</y>
+          <comment>adds randomness to amplitude </comment>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>3.0</maximum>
+          <value>0.0</value>
+          <knobWidth>35</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>false</valueDisplayEnabled>
+          <label>jitter</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>envelope amplitude rate</objectName>
+          <x>35</x>
+          <y>10</y>
+          <comment>repeat amplitude envelope as set in window</comment>
+          <automationAllowed>true</automationAllowed>
+          <minimum>1.0</minimum>
+          <maximum>20.0</maximum>
+          <value>1.0</value>
+          <knobWidth>35</knobWidth>
+          <randomizable>false</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+          <label>scale</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+      </bsbObject>
+    </bsbObject>
+  </graphicInterface>
+  <parameterList>
+    <parameter uniqueId='-1585864615' name='amplitude exponential switch' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='0.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-1585864613' name='envelope amplitude ON' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='0.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-1585864611' name='amplitude jitter min' label='' min='0.0' max='38.0' bdresolution='-1' automationEnabled='false' value='20.14'>
+      <line name='' version='2' max='38.0' min='0.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='20.14'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-1585864609' name='amplitude jitter max' label='' min='0.0' max='40.0' bdresolution='-1' automationEnabled='false' value='40.0'>
+      <line name='' version='2' max='40.0' min='0.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='40.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-1585864607' name='amplitude jitter depth' label='' min='0.0' max='3.0' bdresolution='-1' automationEnabled='false' value='0.0'>
+      <line name='' version='2' max='3.0' min='0.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-1585864605' name='envelope amplitude rate' label='' min='1.0' max='20.0' bdresolution='-1' automationEnabled='false' value='1.0'>
+      <line name='' version='2' max='20.0' min='1.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='1.0'/>
+      </line>
+    </parameter>
+  </parameterList>
+  <presetGroup name='Presets'/>
+  <opcodeList/>
+</instrument>
