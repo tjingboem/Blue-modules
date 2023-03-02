@@ -1,27 +1,25 @@
 <instrument type='blue.orchestra.BlueSynthBuilder' editEnabled='true'>
-  <name>MSstereo</name>
-  <comment>MS stereo Module
-No UDOs
+  <name>untitled</name>
+  <comment>
+DESCRIPTION:
 
-
----
-
-version 1, October 2022
-- initial version
-
+The MS stereo Module lets you decide wheter you want the incoming stereo audio siganl to be treated as MS or &apos;normal&apos; stereo.
+- width parameter
 </comment>
-  <globalOrc>;gifil     ftgen     0, 0, 0, 1, &quot;/media/menno/datae/EigenWerk/samples3/accInterweb/485616__phonosupf__accordion-5.wav&quot;, 0, 0, 1</globalOrc>
-  <globalSco/>
-  <instrumentText>if &lt;MS&gt; == 1 then                                                               ; switch for MS stereo decoding
+  <globalOrc></globalOrc>
+  <globalSco></globalSco>
+  <instrumentText>;;==================================MS stereo===================================
+
+if &lt;MS&gt; == 1 then
     asigFL, asigFR  ms2st   asigFL, asigFR, &lt;MSwidth&gt;
 endif
 
-</instrumentText>
+;===============================================================================</instrumentText>
   <alwaysOnInstrumentText></alwaysOnInstrumentText>
   <graphicInterface editEnabled='false'>
     <gridSettings>
-      <width>5</width>
-      <height>5</height>
+      <width>10</width>
+      <height>10</height>
       <gridStyle>DOT</gridStyle>
       <snapGridEnabled>true</snapGridEnabled>
     </gridSettings>
@@ -45,13 +43,13 @@ endif
         <objectName></objectName>
         <x>0</x>
         <y>0</y>
-        <groupName>MSstereo</groupName>
-        <backgroundColor>0x59853eff</backgroundColor>
+        <groupName>MS</groupName>
+        <backgroundColor>0x282828ff</backgroundColor>
         <borderColor>0x000000ff</borderColor>
         <labelTextColor>0xffffffff</labelTextColor>
         <titleEnabled>true</titleEnabled>
         <width>20</width>
-        <height>20</height>
+        <height>50</height>
         <font>
           <name>Roboto</name>
           <size>12.0</size>
@@ -59,8 +57,8 @@ endif
         </font>
         <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
           <objectName>MS</objectName>
-          <x>0</x>
-          <y>7</y>
+          <x>10</x>
+          <y>12</y>
           <automationAllowed>true</automationAllowed>
           <label>MS</label>
           <selected>false</selected>
@@ -68,13 +66,13 @@ endif
         </bsbObject>
         <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
           <objectName>MSwidth</objectName>
-          <x>34</x>
-          <y>5</y>
+          <x>44</x>
+          <y>10</y>
           <automationAllowed>true</automationAllowed>
           <minimum>0.0</minimum>
           <maximum>1.0</maximum>
           <bdresolution>0.01</bdresolution>
-          <value>0.39</value>
+          <value>0.49</value>
           <sliderWidth>88</sliderWidth>
           <randomizable>true</randomizable>
           <valueDisplayEnabled>false</valueDisplayEnabled>
@@ -83,14 +81,14 @@ endif
     </bsbObject>
   </graphicInterface>
   <parameterList>
-    <parameter uniqueId='-1490019488' name='MS' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='0.0'>
+    <parameter uniqueId='-1585863848' name='MS' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='0.0'>
       <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
         <linePoint x='0.0' y='0.0'/>
       </line>
     </parameter>
-    <parameter uniqueId='-1490019486' name='MSwidth' label='' min='0.0' max='1.0' bdresolution='0.01' automationEnabled='false' value='0.39'>
+    <parameter uniqueId='-1585863826' name='MSwidth' label='' min='0.0' max='1.0' bdresolution='0.01' automationEnabled='false' value='0.49'>
       <line name='' version='2' max='1.0' min='0.0' bdresolution='0.01' color='-8355712' rightBound='false' endPointsLinked='false'>
-        <linePoint x='0.0' y='0.39'/>
+        <linePoint x='0.0' y='0.49'/>
       </line>
     </parameter>
   </parameterList>
