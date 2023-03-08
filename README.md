@@ -9,4 +9,5 @@ But i found that, when designing Instruments in Blue, it saves time to not to ha
 
 
 
-![FilterModule](https://user-images.githubusercontent.com/6670911/222388211-2155b032-8aed-45a7-b73c-56db1fa946b6.png)
+
+![Screenshot from 2023-03-08 12-05-47](https://user-images.githubusercontent.com/6670911/223697641-e4fdf0fc-56cc-404a-9482-ea9d5249909b.png)
