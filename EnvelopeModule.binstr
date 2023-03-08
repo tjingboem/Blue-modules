@@ -1,14 +1,16 @@
 <instrument type='blue.orchestra.BlueSynthBuilder' editEnabled='true'>
-  <name>untitled</name>
+  <name>EnvelopeModule</name>
   <comment>
 DESCRIPTION:
 
-The Envelope Module adds 3 envelopes: Amplitude, Filter and Pitch
+The Envelope Module adds 3 envelopes: Amplitude, Filter and Pitch Bend
 - multiply the envelopes to the audiosignal.
-- the Filter envelope is to be used together with the Filter Module code, Ampltude Module, Tuning Module and Pitch Module as it makes references to these.</comment>
-  <globalOrc></globalOrc>
-  <globalSco></globalSco>
-  <instrumentText>;;=========================amplitude envelope===================================
+- the Filter envelope is or can be used together with the Filter Module code, Ampltude Module, Tuning Module and Pitch Module as it makes references to these.</comment>
+  <globalOrc/>
+  <globalSco/>
+  <instrumentText>;0 inputs, 2 output control signals
+
+;;=========================amplitude envelope===================================
 
 if &lt;envelope amplitude ON&gt; == 1 then
     if i(&lt;amplitude exponential switch&gt;) == 1 then                              ; create amplitude envelope
@@ -35,7 +37,10 @@ else
     kenvpitchbend   =   0
 endif      
 
-;;==============================================================================</instrumentText>
+;;==============================================================================
+
+; for Filters, see FilterModule
+;aout   opcode  aampenv * amplitude, kenvpitchbend * pitch</instrumentText>
   <alwaysOnInstrumentText></alwaysOnInstrumentText>
   <graphicInterface editEnabled='false'>
     <gridSettings>

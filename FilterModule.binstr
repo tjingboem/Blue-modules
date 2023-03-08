@@ -1,5 +1,5 @@
 <instrument type='blue.orchestra.BlueSynthBuilder' editEnabled='true'>
-  <name>untitled</name>
+  <name>FilterModule</name>
   <comment>
 DESCRIPTION:
 
@@ -9,9 +9,12 @@ The Filter Module filters the audio signal in different ways
 - amplitude or pitch follower
 - mixes direct audio signal with filter
 </comment>
-  <globalOrc></globalOrc>
-  <globalSco></globalSco>
-  <instrumentText>;================================filter=========================================
+  <globalOrc/>
+  <globalSco/>
+  <instrumentText>
+;2 inputs, 2 outputs
+
+;================================filter=========================================
 
 if &lt;filterON&gt; == 1 then
 
@@ -79,7 +82,9 @@ else
         aoutR    =   asigFR
 endif
 
-;==============================================================================</instrumentText>
+;==============================================================================
+
+;blueMixerOut aoutL, aoutR</instrumentText>
   <alwaysOnInstrumentText></alwaysOnInstrumentText>
   <graphicInterface editEnabled='false'>
     <gridSettings>
@@ -122,6 +127,240 @@ endif
         </font>
         <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
           <objectName></objectName>
+          <x>494</x>
+          <y>13</y>
+          <groupName>envelopes</groupName>
+          <backgroundColor>0x3a3a3aff</backgroundColor>
+          <borderColor>0x000000ff</borderColor>
+          <labelTextColor>0xffffffff</labelTextColor>
+          <titleEnabled>false</titleEnabled>
+          <width>313</width>
+          <height>91</height>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+            <objectName>filter attack</objectName>
+            <x>11</x>
+            <y>32</y>
+            <comment>attack portion of envelope</comment>
+            <automationAllowed>true</automationAllowed>
+            <minimum>0.0</minimum>
+            <maximum>3.0</maximum>
+            <value>2.7908887414584433</value>
+            <knobWidth>31</knobWidth>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>false</valueDisplayEnabled>
+            <label>attack</label>
+            <labelEnabled>true</labelEnabled>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+            <objectName>filter sustain</objectName>
+            <x>91</x>
+            <y>32</y>
+            <comment>sustain portion of envelope</comment>
+            <automationAllowed>true</automationAllowed>
+            <minimum>0.0</minimum>
+            <maximum>1.0</maximum>
+            <value>1.0</value>
+            <knobWidth>31</knobWidth>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>false</valueDisplayEnabled>
+            <label>sustain</label>
+            <labelEnabled>true</labelEnabled>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+            <objectName></objectName>
+            <x>284</x>
+            <y>55</y>
+            <label>exp</label>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+            <objectName></objectName>
+            <x>67</x>
+            <y>6</y>
+            <label>adsr</label>
+            <font>
+              <name>Roboto</name>
+              <size>18.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+            <objectName></objectName>
+            <x>187</x>
+            <y>6</y>
+            <label>depth</label>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+            <objectName>filter release</objectName>
+            <x>140</x>
+            <y>32</y>
+            <comment>release portion of filter envelope.
+Is relative to Amplitude envelope
+
+</comment>
+            <automationAllowed>true</automationAllowed>
+            <minimum>0.0</minimum>
+            <maximum>1.0</maximum>
+            <value>0.7602193222705109</value>
+            <knobWidth>31</knobWidth>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>false</valueDisplayEnabled>
+            <label>release</label>
+            <labelEnabled>true</labelEnabled>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBVSlider' version='2'>
+            <objectName>filter envelope depth</objectName>
+            <x>298</x>
+            <y>20</y>
+            <comment>gain of filter envelope</comment>
+            <automationAllowed>true</automationAllowed>
+            <minimum>0.0</minimum>
+            <maximum>1.0</maximum>
+            <bdresolution>0.05</bdresolution>
+            <value>1.0</value>
+            <sliderHeight>57</sliderHeight>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>false</valueDisplayEnabled>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+            <objectName>filter decay</objectName>
+            <x>53</x>
+            <y>32</y>
+            <comment>decay portion of envelope</comment>
+            <automationAllowed>true</automationAllowed>
+            <minimum>0.0</minimum>
+            <maximum>1.0</maximum>
+            <value>0.5803389468748646</value>
+            <knobWidth>31</knobWidth>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>false</valueDisplayEnabled>
+            <label>decay</label>
+            <labelEnabled>true</labelEnabled>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+            <objectName>filter exponential switch</objectName>
+            <x>283</x>
+            <y>39</y>
+            <comment>treat anvelope ar exponential</comment>
+            <automationAllowed>true</automationAllowed>
+            <label/>
+            <selected>true</selected>
+            <randomizable>true</randomizable>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBVSlider' version='2'>
+            <objectName>filter ADS depth</objectName>
+            <x>177</x>
+            <y>20</y>
+            <comment>gain of ADS envelope</comment>
+            <automationAllowed>true</automationAllowed>
+            <minimum>0.0</minimum>
+            <maximum>1.0</maximum>
+            <bdresolution>0.01</bdresolution>
+            <value>1.0</value>
+            <sliderHeight>57</sliderHeight>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>false</valueDisplayEnabled>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+            <objectName></objectName>
+            <x>305</x>
+            <y>6</y>
+            <label>depth</label>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+            <objectName></objectName>
+            <x>249</x>
+            <y>6</y>
+            <label>graph</label>
+            <font>
+              <name>Roboto</name>
+              <size>18.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+            <objectName>rate filter envelope</objectName>
+            <x>239</x>
+            <y>32</y>
+            <comment>frequency rate of filter envelope</comment>
+            <automationAllowed>true</automationAllowed>
+            <minimum>1.0</minimum>
+            <maximum>30.0</maximum>
+            <value>1.0</value>
+            <knobWidth>31</knobWidth>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>false</valueDisplayEnabled>
+            <label>rate</label>
+            <labelEnabled>true</labelEnabled>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>362</x>
+          <y>15</y>
+          <label>filter follow modes</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+          <objectName>filterON</objectName>
+          <x>10</x>
+          <y>10</y>
+          <comment>filters ON or OFF</comment>
+          <automationAllowed>true</automationAllowed>
+          <label>filters</label>
+          <selected>false</selected>
+          <randomizable>true</randomizable>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+          <objectName></objectName>
           <x>74</x>
           <y>13</y>
           <groupName>envelopes</groupName>
@@ -149,40 +388,6 @@ endif
             <randomizable>true</randomizable>
             <valueDisplayEnabled>true</valueDisplayEnabled>
             <label>cutoff</label>
-            <labelEnabled>true</labelEnabled>
-            <font>
-              <name>Roboto</name>
-              <size>12.0</size>
-              <style>0</style>
-            </font>
-          </bsbObject>
-          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBVSlider' version='2'>
-            <objectName>filter bandpass gain</objectName>
-            <x>68</x>
-            <y>18</y>
-            <comment>gain of bandpass filter</comment>
-            <automationAllowed>true</automationAllowed>
-            <minimum>0.0</minimum>
-            <maximum>0.5</maximum>
-            <bdresolution>0.1</bdresolution>
-            <value>0.0</value>
-            <sliderHeight>56</sliderHeight>
-            <randomizable>true</randomizable>
-            <valueDisplayEnabled>false</valueDisplayEnabled>
-          </bsbObject>
-          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
-            <objectName>filter resonance</objectName>
-            <x>160</x>
-            <y>6</y>
-            <comment>gain of feedback of filters</comment>
-            <automationAllowed>true</automationAllowed>
-            <minimum>0.5</minimum>
-            <maximum>25.0</maximum>
-            <value>20.69561487394158</value>
-            <knobWidth>40</knobWidth>
-            <randomizable>true</randomizable>
-            <valueDisplayEnabled>true</valueDisplayEnabled>
-            <label>resonance</label>
             <labelEnabled>true</labelEnabled>
             <font>
               <name>Roboto</name>
@@ -249,11 +454,34 @@ endif
               <style>0</style>
             </font>
           </bsbObject>
-          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-            <objectName></objectName>
-            <x>72</x>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBVSlider' version='2'>
+            <objectName>filter bandpass gain</objectName>
+            <x>68</x>
+            <y>18</y>
+            <comment>gain of bandpass filter</comment>
+            <automationAllowed>true</automationAllowed>
+            <minimum>0.0</minimum>
+            <maximum>0.5</maximum>
+            <bdresolution>0.1</bdresolution>
+            <value>0.0</value>
+            <sliderHeight>56</sliderHeight>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>false</valueDisplayEnabled>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+            <objectName>filter resonance</objectName>
+            <x>160</x>
             <y>6</y>
-            <label>bndP</label>
+            <comment>gain of feedback of filters</comment>
+            <automationAllowed>true</automationAllowed>
+            <minimum>0.5</minimum>
+            <maximum>25.0</maximum>
+            <value>20.69561487394158</value>
+            <knobWidth>40</knobWidth>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>true</valueDisplayEnabled>
+            <label>resonance</label>
+            <labelEnabled>true</labelEnabled>
             <font>
               <name>Roboto</name>
               <size>12.0</size>
@@ -271,230 +499,28 @@ endif
               <style>0</style>
             </font>
           </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+            <objectName></objectName>
+            <x>72</x>
+            <y>6</y>
+            <label>bndP</label>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
         </bsbObject>
         <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
           <objectName></objectName>
-          <x>870</x>
-          <y>15</y>
-          <label>mix</label>
+          <x>885</x>
+          <y>85</y>
+          <label>filtered</label>
           <font>
             <name>Roboto</name>
             <size>12.0</size>
             <style>0</style>
           </font>
-        </bsbObject>
-        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
-          <objectName></objectName>
-          <x>494</x>
-          <y>13</y>
-          <groupName>envelopes</groupName>
-          <backgroundColor>0x3a3a3aff</backgroundColor>
-          <borderColor>0x000000ff</borderColor>
-          <labelTextColor>0xffffffff</labelTextColor>
-          <titleEnabled>false</titleEnabled>
-          <width>313</width>
-          <height>91</height>
-          <font>
-            <name>Roboto</name>
-            <size>12.0</size>
-            <style>0</style>
-          </font>
-          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBVSlider' version='2'>
-            <objectName>filter envelope depth</objectName>
-            <x>298</x>
-            <y>20</y>
-            <comment>gain of filter envelope</comment>
-            <automationAllowed>true</automationAllowed>
-            <minimum>0.0</minimum>
-            <maximum>1.0</maximum>
-            <bdresolution>0.05</bdresolution>
-            <value>1.0</value>
-            <sliderHeight>57</sliderHeight>
-            <randomizable>true</randomizable>
-            <valueDisplayEnabled>false</valueDisplayEnabled>
-          </bsbObject>
-          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
-            <objectName>rate filter envelope</objectName>
-            <x>239</x>
-            <y>32</y>
-            <comment>frequency rate of filter envelope</comment>
-            <automationAllowed>true</automationAllowed>
-            <minimum>1.0</minimum>
-            <maximum>30.0</maximum>
-            <value>1.0</value>
-            <knobWidth>31</knobWidth>
-            <randomizable>true</randomizable>
-            <valueDisplayEnabled>false</valueDisplayEnabled>
-            <label>rate</label>
-            <labelEnabled>true</labelEnabled>
-            <font>
-              <name>Roboto</name>
-              <size>12.0</size>
-              <style>0</style>
-            </font>
-          </bsbObject>
-          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-            <objectName></objectName>
-            <x>305</x>
-            <y>6</y>
-            <label>depth</label>
-            <font>
-              <name>Roboto</name>
-              <size>12.0</size>
-              <style>0</style>
-            </font>
-          </bsbObject>
-          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
-            <objectName>filter exponential switch</objectName>
-            <x>283</x>
-            <y>39</y>
-            <comment>treat anvelope ar exponential</comment>
-            <automationAllowed>true</automationAllowed>
-            <label/>
-            <selected>true</selected>
-            <randomizable>true</randomizable>
-          </bsbObject>
-          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
-            <objectName>filter attack</objectName>
-            <x>11</x>
-            <y>32</y>
-            <comment>attack portion of envelope</comment>
-            <automationAllowed>true</automationAllowed>
-            <minimum>0.0</minimum>
-            <maximum>3.0</maximum>
-            <value>2.7908887414584433</value>
-            <knobWidth>31</knobWidth>
-            <randomizable>true</randomizable>
-            <valueDisplayEnabled>false</valueDisplayEnabled>
-            <label>attack</label>
-            <labelEnabled>true</labelEnabled>
-            <font>
-              <name>Roboto</name>
-              <size>12.0</size>
-              <style>0</style>
-            </font>
-          </bsbObject>
-          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-            <objectName></objectName>
-            <x>67</x>
-            <y>6</y>
-            <label>adsr</label>
-            <font>
-              <name>Roboto</name>
-              <size>18.0</size>
-              <style>0</style>
-            </font>
-          </bsbObject>
-          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
-            <objectName>filter release</objectName>
-            <x>140</x>
-            <y>32</y>
-            <comment>release portion of filter envelope.
-Is relative to Amplitude envelope
-
-</comment>
-            <automationAllowed>true</automationAllowed>
-            <minimum>0.0</minimum>
-            <maximum>1.0</maximum>
-            <value>0.7602193222705109</value>
-            <knobWidth>31</knobWidth>
-            <randomizable>true</randomizable>
-            <valueDisplayEnabled>false</valueDisplayEnabled>
-            <label>release</label>
-            <labelEnabled>true</labelEnabled>
-            <font>
-              <name>Roboto</name>
-              <size>12.0</size>
-              <style>0</style>
-            </font>
-          </bsbObject>
-          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
-            <objectName>filter decay</objectName>
-            <x>53</x>
-            <y>32</y>
-            <comment>decay portion of envelope</comment>
-            <automationAllowed>true</automationAllowed>
-            <minimum>0.0</minimum>
-            <maximum>1.0</maximum>
-            <value>0.5803389468748646</value>
-            <knobWidth>31</knobWidth>
-            <randomizable>true</randomizable>
-            <valueDisplayEnabled>false</valueDisplayEnabled>
-            <label>decay</label>
-            <labelEnabled>true</labelEnabled>
-            <font>
-              <name>Roboto</name>
-              <size>12.0</size>
-              <style>0</style>
-            </font>
-          </bsbObject>
-          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBVSlider' version='2'>
-            <objectName>filter ADS depth</objectName>
-            <x>177</x>
-            <y>20</y>
-            <comment>gain of ADS envelope</comment>
-            <automationAllowed>true</automationAllowed>
-            <minimum>0.0</minimum>
-            <maximum>1.0</maximum>
-            <bdresolution>0.01</bdresolution>
-            <value>1.0</value>
-            <sliderHeight>57</sliderHeight>
-            <randomizable>true</randomizable>
-            <valueDisplayEnabled>false</valueDisplayEnabled>
-          </bsbObject>
-          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-            <objectName></objectName>
-            <x>249</x>
-            <y>6</y>
-            <label>graph</label>
-            <font>
-              <name>Roboto</name>
-              <size>18.0</size>
-              <style>0</style>
-            </font>
-          </bsbObject>
-          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-            <objectName></objectName>
-            <x>284</x>
-            <y>55</y>
-            <label>exp</label>
-            <font>
-              <name>Roboto</name>
-              <size>12.0</size>
-              <style>0</style>
-            </font>
-          </bsbObject>
-          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
-            <objectName>filter sustain</objectName>
-            <x>91</x>
-            <y>32</y>
-            <comment>sustain portion of envelope</comment>
-            <automationAllowed>true</automationAllowed>
-            <minimum>0.0</minimum>
-            <maximum>1.0</maximum>
-            <value>1.0</value>
-            <knobWidth>31</knobWidth>
-            <randomizable>true</randomizable>
-            <valueDisplayEnabled>false</valueDisplayEnabled>
-            <label>sustain</label>
-            <labelEnabled>true</labelEnabled>
-            <font>
-              <name>Roboto</name>
-              <size>12.0</size>
-              <style>0</style>
-            </font>
-          </bsbObject>
-          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-            <objectName></objectName>
-            <x>187</x>
-            <y>6</y>
-            <label>depth</label>
-            <font>
-              <name>Roboto</name>
-              <size>12.0</size>
-              <style>0</style>
-            </font>
-          </bsbObject>
         </bsbObject>
         <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
           <objectName></objectName>
@@ -507,54 +533,16 @@ Is relative to Amplitude envelope
             <style>0</style>
           </font>
         </bsbObject>
-        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
-          <objectName>filterON</objectName>
-          <x>10</x>
-          <y>10</y>
-          <comment>filters ON or OFF</comment>
-          <automationAllowed>true</automationAllowed>
-          <label>filters</label>
-          <selected>false</selected>
-          <randomizable>true</randomizable>
-        </bsbObject>
         <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
           <objectName></objectName>
-          <x>362</x>
+          <x>870</x>
           <y>15</y>
-          <label>filter follow modes</label>
+          <label>mix</label>
           <font>
             <name>Roboto</name>
             <size>12.0</size>
             <style>0</style>
           </font>
-        </bsbObject>
-        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBDropdown' version='2'>
-          <objectName>filter envelopes</objectName>
-          <x>365</x>
-          <y>70</y>
-          <comment>bypass envelopes, or choose one of them or both of them</comment>
-          <automationAllowed>true</automationAllowed>
-          <selectedIndex>2</selectedIndex>
-          <fontSize>12</fontSize>
-          <randomizable>true</randomizable>
-          <bsbDropdownItemList>
-            <bsbDropdownItem uniqueId='-1585864573'>
-              <name>disabled</name>
-              <value>0</value>
-            </bsbDropdownItem>
-            <bsbDropdownItem uniqueId='-1585864572'>
-              <name>AttDecSusRel</name>
-              <value>1</value>
-            </bsbDropdownItem>
-            <bsbDropdownItem uniqueId='-1585864571'>
-              <name>Graphic</name>
-              <value>2</value>
-            </bsbDropdownItem>
-            <bsbDropdownItem uniqueId='-1585864570'>
-              <name>ADS+Graphic</name>
-              <value>3</value>
-            </bsbDropdownItem>
-          </bsbDropdownItemList>
         </bsbObject>
         <bsbObject type='blue.orchestra.blueSynthBuilder.BSBDropdown' version='2'>
           <objectName>filter follower</objectName>
@@ -588,16 +576,33 @@ Is relative to Amplitude envelope
             </bsbDropdownItem>
           </bsbDropdownItemList>
         </bsbObject>
-        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-          <objectName></objectName>
-          <x>885</x>
-          <y>85</y>
-          <label>filtered</label>
-          <font>
-            <name>Roboto</name>
-            <size>12.0</size>
-            <style>0</style>
-          </font>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBDropdown' version='2'>
+          <objectName>filter envelopes</objectName>
+          <x>365</x>
+          <y>70</y>
+          <comment>bypass envelopes, or choose one of them or both of them</comment>
+          <automationAllowed>true</automationAllowed>
+          <selectedIndex>2</selectedIndex>
+          <fontSize>12</fontSize>
+          <randomizable>true</randomizable>
+          <bsbDropdownItemList>
+            <bsbDropdownItem uniqueId='-1585864573'>
+              <name>disabled</name>
+              <value>0</value>
+            </bsbDropdownItem>
+            <bsbDropdownItem uniqueId='-1585864572'>
+              <name>AttDecSusRel</name>
+              <value>1</value>
+            </bsbDropdownItem>
+            <bsbDropdownItem uniqueId='-1585864571'>
+              <name>Graphic</name>
+              <value>2</value>
+            </bsbDropdownItem>
+            <bsbDropdownItem uniqueId='-1585864570'>
+              <name>ADS+Graphic</name>
+              <value>3</value>
+            </bsbDropdownItem>
+          </bsbDropdownItemList>
         </bsbObject>
         <bsbObject type='blue.orchestra.blueSynthBuilder.BSBVSlider' version='2'>
           <objectName>output filters</objectName>

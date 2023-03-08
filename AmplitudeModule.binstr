@@ -1,15 +1,18 @@
 <instrument type='blue.orchestra.BlueSynthBuilder' editEnabled='true'>
-  <name>untitled</name>
+  <name>AmplitudeModule</name>
   <comment>
 DESCRIPTION:
 
-The Amplitude Module controles the Amplitude envelope in different ways
+The Amplitude Module controles the Amplitude envelope in different ways.Needs the Envelope Module.
 - multiply the envelopes up to 20x
 - option to add jitter
 - linear vs. exponential envelope</comment>
-  <globalOrc></globalOrc>
-  <globalSco></globalSco>
-  <instrumentText>;;=========================amplitude envelope===================================
+  <globalOrc/>
+  <globalSco/>
+  <instrumentText>
+; no inputs, several control signal outputs
+
+;;=========================amplitude envelope===================================
 
 if &lt;envelope amplitude ON&gt; == 1 then
     if i(&lt;amplitude exponential switch&gt;) == 1 then                              ; create amplitude envelope
@@ -24,7 +27,10 @@ else
     aampenv = &lt;SF pregain&gt;                                                      ; no amplitude envelope, only pregain
 endif
 
-;==============================================================================</instrumentText>
+;===============================================================================
+
+;multiply amplitude envelope with output signal of the instrument:
+;blueMixerOut asig1 * aampenv , asig2 * aampenv</instrumentText>
   <alwaysOnInstrumentText></alwaysOnInstrumentText>
   <graphicInterface editEnabled='false'>
     <gridSettings>
@@ -65,6 +71,26 @@ endif
           <size>12.0</size>
           <style>2</style>
         </font>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>amplitude jitter depth</objectName>
+          <x>85</x>
+          <y>10</y>
+          <comment>adds randomness to amplitude </comment>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>3.0</maximum>
+          <value>0.0</value>
+          <knobWidth>35</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>false</valueDisplayEnabled>
+          <label>jitter</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
         <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
           <objectName></objectName>
           <x>11</x>
@@ -75,25 +101,6 @@ endif
             <size>12.0</size>
             <style>0</style>
           </font>
-        </bsbObject>
-        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
-          <objectName>amplitude exponential switch</objectName>
-          <x>10</x>
-          <y>44</y>
-          <automationAllowed>true</automationAllowed>
-          <label/>
-          <selected>false</selected>
-          <randomizable>true</randomizable>
-        </bsbObject>
-        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
-          <objectName>envelope amplitude ON</objectName>
-          <x>10</x>
-          <y>8</y>
-          <comment>ON/OFF</comment>
-          <automationAllowed>true</automationAllowed>
-          <label/>
-          <selected>false</selected>
-          <randomizable>true</randomizable>
         </bsbObject>
         <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
           <objectName>amplitude jitter min</objectName>
@@ -135,25 +142,15 @@ endif
             <style>0</style>
           </font>
         </bsbObject>
-        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
-          <objectName>amplitude jitter depth</objectName>
-          <x>85</x>
-          <y>10</y>
-          <comment>adds randomness to amplitude </comment>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+          <objectName>envelope amplitude ON</objectName>
+          <x>10</x>
+          <y>8</y>
+          <comment>ON/OFF</comment>
           <automationAllowed>true</automationAllowed>
-          <minimum>0.0</minimum>
-          <maximum>3.0</maximum>
-          <value>0.0</value>
-          <knobWidth>35</knobWidth>
+          <label/>
+          <selected>false</selected>
           <randomizable>true</randomizable>
-          <valueDisplayEnabled>false</valueDisplayEnabled>
-          <label>jitter</label>
-          <labelEnabled>true</labelEnabled>
-          <font>
-            <name>Roboto</name>
-            <size>12.0</size>
-            <style>0</style>
-          </font>
         </bsbObject>
         <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
           <objectName>envelope amplitude rate</objectName>
@@ -174,6 +171,15 @@ endif
             <size>12.0</size>
             <style>0</style>
           </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+          <objectName>amplitude exponential switch</objectName>
+          <x>10</x>
+          <y>44</y>
+          <automationAllowed>true</automationAllowed>
+          <label/>
+          <selected>false</selected>
+          <randomizable>true</randomizable>
         </bsbObject>
       </bsbObject>
     </bsbObject>

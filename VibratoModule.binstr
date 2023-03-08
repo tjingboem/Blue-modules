@@ -1,5 +1,5 @@
 <instrument type='blue.orchestra.BlueSynthBuilder' editEnabled='true'>
-  <name>untitled</name>
+  <name>VibratoModule</name>
   <comment>
 DESCRIPTION:
 
@@ -8,9 +8,11 @@ The Vibrato Module vibrato to the audio signal
 - 6 different wave forms that can be switched to in realtime
 - fade in option so that vibrato does not kick in at the start of the note
 </comment>
-  <globalOrc></globalOrc>
-  <globalSco></globalSco>
-  <instrumentText>;===========================vibrato=============================================
+  <globalOrc/>
+  <globalSco/>
+  <instrumentText>; 0 inputs, 1 control output
+
+;===========================vibrato=============================================
 
 if (&lt;VibratoON&gt; == 1)  then
     if i(&lt;vibrato fade in&gt;) == 1 then
@@ -23,7 +25,9 @@ if (&lt;VibratoON&gt; == 1)  then
     kvib    *=  &lt;vibrato depth&gt; * kvibfade_in
 endif
 
-;==============================================================================</instrumentText>
+;==============================================================================
+
+;aout   opcode  amplitude, kvib * pitch</instrumentText>
   <alwaysOnInstrumentText></alwaysOnInstrumentText>
   <graphicInterface editEnabled='false'>
     <gridSettings>
@@ -64,27 +68,6 @@ endif
           <size>12.0</size>
           <style>2</style>
         </font>
-        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
-          <objectName>vibrato fade in</objectName>
-          <x>10</x>
-          <y>55</y>
-          <comment>vibrato sets in slowly and is at full at the end of the note event</comment>
-          <automationAllowed>true</automationAllowed>
-          <label>fade in</label>
-          <selected>false</selected>
-          <randomizable>true</randomizable>
-        </bsbObject>
-        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-          <objectName></objectName>
-          <x>185</x>
-          <y>96</y>
-          <label>5</label>
-          <font>
-            <name>Roboto</name>
-            <size>14.0</size>
-            <style>1</style>
-          </font>
-        </bsbObject>
         <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
           <objectName></objectName>
           <x>57</x>
@@ -96,25 +79,11 @@ endif
             <style>1</style>
           </font>
         </bsbObject>
-        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
-          <objectName>vibrato wave</objectName>
-          <x>50</x>
-          <y>80</y>
-          <comment>sine, triangle, square x 2, saw up, saw down </comment>
-          <automationAllowed>true</automationAllowed>
-          <minimum>0.0</minimum>
-          <maximum>5.0</maximum>
-          <bdresolution>1</bdresolution>
-          <value>4.0</value>
-          <sliderWidth>150</sliderWidth>
-          <randomizable>true</randomizable>
-          <valueDisplayEnabled>false</valueDisplayEnabled>
-        </bsbObject>
         <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
           <objectName></objectName>
-          <x>159</x>
+          <x>133</x>
           <y>96</y>
-          <label>4</label>
+          <label>3</label>
           <font>
             <name>Roboto</name>
             <size>14.0</size>
@@ -130,26 +99,6 @@ endif
             <name>Roboto</name>
             <size>14.0</size>
             <style>1</style>
-          </font>
-        </bsbObject>
-        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
-          <objectName>vibrato depth</objectName>
-          <x>102</x>
-          <y>8</y>
-          <comment>depth of the vibrato</comment>
-          <automationAllowed>true</automationAllowed>
-          <minimum>0.0</minimum>
-          <maximum>0.15</maximum>
-          <value>0.15</value>
-          <knobWidth>40</knobWidth>
-          <randomizable>true</randomizable>
-          <valueDisplayEnabled>true</valueDisplayEnabled>
-          <label>depth</label>
-          <labelEnabled>true</labelEnabled>
-          <font>
-            <name>Roboto</name>
-            <size>12.0</size>
-            <style>0</style>
           </font>
         </bsbObject>
         <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
@@ -182,6 +131,16 @@ endif
           <selected>true</selected>
           <randomizable>true</randomizable>
         </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+          <objectName>vibrato fade in</objectName>
+          <x>10</x>
+          <y>55</y>
+          <comment>vibrato sets in slowly and is at full at the end of the note event</comment>
+          <automationAllowed>true</automationAllowed>
+          <label>fade in</label>
+          <selected>false</selected>
+          <randomizable>true</randomizable>
+        </bsbObject>
         <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
           <objectName></objectName>
           <x>17</x>
@@ -195,20 +154,65 @@ endif
         </bsbObject>
         <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
           <objectName></objectName>
-          <x>133</x>
+          <x>83</x>
           <y>96</y>
-          <label>3</label>
+          <label>1</label>
           <font>
             <name>Roboto</name>
             <size>14.0</size>
             <style>1</style>
           </font>
         </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>vibrato depth</objectName>
+          <x>102</x>
+          <y>8</y>
+          <comment>depth of the vibrato</comment>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>0.15</maximum>
+          <value>0.15</value>
+          <knobWidth>40</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+          <label>depth</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
         <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
           <objectName></objectName>
-          <x>83</x>
+          <x>185</x>
           <y>96</y>
-          <label>1</label>
+          <label>5</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>1</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
+          <objectName>vibrato wave</objectName>
+          <x>50</x>
+          <y>80</y>
+          <comment>sine, triangle, square x 2, saw up, saw down </comment>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>5.0</maximum>
+          <bdresolution>1</bdresolution>
+          <value>4.0</value>
+          <sliderWidth>150</sliderWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>false</valueDisplayEnabled>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>159</x>
+          <y>96</y>
+          <label>4</label>
           <font>
             <name>Roboto</name>
             <size>14.0</size>

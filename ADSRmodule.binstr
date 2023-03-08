@@ -1,13 +1,15 @@
 <instrument type='blue.orchestra.BlueSynthBuilder' editEnabled='true'>
-  <name>untitled</name>
+  <name>ADSRmodule</name>
   <comment>
 DESCRIPTION:
 
-The Tremolo Module works in realtime.
+The Tremolo Module works in realtime. Produces a control signal.
 - multiply an Attack Decay Sustain Release envelope to the soundsignal.</comment>
-  <globalOrc></globalOrc>
-  <globalSco></globalSco>
-  <instrumentText>;============================ADSR amplitude Module==============================
+  <globalOrc/>
+  <globalSco/>
+  <instrumentText>; no inputs, 1 control signal output
+
+;============================ADSR amplitude Module==============================
  
 if (&lt;ADSR ON&gt; == 1) then
     aret init 1
@@ -17,7 +19,10 @@ else
     aampdsr  =   1
 endif         
 
-;;==============================================================================</instrumentText>
+;;==============================================================================
+
+;multiply ADSR with output signal of the instrument:
+;blueMixerOut asig1 * aampdsr , asig2 * aampdsr</instrumentText>
   <alwaysOnInstrumentText></alwaysOnInstrumentText>
   <graphicInterface editEnabled='false'>
     <gridSettings>
@@ -60,25 +65,6 @@ endif
           <style>2</style>
         </font>
         <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
-          <objectName>ADSR sustain</objectName>
-          <x>155</x>
-          <y>10</y>
-          <automationAllowed>true</automationAllowed>
-          <minimum>0.0</minimum>
-          <maximum>1.0</maximum>
-          <value>0.9993813053987427</value>
-          <knobWidth>50</knobWidth>
-          <randomizable>true</randomizable>
-          <valueDisplayEnabled>true</valueDisplayEnabled>
-          <label>sustain</label>
-          <labelEnabled>true</labelEnabled>
-          <font>
-            <name>Roboto</name>
-            <size>12.0</size>
-            <style>0</style>
-          </font>
-        </bsbObject>
-        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
           <objectName>ADSR release</objectName>
           <x>225</x>
           <y>10</y>
@@ -96,16 +82,6 @@ endif
             <size>12.0</size>
             <style>0</style>
           </font>
-        </bsbObject>
-        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
-          <objectName>ADSR ON</objectName>
-          <x>5</x>
-          <y>10</y>
-          <comment>ON/OFF</comment>
-          <automationAllowed>true</automationAllowed>
-          <label/>
-          <selected>true</selected>
-          <randomizable>true</randomizable>
         </bsbObject>
         <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
           <objectName>ADSR decay</objectName>
@@ -125,6 +101,35 @@ endif
             <size>12.0</size>
             <style>0</style>
           </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>ADSR sustain</objectName>
+          <x>155</x>
+          <y>10</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>1.0</maximum>
+          <value>0.9993813053987427</value>
+          <knobWidth>50</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+          <label>sustain</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+          <objectName>ADSR ON</objectName>
+          <x>5</x>
+          <y>10</y>
+          <comment>ON/OFF</comment>
+          <automationAllowed>true</automationAllowed>
+          <label/>
+          <selected>true</selected>
+          <randomizable>true</randomizable>
         </bsbObject>
         <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
           <objectName>ADSR attack</objectName>

@@ -1,20 +1,24 @@
 <instrument type='blue.orchestra.BlueSynthBuilder' editEnabled='true'>
-  <name>untitled</name>
+  <name>MSstereoModule</name>
   <comment>
 DESCRIPTION:
 
 The MS stereo Module lets you decide wheter you want the incoming stereo audio siganl to be treated as MS or &apos;normal&apos; stereo.
 - width parameter
 </comment>
-  <globalOrc></globalOrc>
-  <globalSco></globalSco>
-  <instrumentText>;;==================================MS stereo===================================
+  <globalOrc/>
+  <globalSco/>
+  <instrumentText>;2 inputs, 2 outputs
+
+;;==================================MS stereo===================================
 
 if &lt;MS&gt; == 1 then
     asigFL, asigFR  ms2st   asigFL, asigFR, &lt;MSwidth&gt;
 endif
 
-;===============================================================================</instrumentText>
+;===============================================================================
+
+;blueMixerOut asigFL, asigFR</instrumentText>
   <alwaysOnInstrumentText></alwaysOnInstrumentText>
   <graphicInterface editEnabled='false'>
     <gridSettings>
@@ -55,15 +59,6 @@ endif
           <size>12.0</size>
           <style>2</style>
         </font>
-        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
-          <objectName>MS</objectName>
-          <x>10</x>
-          <y>12</y>
-          <automationAllowed>true</automationAllowed>
-          <label>MS</label>
-          <selected>false</selected>
-          <randomizable>true</randomizable>
-        </bsbObject>
         <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
           <objectName>MSwidth</objectName>
           <x>44</x>
@@ -77,13 +72,22 @@ endif
           <randomizable>true</randomizable>
           <valueDisplayEnabled>false</valueDisplayEnabled>
         </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+          <objectName>MS</objectName>
+          <x>10</x>
+          <y>12</y>
+          <automationAllowed>true</automationAllowed>
+          <label>MS</label>
+          <selected>true</selected>
+          <randomizable>true</randomizable>
+        </bsbObject>
       </bsbObject>
     </bsbObject>
   </graphicInterface>
   <parameterList>
-    <parameter uniqueId='-1585863848' name='MS' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='0.0'>
+    <parameter uniqueId='-1585863848' name='MS' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='1.0'>
       <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
-        <linePoint x='0.0' y='0.0'/>
+        <linePoint x='0.0' y='1.0'/>
       </line>
     </parameter>
     <parameter uniqueId='-1585863826' name='MSwidth' label='' min='0.0' max='1.0' bdresolution='0.01' automationEnabled='false' value='0.49'>

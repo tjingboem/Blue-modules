@@ -1,26 +1,30 @@
 <instrument type='blue.orchestra.BlueSynthBuilder' editEnabled='true'>
   <name>AutopanModule</name>
-  <comment>Autopan Module
-no UDO
-Autopans a mono signal quite slowly in the stereo field, to be more interesting
+  <comment>
+DESCRIPTION:
 
+Autopan Module moves a mono sound signal slowly from left to right in a stereo field.
+- Autopans a mono signal quite slowly in the stereo field
+</comment>
+  <globalOrc/>
+  <globalSco/>
+  <instrumentText>; 1 (mono) input, 2 (stereo) signal outputs
 
----
-
-version 1, October 2022
-- initial version</comment>
-  <globalOrc></globalOrc>
-  <globalSco></globalSco>
-  <instrumentText>;----------------------------------autopan if mono------------------------------
+;============================autopan============================================
 
 if ichnls == 1 &amp;&amp; (&lt;autopanning if mono&gt; == 1) then                             ; autopan mono sample
-    krandP randi 1, 1, 1
+    krandP randi 1, 1, 1                                                        ; adjust speed and depth
     krandP =   (krandP +1)*.5
     asigL, asigR   pan2 aoutL, krandP, 0                                                                             
 else
     asigL   =   aoutL
     asigR   =   aoutR
-endif</instrumentText>
+endif
+
+;;==============================================================================
+
+;takes in a mono signal, but stereo out
+;blueMixerOut asigL , asigR</instrumentText>
   <alwaysOnInstrumentText></alwaysOnInstrumentText>
   <graphicInterface editEnabled='false'>
     <gridSettings>
@@ -50,16 +54,16 @@ endif</instrumentText>
         <x>0</x>
         <y>0</y>
         <groupName>autopan</groupName>
-        <backgroundColor>0x59853eff</backgroundColor>
+        <backgroundColor>0x282828ff</backgroundColor>
         <borderColor>0x000000ff</borderColor>
         <labelTextColor>0xffffffff</labelTextColor>
         <titleEnabled>true</titleEnabled>
         <width>139</width>
-        <height>52</height>
+        <height>39</height>
         <font>
           <name>Roboto</name>
           <size>12.0</size>
-          <style>0</style>
+          <style>2</style>
         </font>
         <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
           <objectName>autopanning if mono</objectName>

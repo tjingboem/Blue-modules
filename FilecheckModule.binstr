@@ -1,9 +1,17 @@
 <instrument type='blue.orchestra.BlueSynthBuilder' editEnabled='true'>
   <name>FilecheckModule</name>
-  <comment></comment>
+  <comment>
+DESCRIPTION:
+
+The FilecheckModule imports a File, in this case a soundfile. It checks for the most common formats.
+- if it turns out not to be the right format, jumps to LABEL nosound: 
+No sound but also no error is produced.</comment>
   <globalOrc/>
   <globalSco/>
-  <instrumentText>
+  <instrumentText>;0 inputs, 2 output control signals
+
+;;===============================File checker===================================
+
 Suf     StrSuf    &lt;file&gt;, 1
 iok1    strcmp     &quot;wav&quot;, Suf                                                   ; specify wanted file extensions
 iok2    strcmp     &quot;flac&quot;, Suf
@@ -18,13 +26,11 @@ else
           goto nosound                                                          ; jump to label
 endif
 
-asig    diskin2     &lt;file&gt;, 1
+;asig    diskin2     &lt;file&gt;, 1
 
+; place after blueMixerOut asig1 [, asig2...]
 nosound:                                                                        ; label
-
-aout = 0
-
-blueMixerOut asig, asig</instrumentText>
+</instrumentText>
   <alwaysOnInstrumentText></alwaysOnInstrumentText>
   <graphicInterface editEnabled='false'>
     <gridSettings>

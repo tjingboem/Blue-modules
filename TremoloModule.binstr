@@ -1,13 +1,15 @@
 <instrument type='blue.orchestra.BlueSynthBuilder' editEnabled='true'>
-  <name>untitled</name>
+  <name>TremoloModule</name>
   <comment>
 DESCRIPTION:
 
 The Tremolo Module is meant to add trmolo to the sound signal.
 - mixes the envelope signal from a ADSR (aampenv) with tremolo effect (atrem). Output (aa) is an a-rate envelope signal.</comment>
-  <globalOrc></globalOrc>
-  <globalSco></globalSco>
-  <instrumentText>;================================tremolo========================================
+  <globalOrc/>
+  <globalSco/>
+  <instrumentText>; 0 inputs, 1 control output
+
+;================================tremolo========================================
 
 if (&lt;tremolo trigger&gt; == 1) then                                                ; ADSR tremolo
     if &lt;tremolo envelope speed&gt; &gt; 0 then
@@ -26,7 +28,9 @@ endif
 
 aa ntrpol  aampenv, atrem, &lt;mixtremolo&gt;                                         ; mix direct with tremolo effect         
 
-;;==============================================================================</instrumentText>
+;;==============================================================================
+
+;blueMixerOut asigFL * aa, asigFR * aa</instrumentText>
   <alwaysOnInstrumentText></alwaysOnInstrumentText>
   <graphicInterface editEnabled='false'>
     <gridSettings>
@@ -68,19 +72,11 @@ aa ntrpol  aampenv, atrem, &lt;mixtremolo&gt;                                   
           <size>12.0</size>
           <style>2</style>
         </font>
-        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
-          <objectName>mixtremolo</objectName>
-          <x>41</x>
-          <y>218</y>
-          <automationAllowed>true</automationAllowed>
-          <minimum>0.0</minimum>
-          <maximum>1.0</maximum>
-          <value>0.5297468461512551</value>
-          <knobWidth>50</knobWidth>
-          <randomizable>true</randomizable>
-          <valueDisplayEnabled>false</valueDisplayEnabled>
-          <label>mix</label>
-          <labelEnabled>true</labelEnabled>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>12</x>
+          <y>28</y>
+          <label>speed</label>
           <font>
             <name>Roboto</name>
             <size>12.0</size>
@@ -89,9 +85,9 @@ aa ntrpol  aampenv, atrem, &lt;mixtremolo&gt;                                   
         </bsbObject>
         <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
           <objectName></objectName>
-          <x>12</x>
-          <y>28</y>
-          <label>speed</label>
+          <x>7</x>
+          <y>260</y>
+          <label>direct</label>
           <font>
             <name>Roboto</name>
             <size>12.0</size>
@@ -107,17 +103,6 @@ aa ntrpol  aampenv, atrem, &lt;mixtremolo&gt;                                   
           <label>trigger</label>
           <selected>false</selected>
           <randomizable>true</randomizable>
-        </bsbObject>
-        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-          <objectName></objectName>
-          <x>7</x>
-          <y>260</y>
-          <label>direct</label>
-          <font>
-            <name>Roboto</name>
-            <size>12.0</size>
-            <style>0</style>
-          </font>
         </bsbObject>
         <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
           <objectName></objectName>
@@ -144,6 +129,25 @@ aa ntrpol  aampenv, atrem, &lt;mixtremolo&gt;                                   
           <randomizable>true</randomizable>
           <valueDisplayEnabled>true</valueDisplayEnabled>
         </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>mixtremolo</objectName>
+          <x>41</x>
+          <y>218</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>1.0</maximum>
+          <value>0.5297468461512551</value>
+          <knobWidth>50</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>false</valueDisplayEnabled>
+          <label>mix</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
         <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
           <objectName></objectName>
           <x>77</x>
@@ -162,25 +166,6 @@ aa ntrpol  aampenv, atrem, &lt;mixtremolo&gt;                                   
             <style>0</style>
           </font>
           <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
-            <objectName>tremolo sustain</objectName>
-            <x>7</x>
-            <y>90</y>
-            <automationAllowed>true</automationAllowed>
-            <minimum>0.0</minimum>
-            <maximum>1.0</maximum>
-            <value>0.0</value>
-            <knobWidth>31</knobWidth>
-            <randomizable>true</randomizable>
-            <valueDisplayEnabled>false</valueDisplayEnabled>
-            <label>sustain</label>
-            <labelEnabled>true</labelEnabled>
-            <font>
-              <name>Roboto</name>
-              <size>12.0</size>
-              <style>0</style>
-            </font>
-          </bsbObject>
-          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
             <objectName>tremolo release</objectName>
             <x>7</x>
             <y>134</y>
@@ -192,6 +177,25 @@ aa ntrpol  aampenv, atrem, &lt;mixtremolo&gt;                                   
             <randomizable>true</randomizable>
             <valueDisplayEnabled>false</valueDisplayEnabled>
             <label>release</label>
+            <labelEnabled>true</labelEnabled>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+            <objectName>tremolo sustain</objectName>
+            <x>7</x>
+            <y>90</y>
+            <automationAllowed>true</automationAllowed>
+            <minimum>0.0</minimum>
+            <maximum>1.0</maximum>
+            <value>0.0</value>
+            <knobWidth>31</knobWidth>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>false</valueDisplayEnabled>
+            <label>sustain</label>
             <labelEnabled>true</labelEnabled>
             <font>
               <name>Roboto</name>

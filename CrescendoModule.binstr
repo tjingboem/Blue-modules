@@ -1,5 +1,5 @@
 <instrument type='blue.orchestra.BlueSynthBuilder' editEnabled='true'>
-  <name>Evolver Type A</name>
+  <name>CrescendoModule</name>
   <comment>
 DESCRIPTION:
 
@@ -89,13 +89,15 @@ giwave20	ftgen	79, 0, isize, 9, 1000/32,1.000,0,	 1001/32,0.833,0,	 1793/32,0.69
 gifrqs&lt;INSTR_ID&gt; ftgen 0, 0, 32, 7, 0, 32, 0                                           ; Generate two empty tables for adsynt2.
 giamps&lt;INSTR_ID&gt; ftgen 0, 0, 32, 7, 0, 32, 0                                           ; A table for freqency and amp parameters.</globalOrc>
   <globalSco/>
-  <instrumentText>
+  <instrumentText>; no input signal, 1 output
 ;=============envelope============================== 
 
 kswell k_Zwel_m &lt;Swell ON&gt;, &lt;Swell position&gt;, &lt;Swell amplitude&gt;                 ; UDO k_Zwel_
 
 ;===============================================================================
-</instrumentText>
+
+;multiply this control signal to output
+;blueMixerOut asigL * kswell , asigR * kswell</instrumentText>
   <alwaysOnInstrumentText></alwaysOnInstrumentText>
   <graphicInterface editEnabled='false'>
     <gridSettings>
@@ -137,6 +139,26 @@ kswell k_Zwel_m &lt;Swell ON&gt;, &lt;Swell position&gt;, &lt;Swell amplitude&gt
           <size>12.0</size>
           <style>2</style>
         </font>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>81</x>
+          <y>36</y>
+          <label>l</label>
+          <font>
+            <name>Roboto</name>
+            <size>18.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+          <objectName>Swell ON</objectName>
+          <x>5</x>
+          <y>10</y>
+          <automationAllowed>true</automationAllowed>
+          <label/>
+          <selected>true</selected>
+          <randomizable>true</randomizable>
+        </bsbObject>
         <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
           <objectName>Swell position</objectName>
           <x>20</x>
@@ -150,25 +172,18 @@ kswell k_Zwel_m &lt;Swell ON&gt;, &lt;Swell position&gt;, &lt;Swell amplitude&gt
           <randomizable>true</randomizable>
           <valueDisplayEnabled>false</valueDisplayEnabled>
         </bsbObject>
-        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-          <objectName></objectName>
-          <x>55</x>
-          <y>41</y>
-          <label>amplitude</label>
-          <font>
-            <name>Roboto</name>
-            <size>12.0</size>
-            <style>0</style>
-          </font>
-        </bsbObject>
-        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
-          <objectName>Swell ON</objectName>
-          <x>5</x>
-          <y>10</y>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
+          <objectName>Swell amplitude</objectName>
+          <x>20</x>
+          <y>31</y>
           <automationAllowed>true</automationAllowed>
-          <label/>
-          <selected>true</selected>
+          <minimum>0.0</minimum>
+          <maximum>2.0</maximum>
+          <bdresolution>0.01</bdresolution>
+          <value>1.45</value>
+          <sliderWidth>125</sliderWidth>
           <randomizable>true</randomizable>
+          <valueDisplayEnabled>false</valueDisplayEnabled>
         </bsbObject>
         <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
           <objectName></objectName>
@@ -183,27 +198,14 @@ kswell k_Zwel_m &lt;Swell ON&gt;, &lt;Swell position&gt;, &lt;Swell amplitude&gt
         </bsbObject>
         <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
           <objectName></objectName>
-          <x>81</x>
-          <y>36</y>
-          <label>l</label>
+          <x>55</x>
+          <y>41</y>
+          <label>amplitude</label>
           <font>
             <name>Roboto</name>
-            <size>18.0</size>
+            <size>12.0</size>
             <style>0</style>
           </font>
-        </bsbObject>
-        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
-          <objectName>Swell amplitude</objectName>
-          <x>20</x>
-          <y>31</y>
-          <automationAllowed>true</automationAllowed>
-          <minimum>0.0</minimum>
-          <maximum>2.0</maximum>
-          <bdresolution>0.01</bdresolution>
-          <value>1.45</value>
-          <sliderWidth>125</sliderWidth>
-          <randomizable>true</randomizable>
-          <valueDisplayEnabled>false</valueDisplayEnabled>
         </bsbObject>
       </bsbObject>
     </bsbObject>
@@ -231,7 +233,7 @@ kswell k_Zwel_m &lt;Swell ON&gt;, &lt;Swell position&gt;, &lt;Swell amplitude&gt
       <opcodeName>k_Zwel_m</opcodeName>
       <outTypes>K</outTypes>
       <inTypes>KKK</inTypes>
-      <codeBody>kOnSwell,kposition, ksw xin
+      <codeBody>kOnSwell, kposition, ksw xin
  
 if kOnSwell == 1 then                                                           ; switch Swell on/off
        irise  = p3 * i(kposition)                                               ; relative position 0 &gt; position &lt; 1 inside note
@@ -240,7 +242,6 @@ if kOnSwell == 1 then                                                           
 else
         kswell = 1                                                              ; if switch = OFF, no effect
 endif
-
 	xout kswell
 </codeBody>
       <comments>use to put a amplitude accent inside the note
