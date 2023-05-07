@@ -1,0 +1,467 @@
+<instrument type='blue.orchestra.BlueSynthBuilder' editEnabled='true'>
+  <name>TimbreModule</name>
+  <comment>The TimbreModule is intended to be used as an amplitude depending timbre coloring of the incoming signal.
+The louder (or softer) the amplitude of the incoming, the resonance intensity increases.
+
+Idea is to add some viability to the Instrument.
+Choices are to add some Parametric EQ and/or a Treble cutoff.
+
+---
+
+version 1, May 2023
+- initial version</comment>
+  <globalOrc></globalOrc>
+  <globalSco></globalSco>
+  <instrumentText>;========================TimbreModule===========================================
+
+; psrametric EQ
+if (&lt;paraEQON&gt; == 1) then
+    asigFLpar =   asigFL
+    asigFRpar =   asigFR
+    asigFL1  pareq    asigFLpar, &lt;pareqfreq1&gt;, &lt;pareqgain1&gt; * iamp, &lt;pareqQ1&gt; + iamp * 2 ; 1
+    asigFR1  pareq    asigFRpar, &lt;pareqfreq1&gt;, &lt;pareqgain1&gt; * iamp, &lt;pareqQ1&gt; + iamp * 2
+    asigFL2  pareq    asigFL1,   &lt;pareqfreq2&gt;, &lt;pareqgain2&gt; * iamp, &lt;pareqQ2&gt; + iamp * 2 ; 2
+    asigFR2  pareq    asigFR1,   &lt;pareqfreq2&gt;, &lt;pareqgain2&gt; * iamp, &lt;pareqQ2&gt; + iamp * 2
+    asigFL3  pareq    asigFL2,   &lt;pareqfreq3&gt;, &lt;pareqgain3&gt; * iamp, &lt;pareqQ3&gt; + iamp * 2 ; 3
+    asigFR3  pareq    asigFR2,   &lt;pareqfreq3&gt;, &lt;pareqgain3&gt; * iamp, &lt;pareqQ3&gt; + iamp * 2
+    asigFL4  pareq    asigFL3,   &lt;pareqfreq4&gt;, &lt;pareqgain4&gt; * iamp, &lt;pareqQ4&gt; + iamp * 2 ; 4
+    asigFR4  pareq    asigFR3,   &lt;pareqfreq4&gt;, &lt;pareqgain4&gt; * iamp, &lt;pareqQ4&gt; + iamp * 2
+    asigFL  = &lt;pareqdepth&gt; * asigFL4
+    asigFR  = &lt;pareqdepth&gt; * asigFR4
+endif
+
+; timbre 
+    itimbre1	ftgen 0, 0, 16, -2, 40, 80, 160, 320, 640, 1280, 2560, 5120, 10240, 22000
+    itimbre2	ftgen 0, 0, 16, -2, 22000, 10240, 5120, 2560, 1280, 640, 320, 160, 80, 40
+if (&lt;timbre&gt; == 0) then
+    kfcut	tablei	p5*10, itimbre1                                         ; LP filter cutoff frequency
+elseif (&lt;timbre&gt; == 1) then
+    kfcut	tablei	p5*10, itimbre2                                         ; LP filter inverse cutoff frequency 
+else
+    kfcut       =       22000
+endif
+    afiltL	tone	asigFL, kfcut                                           ; LP filter...
+    afiltR	tone	asigFR, kfcut	
+    asigFL	balance	afiltL, asigFL                                          ; ... to control brightness
+    asigFR	balance	afiltR, asigFR	
+</instrumentText>
+  <alwaysOnInstrumentText></alwaysOnInstrumentText>
+  <graphicInterface editEnabled='false'>
+    <gridSettings>
+      <width>10</width>
+      <height>10</height>
+      <gridStyle>DOT</gridStyle>
+      <snapGridEnabled>true</snapGridEnabled>
+    </gridSettings>
+    <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+      <objectName></objectName>
+      <x>0</x>
+      <y>0</y>
+      <groupName>Group</groupName>
+      <backgroundColor>0x00000033</backgroundColor>
+      <borderColor>0x000000ff</borderColor>
+      <labelTextColor>0xffffffff</labelTextColor>
+      <titleEnabled>true</titleEnabled>
+      <width>20</width>
+      <height>20</height>
+      <font>
+        <name>Roboto</name>
+        <size>12.0</size>
+        <style>0</style>
+      </font>
+      <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+        <objectName></objectName>
+        <x>0</x>
+        <y>0</y>
+        <comment>amplitude = red, filter = blue, brown = pitch</comment>
+        <groupName>parametric&amp;timbre</groupName>
+        <backgroundColor>0x282828ff</backgroundColor>
+        <borderColor>0x000000ff</borderColor>
+        <labelTextColor>0xffffffff</labelTextColor>
+        <titleEnabled>true</titleEnabled>
+        <width>165</width>
+        <height>188</height>
+        <font>
+          <name>Roboto</name>
+          <size>12.0</size>
+          <style>2</style>
+        </font>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>pareqfreq4</objectName>
+          <x>10</x>
+          <y>290</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>3000.0</minimum>
+          <maximum>10000.0</maximum>
+          <value>5977.741595574604</value>
+          <knobWidth>45</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+          <label>freq3</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>pareqfreq3</objectName>
+          <x>10</x>
+          <y>205</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>1000.0</minimum>
+          <maximum>3000.0</maximum>
+          <value>1373.6262350474456</value>
+          <knobWidth>45</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+          <label>freq3</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>pareqQ4</objectName>
+          <x>60</x>
+          <y>290</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.7</minimum>
+          <maximum>5.0</maximum>
+          <value>4.0218115539886305</value>
+          <knobWidth>45</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+          <label>q3</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>pareqgain2</objectName>
+          <x>110</x>
+          <y>120</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>5.0</maximum>
+          <value>1.0</value>
+          <knobWidth>45</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+          <label>gain</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>pareqgain3</objectName>
+          <x>110</x>
+          <y>205</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>5.0</maximum>
+          <value>1.0</value>
+          <knobWidth>45</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+          <label>gain</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>pareqfreq2</objectName>
+          <x>10</x>
+          <y>120</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>300.0</minimum>
+          <maximum>1000.0</maximum>
+          <value>563.8913059791366</value>
+          <knobWidth>45</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+          <label>freq2</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+          <objectName>paraEQON</objectName>
+          <x>40</x>
+          <y>10</y>
+          <automationAllowed>true</automationAllowed>
+          <label>parametric</label>
+          <selected>true</selected>
+          <randomizable>true</randomizable>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>pareqgain4</objectName>
+          <x>110</x>
+          <y>290</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>5.0</maximum>
+          <value>1.0</value>
+          <knobWidth>45</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+          <label>gain</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+          <objectName></objectName>
+          <x>10</x>
+          <y>440</y>
+          <groupName>timbre</groupName>
+          <backgroundColor>0x00000033</backgroundColor>
+          <borderColor>0x000000ff</borderColor>
+          <labelTextColor>0xffffffff</labelTextColor>
+          <titleEnabled>true</titleEnabled>
+          <width>20</width>
+          <height>20</height>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBDropdown' version='2'>
+            <objectName>timbre</objectName>
+            <x>10</x>
+            <y>10</y>
+            <automationAllowed>true</automationAllowed>
+            <selectedIndex>0</selectedIndex>
+            <fontSize>12</fontSize>
+            <randomizable>true</randomizable>
+            <bsbDropdownItemList>
+              <bsbDropdownItem uniqueId='-163889220'>
+                <name>+ amp = + bright</name>
+                <value>0</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='-163889219'>
+                <name>+ amp = - bright</name>
+                <value>1</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='-163889218'>
+                <name>inactive</name>
+                <value>2</value>
+              </bsbDropdownItem>
+            </bsbDropdownItemList>
+          </bsbObject>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>pareqQ1</objectName>
+          <x>60</x>
+          <y>35</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.7</minimum>
+          <maximum>5.0</maximum>
+          <value>0.7</value>
+          <knobWidth>45</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+          <label>q1</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>pareqfreq1</objectName>
+          <x>10</x>
+          <y>35</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>20.0</minimum>
+          <maximum>300.0</maximum>
+          <value>151.6739218086609</value>
+          <knobWidth>45</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+          <label>freq1</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>pareqQ2</objectName>
+          <x>60</x>
+          <y>120</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.7</minimum>
+          <maximum>5.0</maximum>
+          <value>0.7</value>
+          <knobWidth>45</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+          <label>q2</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>pareqdepth</objectName>
+          <x>60</x>
+          <y>375</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>0.3</maximum>
+          <value>0.3</value>
+          <knobWidth>45</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>false</valueDisplayEnabled>
+          <label>depth</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>pareqgain1</objectName>
+          <x>110</x>
+          <y>35</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>5.0</maximum>
+          <value>4.34356889280852</value>
+          <knobWidth>45</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+          <label>gain</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>pareqQ3</objectName>
+          <x>60</x>
+          <y>205</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.7</minimum>
+          <maximum>5.0</maximum>
+          <value>2.911275551934737</value>
+          <knobWidth>45</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+          <label>q3</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+      </bsbObject>
+    </bsbObject>
+  </graphicInterface>
+  <parameterList>
+    <parameter uniqueId='-163889216' name='pareqfreq4' label='' min='3000.0' max='10000.0' bdresolution='-1' automationEnabled='false' value='5977.741595574604'>
+      <line name='' version='2' max='10000.0' min='3000.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='5977.741595574604'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-163889214' name='pareqfreq3' label='' min='1000.0' max='3000.0' bdresolution='-1' automationEnabled='false' value='1373.6262350474456'>
+      <line name='' version='2' max='3000.0' min='1000.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='1373.6262350474456'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-163889212' name='pareqQ4' label='' min='0.7' max='5.0' bdresolution='-1' automationEnabled='false' value='4.0218115539886305'>
+      <line name='' version='2' max='5.0' min='0.7' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='4.0218115539886305'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-163889210' name='pareqgain2' label='' min='0.0' max='5.0' bdresolution='-1' automationEnabled='false' value='1.0'>
+      <line name='' version='2' max='5.0' min='0.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='1.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-163889208' name='pareqgain3' label='' min='0.0' max='5.0' bdresolution='-1' automationEnabled='false' value='1.0'>
+      <line name='' version='2' max='5.0' min='0.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='1.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-163889206' name='pareqfreq2' label='' min='300.0' max='1000.0' bdresolution='-1' automationEnabled='false' value='563.8913059791366'>
+      <line name='' version='2' max='1000.0' min='300.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='563.8913059791366'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-163889204' name='paraEQON' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='1.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='1.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-163889202' name='pareqgain4' label='' min='0.0' max='5.0' bdresolution='-1' automationEnabled='false' value='1.0'>
+      <line name='' version='2' max='5.0' min='0.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='1.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-163889200' name='timbre' label='' min='0.0' max='2.0' bdresolution='1' automationEnabled='false' value='0.0'>
+      <line name='' version='2' max='2.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-163889198' name='pareqQ1' label='' min='0.7' max='5.0' bdresolution='-1' automationEnabled='false' value='0.7'>
+      <line name='' version='2' max='5.0' min='0.7' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.7'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-163889196' name='pareqfreq1' label='' min='20.0' max='300.0' bdresolution='-1' automationEnabled='false' value='151.6739218086609'>
+      <line name='' version='2' max='300.0' min='20.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='151.6739218086609'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-163889194' name='pareqQ2' label='' min='0.7' max='5.0' bdresolution='-1' automationEnabled='false' value='0.7'>
+      <line name='' version='2' max='5.0' min='0.7' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.7'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-163889192' name='pareqdepth' label='' min='0.0' max='0.3' bdresolution='-1' automationEnabled='false' value='0.3'>
+      <line name='' version='2' max='0.3' min='0.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.3'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-163889190' name='pareqgain1' label='' min='0.0' max='5.0' bdresolution='-1' automationEnabled='false' value='4.34356889280852'>
+      <line name='' version='2' max='5.0' min='0.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='4.34356889280852'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='-163889188' name='pareqQ3' label='' min='0.7' max='5.0' bdresolution='-1' automationEnabled='false' value='2.911275551934737'>
+      <line name='' version='2' max='5.0' min='0.7' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='2.911275551934737'/>
+      </line>
+    </parameter>
+  </parameterList>
+  <presetGroup name='Presets'/>
+  <opcodeList/>
+</instrument>
