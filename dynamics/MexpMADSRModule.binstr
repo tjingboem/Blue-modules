@@ -71,14 +71,14 @@ print i(&lt;expADSR_decay&gt;)
 elseif (itiestatus == 0) then                                                   ; envelope for first tied note
     aampdsr     expsega 0.00001,  i(&lt;expADSR_attack&gt;)+0.00001, 1, i(&lt;expADSR_decay&gt;)+0.00001, 1
     aampdsr -= 0.00001                                                          ; be sure to get envelope to zero
-    prints &quot;\n--&gt; first tied note\n&quot;,  itiestatus                              
+    prints &quot;\n--&gt; first tied note\n&quot;                              
 elseif (itiestatus == 1) then                                                   ; envelope for tied middle notes
     aampdsr = 1
-    prints &quot;\n--&gt; tied middle note\n&quot;,  itiestatus  
+    prints &quot;\n--&gt; tied middle note\n&quot; 
 elseif (itiestatus == 2) then                                                   ; release for last tied note
     aampdsr expsegr  1+0.00001, idur-.05, i(&lt;expADSR_sustain&gt;)+0.00001, (i(&lt;expADSR_release&gt;) * i(&lt;expADSR_Xrelease&gt;)+0.00001), 0.00001
     aampdsr -= 0.00001
-    prints &quot;\n--&gt; last tied note\n&quot;,  itiestatus 
+    prints &quot;\n--&gt; last tied note\n&quot; 
 endif
 
 if (&lt;TiedNotes_sync&gt; == 0) then
