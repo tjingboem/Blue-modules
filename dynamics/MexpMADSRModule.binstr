@@ -1,0 +1,904 @@
+<instrument type='blue.orchestra.BlueSynthBuilder' editEnabled='true'>
+  <name>MexpADSRModule</name>
+  <comment>
+DESCRIPTION:
+
+** 3 Control signals, 1 is optional**
+
+MexpADSR Module uses the mxadsr opcode to produce the amplitude envelope. The release portion will be done after the note duration is finished. All 4 parameters A D S R are
+in seconds. So it may happen that a short note will not sound because it has never reached the long attack time over that note.
+
+In total, 3 enevelopes are happening:
+1. amplitude = kampline
+2. pitch = kpchline
+3. cutoff frequency of a filter (optional) = kcutline
+
+note example:
+instr   start   duration        pitch   ampl.   filter cutoff freq.
+i1.1	2	-1.8142857143	527	0.97	2659.0379061788                 ; next 3 notes make their own cluster
+i1.1	3	-0.5142857143	114	0.3	143.7976273858                  ; consisting of 3 notes tied to each other
+i1.1	4	1               306	0.6	14945.5509730192                ; this is the last note of the cluster
+i1.2	6	2               306	0.5	4945.5509730192                 ; standalone note, is its own fractional i1.2 stream
+
+Check the article https://github.com/kunstmusik/blue/wiki/a-Blue-Tie
+
+
+CONTROLLERS:
+
+see the help balloon when hovering over the controllers in the instrument. Help can be turned off by pressing the &apos;I&apos; button next to the play bar.
+
+---
+
+version 1, July 2023
+- initial version
+
+</comment>
+  <globalOrc></globalOrc>
+  <globalSco/>
+  <instrumentText>idur        =   abs(p3)                                                         ; be sure idur is always positive, but collect info on a negative duration or not
+ipitch      =   p4                                                              ; here in frequency
+iamp        =   p5                                                              ; range 0 - 1
+icutoff     =   p6                                                              ; (optional) cutoff frequency of filter  
+
+;================================tied note system===============================
+
+itiestatus tieStatus                                                    
+iskip 	tival
+tigoto skipInit
+
+ioldpch init ipitch                                                             ; copy pitch
+ioldamp init iamp                                                               ; copy amplitude
+ioldfrq init icutoff                                                            ; copy freq for filter value
+
+skipInit:
+inewpch 	= ipitch                                                        ; takes care of pitch jumps
+kpchline	transeg	ioldpch, i(&lt;TiedNotes_pitch&gt;)*idur, -(i(&lt;TiedNotes_pitchenvtype&gt;)), inewpch, idur - i(&lt;TiedNotes_pitch&gt;)*idur, i(&lt;TiedNotes_pitchenvtype&gt;), inewpch
+ioldpch	= inewpch
+
+inewamp         = iamp                                                          ; takes care of amplitude jumps
+kampline    	transeg	ioldamp, i(&lt;TiedNotes_amplitude&gt;)*idur, -(i(&lt;TiedNotes_ampenvtype&gt;)), inewamp, idur - i(&lt;TiedNotes_amplitude&gt;)*idur, i(&lt;TiedNotes_ampenvtype&gt;), inewamp
+ioldamp	= inewamp
+
+inewfrq 	= icutoff                                                       ; takes care of cutoff frequency of filter jumps
+kcutline	transeg	ioldfrq, i(&lt;TiedNotes_filter&gt;)*idur, -(i(&lt;TiedNotes_filterenvtype&gt;)), inewfrq, idur - i(&lt;TiedNotes_filter&gt;)*idur,  i(&lt;TiedNotes_filterenvtype&gt;), inewfrq 
+ioldfrq	= inewfrq
+
+
+if (itiestatus == -1) then                                                      ; envelope for normal notes
+    aampdsr    mxadsr     i(&lt;expADSR_attack&gt;)+0.00001, i(&lt;expADSR_decay&gt;)+0.00001, i(&lt;expADSR_sustain&gt;)+0.00001, (i(&lt;expADSR_release&gt;) * i(&lt;expADSR_Xrelease&gt;)+0.00001)
+    aampdsr -= 0.00001
+print i(&lt;expADSR_decay&gt;)
+elseif (itiestatus == 0) then                                                   ; envelope for first tied note
+    aampdsr     expsega 0.00001,  i(&lt;expADSR_attack&gt;)+0.00001, 1, i(&lt;expADSR_decay&gt;)+0.00001, 1
+    aampdsr -= 0.00001                                                          ; be sure to get envelope to zero
+    prints &quot;\n--&gt; first tied note\n&quot;,  itiestatus                              
+elseif (itiestatus == 1) then                                                   ; envelope for tied middle notes
+    aampdsr = 1
+    prints &quot;\n--&gt; tied middle note\n&quot;,  itiestatus  
+elseif (itiestatus == 2) then                                                   ; release for last tied note
+    aampdsr expsegr  1+0.00001, idur-.05, i(&lt;expADSR_sustain&gt;)+0.00001, (i(&lt;expADSR_release&gt;) * i(&lt;expADSR_Xrelease&gt;)+0.00001), 0.00001
+    aampdsr -= 0.00001
+    prints &quot;\n--&gt; last tied note\n&quot;,  itiestatus 
+endif
+
+if (&lt;TiedNotes_sync&gt; == 0) then
+;                                                                               ; no syncing
+elseif (&lt;TiedNotes_sync&gt; == 1) then
+    &lt;TiedNotes_amplitude&gt;   =   &lt;TiedNotes_pitch&gt;                               ; sync amp time with pitch time
+    &lt;TiedNotes_ampenvtype&gt;  =   &lt;TiedNotes_pitchenvtype&gt;                        ; and pitch envelope type
+elseif (&lt;TiedNotes_sync&gt; == 2) then
+    &lt;TiedNotes_amplitude&gt;   =   &lt;TiedNotes_pitch&gt;                               ; sync amp time with pitch time
+    &lt;TiedNotes_filter&gt;      =   &lt;TiedNotes_pitch&gt;                               ; sync filter time with pitch time
+    &lt;TiedNotes_ampenvtype&gt;  =   &lt;TiedNotes_pitchenvtype&gt;                        ; and pitch envelope type
+    &lt;TiedNotes_filterenvtype&gt;   =   &lt;TiedNotes_pitchenvtype&gt;                    
+endif
+
+
+
+ain vco2 kampline, kpchline, iskip                                              ; example of oscillator                                              
+
+asig moogladder2 ain, kcutline, .5, iskip                                       ; example of filter
+
+
+;==================outs=======================================
+blueMixerOut asig * aampdsr, asig * aampdsr
+</instrumentText>
+  <alwaysOnInstrumentText></alwaysOnInstrumentText>
+  <graphicInterface editEnabled='false'>
+    <gridSettings>
+      <width>5</width>
+      <height>5</height>
+      <gridStyle>DOT</gridStyle>
+      <snapGridEnabled>true</snapGridEnabled>
+    </gridSettings>
+    <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+      <objectName></objectName>
+      <x>0</x>
+      <y>0</y>
+      <groupName>Group</groupName>
+      <backgroundColor>0x00000033</backgroundColor>
+      <borderColor>0x000000ff</borderColor>
+      <labelTextColor>0xffffffff</labelTextColor>
+      <titleEnabled>true</titleEnabled>
+      <width>20</width>
+      <height>20</height>
+      <font>
+        <name>Roboto</name>
+        <size>12.0</size>
+        <style>0</style>
+      </font>
+      <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+        <objectName></objectName>
+        <x>180</x>
+        <y>0</y>
+        <comment>4 envelopes for amplitude</comment>
+        <groupName>expADSR</groupName>
+        <backgroundColor>0x282828ff</backgroundColor>
+        <borderColor>0x000000ff</borderColor>
+        <labelTextColor>0xffffffff</labelTextColor>
+        <titleEnabled>true</titleEnabled>
+        <width>20</width>
+        <height>99</height>
+        <font>
+          <name>Roboto</name>
+          <size>12.0</size>
+          <style>2</style>
+        </font>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+          <objectName>expADSR_Xrelease</objectName>
+          <x>215</x>
+          <y>75</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>1.0</minimum>
+          <maximum>10.0</maximum>
+          <value>2.723712063595695</value>
+          <knobWidth>40</knobWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+          <label>extra</label>
+          <labelEnabled>true</labelEnabled>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBVSlider' version='2'>
+          <objectName>expADSR_decay</objectName>
+          <x>60</x>
+          <y>5</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>1.0</maximum>
+          <bdresolution>0.001</bdresolution>
+          <value>0.0</value>
+          <sliderHeight>150</sliderHeight>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>false</valueDisplayEnabled>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>230</x>
+          <y>145</y>
+          <label>X</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBVSlider' version='2'>
+          <objectName>expADSR_sustain</objectName>
+          <x>110</x>
+          <y>5</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>1.0</maximum>
+          <bdresolution>0.001</bdresolution>
+          <value>1.0</value>
+          <sliderHeight>150</sliderHeight>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>false</valueDisplayEnabled>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>30</x>
+          <y>145</y>
+          <label>A</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>80</x>
+          <y>145</y>
+          <label>D</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>180</x>
+          <y>145</y>
+          <label>R</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBVSlider' version='2'>
+          <objectName>expADSR_attack</objectName>
+          <x>10</x>
+          <y>5</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>1.0</maximum>
+          <bdresolution>0.001</bdresolution>
+          <value>0.0</value>
+          <sliderHeight>150</sliderHeight>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>false</valueDisplayEnabled>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBVSlider' version='2'>
+          <objectName>expADSR_release</objectName>
+          <x>160</x>
+          <y>5</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>1.0</maximum>
+          <bdresolution>0.001</bdresolution>
+          <value>1.0</value>
+          <sliderHeight>150</sliderHeight>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>false</valueDisplayEnabled>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>205</x>
+          <y>145</y>
+          <label>__
+</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>130</x>
+          <y>145</y>
+          <label>S</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+      </bsbObject>
+      <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+        <objectName></objectName>
+        <x>510</x>
+        <y>0</y>
+        <comment>Score Module - use this to add extra P-fields in Score and instrumentcode</comment>
+        <groupName>Score Module</groupName>
+        <backgroundColor>0x66666600</backgroundColor>
+        <borderColor>0x000000ff</borderColor>
+        <labelTextColor>0xff0000ff</labelTextColor>
+        <titleEnabled>false</titleEnabled>
+        <width>137</width>
+        <height>20</height>
+        <font>
+          <name>Roboto</name>
+          <size>12.0</size>
+          <style>0</style>
+        </font>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+          <objectName></objectName>
+          <x>28</x>
+          <y>113</y>
+          <value></value>
+          <textFieldWidth>100</textFieldWidth>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>6</x>
+          <y>222</y>
+          <label>13</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>6</x>
+          <y>263</y>
+          <label>15</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>14</x>
+          <y>34</y>
+          <label>4</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>6</x>
+          <y>159</y>
+          <label>10</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>6</x>
+          <y>179</y>
+          <label>11</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>14</x>
+          <y>117</y>
+          <label>8</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+          <objectName></objectName>
+          <x>28</x>
+          <y>219</y>
+          <value></value>
+          <textFieldWidth>100</textFieldWidth>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>12</x>
+          <y>10</y>
+          <label>Pfield description</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>6</x>
+          <y>243</y>
+          <label>14</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+          <objectName></objectName>
+          <x>28</x>
+          <y>156</y>
+          <value></value>
+          <textFieldWidth>100</textFieldWidth>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>36</x>
+          <y>34</y>
+          <label>frequency</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>14</x>
+          <y>138</y>
+          <label>9</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>14</x>
+          <y>74</y>
+          <label>6</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>36</x>
+          <y>53</y>
+          <label>volume</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+          <objectName></objectName>
+          <x>28</x>
+          <y>197</y>
+          <value></value>
+          <textFieldWidth>100</textFieldWidth>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>14</x>
+          <y>53</y>
+          <label>5</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+          <objectName></objectName>
+          <x>28</x>
+          <y>93</y>
+          <value></value>
+          <textFieldWidth>100</textFieldWidth>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+          <objectName></objectName>
+          <x>28</x>
+          <y>178</y>
+          <value></value>
+          <textFieldWidth>100</textFieldWidth>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>6</x>
+          <y>199</y>
+          <label>12</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+          <objectName></objectName>
+          <x>28</x>
+          <y>239</y>
+          <value></value>
+          <textFieldWidth>100</textFieldWidth>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+          <objectName></objectName>
+          <x>28</x>
+          <y>134</y>
+          <value></value>
+          <textFieldWidth>100</textFieldWidth>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+          <objectName></objectName>
+          <x>28</x>
+          <y>71</y>
+          <value>cutoff filter</value>
+          <textFieldWidth>100</textFieldWidth>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>14</x>
+          <y>97</y>
+          <label>7</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+          <objectName></objectName>
+          <x>28</x>
+          <y>260</y>
+          <value></value>
+          <textFieldWidth>100</textFieldWidth>
+        </bsbObject>
+      </bsbObject>
+      <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+        <objectName></objectName>
+        <x>0</x>
+        <y>0</y>
+        <comment>4 envelopes for amplitude</comment>
+        <groupName>tied notes</groupName>
+        <backgroundColor>0x282828ff</backgroundColor>
+        <borderColor>0x000000ff</borderColor>
+        <labelTextColor>0xffffffff</labelTextColor>
+        <titleEnabled>true</titleEnabled>
+        <width>160</width>
+        <height>117</height>
+        <font>
+          <name>Roboto</name>
+          <size>12.0</size>
+          <style>2</style>
+        </font>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+          <objectName></objectName>
+          <x>10</x>
+          <y>200</y>
+          <comment>4 envelopes for amplitude</comment>
+          <groupName>filter</groupName>
+          <backgroundColor>0x282828ff</backgroundColor>
+          <borderColor>0x000000ff</borderColor>
+          <labelTextColor>0xffffffff</labelTextColor>
+          <titleEnabled>true</titleEnabled>
+          <width>152</width>
+          <height>85</height>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+            <objectName>TiedNotes_filterenvtype</objectName>
+            <x>80</x>
+            <y>10</y>
+            <automationAllowed>true</automationAllowed>
+            <minimum>-2.0</minimum>
+            <maximum>2.0</maximum>
+            <value>1.1063895671669681</value>
+            <knobWidth>50</knobWidth>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>false</valueDisplayEnabled>
+            <label>env type</label>
+            <labelEnabled>true</labelEnabled>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+            <objectName>TiedNotes_filter</objectName>
+            <x>10</x>
+            <y>10</y>
+            <automationAllowed>true</automationAllowed>
+            <minimum>1.0E-5</minimum>
+            <maximum>1.0</maximum>
+            <value>0.6154617101960392</value>
+            <knobWidth>50</knobWidth>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>false</valueDisplayEnabled>
+            <label>cutoff slur</label>
+            <labelEnabled>true</labelEnabled>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+            <objectName></objectName>
+            <x>120</x>
+            <y>60</y>
+            <label>fast</label>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+            <objectName></objectName>
+            <x>70</x>
+            <y>60</y>
+            <label>slow</label>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>120</x>
+          <y>320</y>
+          <label>p+a+f</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
+          <objectName>TiedNotes_sync</objectName>
+          <x>20</x>
+          <y>305</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>2.0</maximum>
+          <bdresolution>1</bdresolution>
+          <value>0.0</value>
+          <sliderWidth>130</sliderWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>false</valueDisplayEnabled>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>75</x>
+          <y>320</y>
+          <label>p+a</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>10</x>
+          <y>320</y>
+          <label>no sync</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+          <objectName></objectName>
+          <x>10</x>
+          <y>10</y>
+          <comment>4 envelopes for amplitude</comment>
+          <groupName>note</groupName>
+          <backgroundColor>0x282828ff</backgroundColor>
+          <borderColor>0x000000ff</borderColor>
+          <labelTextColor>0xffffffff</labelTextColor>
+          <titleEnabled>true</titleEnabled>
+          <width>152</width>
+          <height>99</height>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+            <objectName>TiedNotes_amplitude</objectName>
+            <x>10</x>
+            <y>90</y>
+            <automationAllowed>true</automationAllowed>
+            <minimum>1.0E-5</minimum>
+            <maximum>1.0</maximum>
+            <value>0.6298917204273985</value>
+            <knobWidth>50</knobWidth>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>false</valueDisplayEnabled>
+            <label>amp slur</label>
+            <labelEnabled>true</labelEnabled>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+            <objectName></objectName>
+            <x>120</x>
+            <y>60</y>
+            <label>fast</label>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+            <objectName>TiedNotes_ampenvtype</objectName>
+            <x>80</x>
+            <y>90</y>
+            <automationAllowed>true</automationAllowed>
+            <minimum>-2.0</minimum>
+            <maximum>2.0</maximum>
+            <value>-2.0</value>
+            <knobWidth>50</knobWidth>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>false</valueDisplayEnabled>
+            <label>env type</label>
+            <labelEnabled>true</labelEnabled>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+            <objectName>TiedNotes_pitch</objectName>
+            <x>10</x>
+            <y>10</y>
+            <automationAllowed>true</automationAllowed>
+            <minimum>0.001</minimum>
+            <maximum>1.0</maximum>
+            <value>0.6286674658200878</value>
+            <knobWidth>50</knobWidth>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>false</valueDisplayEnabled>
+            <label>pitch slur</label>
+            <labelEnabled>true</labelEnabled>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+            <objectName></objectName>
+            <x>70</x>
+            <y>140</y>
+            <label>slow</label>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+            <objectName></objectName>
+            <x>70</x>
+            <y>60</y>
+            <label>slow</label>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+            <objectName></objectName>
+            <x>120</x>
+            <y>140</y>
+            <label>fast</label>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+            <objectName>TiedNotes_pitchenvtype</objectName>
+            <x>80</x>
+            <y>10</y>
+            <automationAllowed>true</automationAllowed>
+            <minimum>-2.0</minimum>
+            <maximum>2.0</maximum>
+            <value>-2.0</value>
+            <knobWidth>50</knobWidth>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>false</valueDisplayEnabled>
+            <label>env type</label>
+            <labelEnabled>true</labelEnabled>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+        </bsbObject>
+      </bsbObject>
+    </bsbObject>
+  </graphicInterface>
+  <parameterList>
+    <parameter uniqueId='1919273155' name='expADSR_Xrelease' label='' min='1.0' max='10.0' bdresolution='-1' automationEnabled='false' value='2.723712063595695'>
+      <line name='' version='2' max='10.0' min='1.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='2.723712063595695'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='1919273157' name='expADSR_decay' label='' min='0.0' max='1.0' bdresolution='0.001' automationEnabled='false' value='0.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='0.001' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='1919273159' name='expADSR_sustain' label='' min='0.0' max='1.0' bdresolution='0.001' automationEnabled='false' value='1.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='0.001' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='1.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='1919273161' name='expADSR_attack' label='' min='0.0' max='1.0' bdresolution='0.001' automationEnabled='false' value='0.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='0.001' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='1919273163' name='expADSR_release' label='' min='0.0' max='1.0' bdresolution='0.001' automationEnabled='false' value='1.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='0.001' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='1.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='1919273165' name='TiedNotes_filterenvtype' label='' min='-2.0' max='2.0' bdresolution='-1' automationEnabled='false' value='1.1063895671669681'>
+      <line name='' version='2' max='2.0' min='-2.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='1.1063895671669681'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='1919273167' name='TiedNotes_filter' label='' min='1.0E-5' max='1.0' bdresolution='-1' automationEnabled='false' value='0.6154617101960392'>
+      <line name='' version='2' max='1.0' min='1.0E-5' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.6154617101960392'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='1919273169' name='TiedNotes_sync' label='' min='0.0' max='2.0' bdresolution='1' automationEnabled='false' value='0.0'>
+      <line name='' version='2' max='2.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='1919273171' name='TiedNotes_amplitude' label='' min='1.0E-5' max='1.0' bdresolution='-1' automationEnabled='false' value='0.6298917204273985'>
+      <line name='' version='2' max='1.0' min='1.0E-5' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.6298917204273985'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='1919273173' name='TiedNotes_ampenvtype' label='' min='-2.0' max='2.0' bdresolution='-1' automationEnabled='false' value='-2.0'>
+      <line name='' version='2' max='2.0' min='-2.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='-2.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='1919273175' name='TiedNotes_pitch' label='' min='0.001' max='1.0' bdresolution='-1' automationEnabled='false' value='0.6286674658200878'>
+      <line name='' version='2' max='1.0' min='0.001' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.6286674658200878'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='1919273177' name='TiedNotes_pitchenvtype' label='' min='-2.0' max='2.0' bdresolution='-1' automationEnabled='false' value='-2.0'>
+      <line name='' version='2' max='2.0' min='-2.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='-2.0'/>
+      </line>
+    </parameter>
+  </parameterList>
+  <presetGroup name='Presets'/>
+  <opcodeList>
+    <udo>
+      <opcodeName>tieStatus</opcodeName>
+      <outTypes>i</outTypes>
+      <inTypes>0</inTypes>
+      <codeBody>itie tival
+if (itie == 0 &amp;&amp; p3 &lt; 0) ithen                                                  ; this is an initial note within a group of tied notes
+    itiestatus = 0   
+elseif (p3 &lt; 0 &amp;&amp; itie == 1) ithen                                              ; this is a middle note within a group of tied notes
+    itiestatus = 1
+elseif (p3 &gt; 0 &amp;&amp; itie == 1) ithen                                              ; this is an end note out of a group of tied notes
+    itiestatus = 2
+elseif (p3 &gt; 0 &amp;&amp; itie == 0) ithen                                              ; this note is a standalone note
+    itiestatus = -1
+endif  
+	xout	itiestatus
+</codeBody>
+      <comments></comments>
+    </udo>
+  </opcodeList>
+</instrument>
