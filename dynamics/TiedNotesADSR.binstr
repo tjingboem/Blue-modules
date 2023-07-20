@@ -1,0 +1,1415 @@
+<instrument type='blue.orchestra.BlueSynthBuilder' editEnabled='true'>
+  <name>TiedNotesADSRModule</name>
+  <comment>
+DESCRIPTION:
+
+** 3 Control signals OUT**
+
+The TiedNotesModule gets the negative duration information and decide what to do with it. In this Module pitch, amplitude and/or filter cutoff frequency can be modelled 
+according to the information of a first tied note, a middle tied note and the last note that is tied to. Also &apos;normal&apos; standalone notes of course.
+It is based on the UDO from Steven Yi https://csoundjournal.com/2005fall/tiedNotes.html. But a few different decisions are made on what to do with the tied note information.
+
+This Module needs the ADSRModule. But, if you prefer, you can take another ADSR and implement that one.
+Any filters in the code must get the iskip parameter set for detection if it needs to re-initialize or not.
+
+CONTROLLERS:
+
+see the help balloon when hovering over the controllers in the instrument. Help can be turned off by pressing the &apos;I&apos; button next to the play bar.
+
+---
+
+version 1.0, July 2023
+- initial version 
+
+</comment>
+  <globalOrc>iFirstTableNumber&lt;INSTR_ID&gt; = 100*&lt;INSTR_ID&gt;                                    ; create room for 100 soundfile tables
+giSample&lt;INSTR_ID&gt; ftsamplebank &quot;&lt;samplebank&gt;&quot;, iFirstTableNumber&lt;INSTR_ID&gt;, 0, 4, 0
+
+
+</globalOrc>
+  <globalSco>f 2 0   16  -2  40 40 80 160 320 640 1280 2560 5120 10240 22000</globalSco>
+  <instrumentText>idur        =   abs(p3)                                                         ; be sure idur is always positive, but collect info on a negative duration or not
+ipitch      =   p4                                                              ; here in frequency
+iamp        =   p5                                                              ; range 0 - 1
+icutoff     =   p6                                                              ; (optional) cutoff frequency of filter
+
+itiestatus tieStatus                                                    
+iskip 	tival
+tigoto skipInit
+
+ioldpch init ipitch                                                             ; copy pitch
+ioldamp init iamp                                                               ; copy amplitude
+ioldfrq init ipitch                                                             ; copy freq for filter value
+
+skipInit:
+inewpch 	= ipitch                                                        ; takes care of pitch jumps
+kpchline	transeg	ioldpch, i(&lt;TiedNotes_pitch&gt;)*idur, -(i(&lt;TiedNotes_pitchenvtype&gt;)), inewpch, idur - i(&lt;TiedNotes_pitch&gt;)*idur, i(&lt;TiedNotes_pitchenvtype&gt;), inewpch
+ioldpch	= inewpch
+
+inewamp         = iamp                                                          ; takes care of amplitude jumps
+kampline    	transeg	ioldamp, i(&lt;TiedNotes_amplitude&gt;)*idur, -(i(&lt;TiedNotes_ampenvtype&gt;)), inewamp, idur - i(&lt;TiedNotes_amplitude&gt;)*idur, i(&lt;TiedNotes_ampenvtype&gt;), inewamp
+ioldamp	= inewamp
+
+inewfrq 	= icutoff                                                       ; takes care of cutoff frequency of filter jumps
+kcutline	transeg	ioldfrq, i(&lt;TiedNotes_filter&gt;)*idur, -(i(&lt;TiedNotes_filterenvtype&gt;)), inewfrq, idur - i(&lt;TiedNotes_filter&gt;)*idur,  i(&lt;TiedNotes_filterenvtype&gt;), inewfrq 
+ioldfrq	= inewfrq
+
+aret init 1                                                                     ; takes care of ADSR_ envelopes for normal and tied notes
+aagate = linseg:a(1, idur - i(&lt;ADSR_release&gt;), 1, 0, 0, i(&lt;ADSR_release&gt;), 0)   ; ADSR_ UDO
+if (itiestatus == -1) then                                                      ; envelope for normal notes
+    aampdsr    adsr140    aagate, aret, &lt;ADSR_attack&gt;, &lt;ADSR_decay&gt;, &lt;ADSR_sustain&gt;, &lt;ADSR_release&gt; 
+elseif (itiestatus == 0) then                                                   ; envelope for first tied note
+    aampdsr	linseg	0, i(&lt;ADSR_attack&gt;) +0.000001, 1
+    prints &quot;\n--&gt; first tied note\n&quot;,  itiestatus                              
+elseif (itiestatus == 1) then                                                   ; envelope for tied middle notes
+    aampdsr = 1
+    prints &quot;\n--&gt; tied middle note\n&quot;,  itiestatus  
+elseif (itiestatus == 2) then                                                   ; release for last tied note
+    aampdsr linseg	1, 1 - i(&lt;ADSR_release&gt;), 1, idur*i(&lt;ADSR_release&gt;), 0
+    prints &quot;\n--&gt; last tied note\n&quot;,  itiestatus 
+endif
+
+if (&lt;TiedNotes_sync&gt; == 0) then
+;                                                                               ; no syncing
+elseif (&lt;TiedNotes_sync&gt; == 1) then
+    &lt;TiedNotes_amplitude&gt;   =   &lt;TiedNotes_pitch&gt;                               ; sync amp time with pitch time
+    &lt;TiedNotes_ampenvtype&gt;  =   &lt;TiedNotes_pitchenvtype&gt;                        ; and pitch envelope type
+elseif (&lt;TiedNotes_sync&gt; == 2) then
+    &lt;TiedNotes_amplitude&gt;   =   &lt;TiedNotes_pitch&gt;                               ; sync amp time with pitch time
+    &lt;TiedNotes_filter&gt;      =   &lt;TiedNotes_pitch&gt;                               ; sync filter time with pitch time
+    &lt;TiedNotes_ampenvtype&gt;  =   &lt;TiedNotes_pitchenvtype&gt;                        ; and pitch envelope type
+    &lt;TiedNotes_filterenvtype&gt;   =   &lt;TiedNotes_pitchenvtype&gt;                    
+endif
+
+
+ain vco2 kampline, kpchline, iskip                                              ; example of oscillator                                              
+
+asig moogladder2 ain, kcutline, .5, iskip                                       ; example of filter
+
+
+;==================outs=======================================
+blueMixerOut asig * aampdsr, asig * aampdsr
+
+</instrumentText>
+  <alwaysOnInstrumentText></alwaysOnInstrumentText>
+  <graphicInterface editEnabled='false'>
+    <gridSettings>
+      <width>5</width>
+      <height>5</height>
+      <gridStyle>DOT</gridStyle>
+      <snapGridEnabled>true</snapGridEnabled>
+    </gridSettings>
+    <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+      <objectName></objectName>
+      <x>0</x>
+      <y>0</y>
+      <groupName>Group</groupName>
+      <backgroundColor>0x00000033</backgroundColor>
+      <borderColor>0x000000ff</borderColor>
+      <labelTextColor>0xffffffff</labelTextColor>
+      <titleEnabled>true</titleEnabled>
+      <width>20</width>
+      <height>20</height>
+      <font>
+        <name>Roboto</name>
+        <size>12.0</size>
+        <style>0</style>
+      </font>
+      <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+        <objectName></objectName>
+        <x>185</x>
+        <y>0</y>
+        <comment>4 envelopes for amplitude</comment>
+        <groupName>ADSR</groupName>
+        <backgroundColor>0x282828ff</backgroundColor>
+        <borderColor>0x000000ff</borderColor>
+        <labelTextColor>0xffffffff</labelTextColor>
+        <titleEnabled>true</titleEnabled>
+        <width>20</width>
+        <height>99</height>
+        <font>
+          <name>Roboto</name>
+          <size>12.0</size>
+          <style>2</style>
+        </font>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>180</x>
+          <y>145</y>
+          <label>R</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBVSlider' version='2'>
+          <objectName>ADSR_sustain</objectName>
+          <x>110</x>
+          <y>5</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>1.0</maximum>
+          <bdresolution>0.001</bdresolution>
+          <value>0.271</value>
+          <sliderHeight>150</sliderHeight>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>false</valueDisplayEnabled>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBVSlider' version='2'>
+          <objectName>ADSR_decay</objectName>
+          <x>60</x>
+          <y>5</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>1.0</maximum>
+          <bdresolution>0.001</bdresolution>
+          <value>0.659</value>
+          <sliderHeight>150</sliderHeight>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>false</valueDisplayEnabled>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBVSlider' version='2'>
+          <objectName>ADSR_attack</objectName>
+          <x>10</x>
+          <y>5</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>1.0</maximum>
+          <bdresolution>0.001</bdresolution>
+          <value>0.155</value>
+          <sliderHeight>150</sliderHeight>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>false</valueDisplayEnabled>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>30</x>
+          <y>145</y>
+          <label>A</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBVSlider' version='2'>
+          <objectName>ADSR_release</objectName>
+          <x>160</x>
+          <y>5</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>1.0</maximum>
+          <bdresolution>0.001</bdresolution>
+          <value>0.837</value>
+          <sliderHeight>150</sliderHeight>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>false</valueDisplayEnabled>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>130</x>
+          <y>145</y>
+          <label>S</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>80</x>
+          <y>145</y>
+          <label>D</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+      </bsbObject>
+      <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+        <objectName></objectName>
+        <x>415</x>
+        <y>0</y>
+        <comment>Score Module - use this to add extra P-fields in Score and instrumentcode</comment>
+        <groupName>Score Module</groupName>
+        <backgroundColor>0x66666600</backgroundColor>
+        <borderColor>0x000000ff</borderColor>
+        <labelTextColor>0xff0000ff</labelTextColor>
+        <titleEnabled>false</titleEnabled>
+        <width>137</width>
+        <height>20</height>
+        <font>
+          <name>Roboto</name>
+          <size>12.0</size>
+          <style>0</style>
+        </font>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>14</x>
+          <y>34</y>
+          <label>4</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>14</x>
+          <y>74</y>
+          <label>6</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>6</x>
+          <y>263</y>
+          <label>15</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+          <objectName></objectName>
+          <x>28</x>
+          <y>113</y>
+          <value></value>
+          <textFieldWidth>100</textFieldWidth>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>36</x>
+          <y>34</y>
+          <label>frequency</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+          <objectName></objectName>
+          <x>28</x>
+          <y>260</y>
+          <value></value>
+          <textFieldWidth>100</textFieldWidth>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+          <objectName></objectName>
+          <x>28</x>
+          <y>239</y>
+          <value></value>
+          <textFieldWidth>100</textFieldWidth>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+          <objectName></objectName>
+          <x>28</x>
+          <y>219</y>
+          <value></value>
+          <textFieldWidth>100</textFieldWidth>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>14</x>
+          <y>53</y>
+          <label>5</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>14</x>
+          <y>97</y>
+          <label>7</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>14</x>
+          <y>117</y>
+          <label>8</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+          <objectName></objectName>
+          <x>28</x>
+          <y>71</y>
+          <value>cutoff filter</value>
+          <textFieldWidth>100</textFieldWidth>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>6</x>
+          <y>179</y>
+          <label>11</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>6</x>
+          <y>159</y>
+          <label>10</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+          <objectName></objectName>
+          <x>28</x>
+          <y>134</y>
+          <value></value>
+          <textFieldWidth>100</textFieldWidth>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+          <objectName></objectName>
+          <x>28</x>
+          <y>156</y>
+          <value></value>
+          <textFieldWidth>100</textFieldWidth>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+          <objectName></objectName>
+          <x>28</x>
+          <y>93</y>
+          <value></value>
+          <textFieldWidth>100</textFieldWidth>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>6</x>
+          <y>199</y>
+          <label>12</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>6</x>
+          <y>222</y>
+          <label>13</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>14</x>
+          <y>138</y>
+          <label>9</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>6</x>
+          <y>243</y>
+          <label>14</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>12</x>
+          <y>10</y>
+          <label>Pfield description</label>
+          <font>
+            <name>Roboto</name>
+            <size>14.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+          <objectName></objectName>
+          <x>28</x>
+          <y>178</y>
+          <value></value>
+          <textFieldWidth>100</textFieldWidth>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+          <objectName></objectName>
+          <x>28</x>
+          <y>197</y>
+          <value></value>
+          <textFieldWidth>100</textFieldWidth>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>36</x>
+          <y>53</y>
+          <label>volume</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+      </bsbObject>
+      <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+        <objectName></objectName>
+        <x>0</x>
+        <y>0</y>
+        <comment>4 envelopes for amplitude</comment>
+        <groupName>tied notes</groupName>
+        <backgroundColor>0x282828ff</backgroundColor>
+        <borderColor>0x000000ff</borderColor>
+        <labelTextColor>0xffffffff</labelTextColor>
+        <titleEnabled>true</titleEnabled>
+        <width>160</width>
+        <height>117</height>
+        <font>
+          <name>Roboto</name>
+          <size>12.0</size>
+          <style>2</style>
+        </font>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+          <objectName></objectName>
+          <x>10</x>
+          <y>10</y>
+          <comment>4 envelopes for amplitude</comment>
+          <groupName>note</groupName>
+          <backgroundColor>0x282828ff</backgroundColor>
+          <borderColor>0x000000ff</borderColor>
+          <labelTextColor>0xffffffff</labelTextColor>
+          <titleEnabled>true</titleEnabled>
+          <width>152</width>
+          <height>99</height>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+            <objectName>TiedNotes_amplitude</objectName>
+            <x>10</x>
+            <y>90</y>
+            <automationAllowed>true</automationAllowed>
+            <minimum>1.0E-5</minimum>
+            <maximum>1.0</maximum>
+            <value>0.43818063256499307</value>
+            <knobWidth>50</knobWidth>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>false</valueDisplayEnabled>
+            <label>amplitude
+</label>
+            <labelEnabled>true</labelEnabled>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+            <objectName></objectName>
+            <x>120</x>
+            <y>140</y>
+            <label>fast</label>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+            <objectName>TiedNotes_pitch</objectName>
+            <x>10</x>
+            <y>10</y>
+            <automationAllowed>true</automationAllowed>
+            <minimum>0.001</minimum>
+            <maximum>1.0</maximum>
+            <value>0.09664893617021274</value>
+            <knobWidth>50</knobWidth>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>false</valueDisplayEnabled>
+            <label>pitch slur</label>
+            <labelEnabled>true</labelEnabled>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+            <objectName></objectName>
+            <x>70</x>
+            <y>60</y>
+            <label>slow</label>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+            <objectName>TiedNotes_ampenvtype</objectName>
+            <x>80</x>
+            <y>90</y>
+            <automationAllowed>true</automationAllowed>
+            <minimum>-2.0</minimum>
+            <maximum>2.0</maximum>
+            <value>-1.0956615983355624</value>
+            <knobWidth>50</knobWidth>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>false</valueDisplayEnabled>
+            <label>env type</label>
+            <labelEnabled>true</labelEnabled>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+            <objectName>TiedNotes_pitchenvtype</objectName>
+            <x>80</x>
+            <y>10</y>
+            <automationAllowed>true</automationAllowed>
+            <minimum>-2.0</minimum>
+            <maximum>2.0</maximum>
+            <value>-2.0</value>
+            <knobWidth>50</knobWidth>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>false</valueDisplayEnabled>
+            <label>env type</label>
+            <labelEnabled>true</labelEnabled>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+            <objectName></objectName>
+            <x>120</x>
+            <y>60</y>
+            <label>fast</label>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+            <objectName></objectName>
+            <x>70</x>
+            <y>140</y>
+            <label>slow</label>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+          <objectName></objectName>
+          <x>10</x>
+          <y>200</y>
+          <comment>4 envelopes for amplitude</comment>
+          <groupName>filter</groupName>
+          <backgroundColor>0x282828ff</backgroundColor>
+          <borderColor>0x000000ff</borderColor>
+          <labelTextColor>0xffffffff</labelTextColor>
+          <titleEnabled>true</titleEnabled>
+          <width>152</width>
+          <height>85</height>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+            <objectName>TiedNotes_filter</objectName>
+            <x>10</x>
+            <y>10</y>
+            <automationAllowed>true</automationAllowed>
+            <minimum>1.0E-5</minimum>
+            <maximum>1.0</maximum>
+            <value>0.6065522614326705</value>
+            <knobWidth>50</knobWidth>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>false</valueDisplayEnabled>
+            <label>cutoff slur</label>
+            <labelEnabled>true</labelEnabled>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+            <objectName></objectName>
+            <x>70</x>
+            <y>60</y>
+            <label>slow</label>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+            <objectName>TiedNotes_filterenvtype</objectName>
+            <x>80</x>
+            <y>10</y>
+            <automationAllowed>true</automationAllowed>
+            <minimum>-2.0</minimum>
+            <maximum>2.0</maximum>
+            <value>1.875202402339061</value>
+            <knobWidth>50</knobWidth>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>false</valueDisplayEnabled>
+            <label>env type</label>
+            <labelEnabled>true</labelEnabled>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+            <objectName></objectName>
+            <x>120</x>
+            <y>60</y>
+            <label>fast</label>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
+          <objectName>TiedNotes_sync</objectName>
+          <x>20</x>
+          <y>305</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>2.0</maximum>
+          <bdresolution>1</bdresolution>
+          <value>2.0</value>
+          <sliderWidth>130</sliderWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>false</valueDisplayEnabled>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>10</x>
+          <y>320</y>
+          <label>no sync</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>75</x>
+          <y>320</y>
+          <label>p+a</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>120</x>
+          <y>320</y>
+          <label>p+a+f</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+      </bsbObject>
+    </bsbObject>
+  </graphicInterface>
+  <parameterList>
+    <parameter uniqueId='1934434795' name='TiedNotes_amplitude' label='' min='1.0E-5' max='1.0' bdresolution='-1' automationEnabled='false' value='0.43818063256499307'>
+      <line name='' version='2' max='1.0' min='1.0E-5' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.43818063256499307'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='1934434797' name='TiedNotes_pitch' label='' min='0.001' max='1.0' bdresolution='-1' automationEnabled='false' value='0.09664893617021274'>
+      <line name='' version='2' max='1.0' min='0.001' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.09664893617021274'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='1934434799' name='TiedNotes_ampenvtype' label='' min='-2.0' max='2.0' bdresolution='-1' automationEnabled='false' value='-1.0956615983355624'>
+      <line name='' version='2' max='2.0' min='-2.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='-1.0956615983355624'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='1934434801' name='TiedNotes_pitchenvtype' label='' min='-2.0' max='2.0' bdresolution='-1' automationEnabled='false' value='-2.0'>
+      <line name='' version='2' max='2.0' min='-2.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='-2.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='1934434803' name='TiedNotes_filter' label='' min='1.0E-5' max='1.0' bdresolution='-1' automationEnabled='false' value='0.6065522614326705'>
+      <line name='' version='2' max='1.0' min='1.0E-5' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.6065522614326705'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='1934434805' name='TiedNotes_filterenvtype' label='' min='-2.0' max='2.0' bdresolution='-1' automationEnabled='false' value='1.875202402339061'>
+      <line name='' version='2' max='2.0' min='-2.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='1.875202402339061'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='1934434807' name='TiedNotes_sync' label='' min='0.0' max='2.0' bdresolution='1' automationEnabled='false' value='2.0'>
+      <line name='' version='2' max='2.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='2.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='1934434819' name='ADSR_sustain' label='' min='0.0' max='1.0' bdresolution='0.001' automationEnabled='false' value='0.271'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='0.001' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.271'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='1934434821' name='ADSR_decay' label='' min='0.0' max='1.0' bdresolution='0.001' automationEnabled='false' value='0.659'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='0.001' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.659'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='1934434823' name='ADSR_attack' label='' min='0.0' max='1.0' bdresolution='0.001' automationEnabled='false' value='0.155'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='0.001' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.155'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='1934434825' name='ADSR_release' label='' min='0.0' max='1.0' bdresolution='0.001' automationEnabled='false' value='0.837'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='0.001' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.837'/>
+      </line>
+    </parameter>
+  </parameterList>
+  <presetGroup name='Presets' currentPresetUniqueId='-1149000462' currentPresetModified='false'>
+    <preset name='' uniqueId='-693797601'>
+      <setting name='PfieldXfrequency'>4</setting>
+      <setting name='PfieldXvelocity'>5</setting>
+      <setting name='VibratoON'>true</setting>
+      <setting name='Xfade'>0.04800000000000004</setting>
+      <setting name='Xrandom'>ver2:0.31</setting>
+      <setting name='amplitude exponential switch'>true</setting>
+      <setting name='autopanning if mono sample'>false</setting>
+      <setting name='basefreq'>261.625565</setting>
+      <setting name='check mono/stereo'>false</setting>
+      <setting name='envelope'>version=2@_@amplitude envelope:0.0:0.0:0.19550561797752808:1.0:0.5700934579439252:1.0:0.6214953271028038:1.0:0.8121495327102803:1.0:1.0:0.0:1.0:0.0@_@filter envelope:0.0:9025.0:0.0691588785046729:1127.0000000000011:0.21460674157303372:648.3333333333331:0.516822429906542:528.6666666666658:0.798876404494382:7828.333333333334:1.0:289.3333333333329@_@pitch bend envelope:0.0:2.3466666666666667:0.525233644859813:2.293333333333333:0.5831460674157304:1.12:0.7168539325842697:1.7599999999999998:0.8299065420560747:0.0:1.0:2.24</setting>
+      <setting name='file'>/media/menno/datae/EigenWerk/eigenwerk/samples/gilpiep.wav</setting>
+      <setting name='filter'>ver2:1.0:1.0</setting>
+      <setting name='filter bandpass gain'>1.0</setting>
+      <setting name='filter bandreject gain'>0.0</setting>
+      <setting name='filter envelope'>true</setting>
+      <setting name='filter exponential switch'>false</setting>
+      <setting name='filter highpass gain'>0.0</setting>
+      <setting name='filter lowpass gain'>1.0</setting>
+      <setting name='filterON'>true</setting>
+      <setting name='filterQ'>ver2:1.666</setting>
+      <setting name='frequency cutoff'>2517.2</setting>
+      <setting name='loop direction'>id:-717362694</setting>
+      <setting name='panning the mono sample'>ver2:0.54</setting>
+      <setting name='pianoroll'>false</setting>
+      <setting name='pitch bend envelope'>true</setting>
+      <setting name='pitch slider'>false</setting>
+      <setting name='sample begin loop'>0.299</setting>
+      <setting name='sample end loop'>0.321</setting>
+      <setting name='sample pitch'>1.0</setting>
+      <setting name='sample start playback'>0.237</setting>
+      <setting name='scale amplitude envelope'>ver2:1</setting>
+      <setting name='scale filter envelope'>ver2:1</setting>
+      <setting name='scale pitch envelope'>ver2:1</setting>
+      <setting name='tuning'>1.0</setting>
+      <setting name='vibrato LFO type'>2.0</setting>
+      <setting name='vibrato depth'>ver2:0.102</setting>
+      <setting name='vibrato fade in'>false</setting>
+      <setting name='vibrato speed'>ver2:10</setting>
+      <setting name='volume'>ver2:1.76</setting>
+    </preset>
+    <preset name='' uniqueId='-693797457'>
+      <setting name='PfieldXfrequency'>4</setting>
+      <setting name='PfieldXvelocity'>5</setting>
+      <setting name='VibratoON'>false</setting>
+      <setting name='Xfade'>0.04800000000000004</setting>
+      <setting name='Xrandom'>ver2:0.31</setting>
+      <setting name='amplitude exponential switch'>true</setting>
+      <setting name='autopanning if mono sample'>false</setting>
+      <setting name='basefreq'>261.625565</setting>
+      <setting name='check mono/stereo'>false</setting>
+      <setting name='envelope'>version=2@_@amplitude envelope:0.0:0.0:0.19550561797752808:1.0:0.5700934579439252:1.0:0.6214953271028038:1.0:0.8121495327102803:1.0:1.0:0.0:1.0:0.0@_@filter envelope:0.0:9025.0:0.0691588785046729:1127.0000000000011:0.21460674157303372:648.3333333333331:0.516822429906542:528.6666666666658:0.798876404494382:7828.333333333334:1.0:289.3333333333329@_@pitch bend envelope:0.0:2.3466666666666667:0.525233644859813:2.293333333333333:0.5831460674157304:1.12:0.7168539325842697:1.7599999999999998:0.8299065420560747:0.0:1.0:2.24</setting>
+      <setting name='file'>/media/menno/datae/EigenWerk/eigenwerk/samples/gilpiep.wav</setting>
+      <setting name='filter'>ver2:1.0:0.0</setting>
+      <setting name='filter bandpass gain'>1.0</setting>
+      <setting name='filter bandreject gain'>0.0</setting>
+      <setting name='filter envelope'>true</setting>
+      <setting name='filter exponential switch'>false</setting>
+      <setting name='filter highpass gain'>0.0</setting>
+      <setting name='filter lowpass gain'>1.0</setting>
+      <setting name='filterON'>true</setting>
+      <setting name='filterQ'>ver2:1.666</setting>
+      <setting name='frequency cutoff'>2517.2</setting>
+      <setting name='loop direction'>id:-717362696</setting>
+      <setting name='panning the mono sample'>ver2:0.54</setting>
+      <setting name='pianoroll'>false</setting>
+      <setting name='pitch bend envelope'>false</setting>
+      <setting name='pitch slider'>false</setting>
+      <setting name='sample begin loop'>0.572</setting>
+      <setting name='sample end loop'>0.61</setting>
+      <setting name='sample pitch'>1.0</setting>
+      <setting name='sample start playback'>0.528</setting>
+      <setting name='scale amplitude envelope'>ver2:1</setting>
+      <setting name='scale filter envelope'>ver2:1</setting>
+      <setting name='scale pitch envelope'>ver2:1</setting>
+      <setting name='tuning'>1.0</setting>
+      <setting name='vibrato LFO type'>5.0</setting>
+      <setting name='vibrato depth'>ver2:0.045</setting>
+      <setting name='vibrato fade in'>false</setting>
+      <setting name='vibrato speed'>ver2:10</setting>
+      <setting name='volume'>ver2:1.76</setting>
+    </preset>
+    <preset name='' uniqueId='1825647065'>
+      <setting name='VibratoON'>false</setting>
+      <setting name='Xfade'>0.04800000000000004</setting>
+      <setting name='Xrandom'>ver2:0.26</setting>
+      <setting name='amplitude exponential switch'>true</setting>
+      <setting name='autopanning if mono sample'>false</setting>
+      <setting name='check mono/stereo'>false</setting>
+      <setting name='envelope'>version=2@_@amplitude envelope:0.0:0.0:0.19550561797752808:1.0:0.5700934579439252:1.0:0.6214953271028038:1.0:0.8121495327102803:1.0:1.0:0.0:1.0:0.0@_@filter envelope:0.0:9025.0:0.0691588785046729:1127.0000000000011:0.21460674157303372:648.3333333333331:0.516822429906542:528.6666666666658:0.798876404494382:7828.333333333334:1.0:289.3333333333329@_@pitch bend envelope:0.0:2.3466666666666667:0.525233644859813:2.293333333333333:0.5831460674157304:1.12:0.7168539325842697:1.7599999999999998:0.8299065420560747:0.0:1.0:2.24</setting>
+      <setting name='file'>/media/menno/datae/EigenWerk/verzameling_ideejen/samples/tiedtest.wav</setting>
+      <setting name='filter'>ver2:1.0:1.0</setting>
+      <setting name='filter bandpass gain'>1.0</setting>
+      <setting name='filter bandreject gain'>0.0</setting>
+      <setting name='filter envelope'>true</setting>
+      <setting name='filter exponential switch'>true</setting>
+      <setting name='filter highpass gain'>0.0</setting>
+      <setting name='filter lowpass gain'>1.0</setting>
+      <setting name='filterON'>true</setting>
+      <setting name='filterQ'>ver2:0.651</setting>
+      <setting name='frequency cutoff'>2517.2</setting>
+      <setting name='loop direction'>id:1680432903</setting>
+      <setting name='panning the mono sample'>ver2:0.54</setting>
+      <setting name='pitch bend envelope'>false</setting>
+      <setting name='pitch slider'>false</setting>
+      <setting name='sample begin loop'>0.45</setting>
+      <setting name='sample end loop'>0.503</setting>
+      <setting name='sample pitch'>2.504</setting>
+      <setting name='sample start playback'>0.346</setting>
+      <setting name='scale amplitude envelope'>ver2:1</setting>
+      <setting name='scale filter envelope'>ver2:7.46</setting>
+      <setting name='scale pitch envelope'>ver2:1</setting>
+      <setting name='tuning'>1.0</setting>
+      <setting name='vibrato LFO type'>5.0</setting>
+      <setting name='vibrato depth'>ver2:0.045</setting>
+      <setting name='vibrato fade in'>false</setting>
+      <setting name='vibrato speed'>ver2:10</setting>
+      <setting name='volume'>ver2:0.48</setting>
+    </preset>
+    <preset name='' uniqueId='-1455840376'>
+      <setting name='ADSR envelope speed'>11.79</setting>
+      <setting name='ADSR trigger'>true</setting>
+      <setting name='SCORE_format_Sampler'>id:-2009231365</setting>
+      <setting name='VibratoON'>false</setting>
+      <setting name='Xfade'>-0.16099999999999998</setting>
+      <setting name='Xrandom'>ver2:0.082</setting>
+      <setting name='amp attack'>ver2:0</setting>
+      <setting name='amp decay'>ver2:0.29</setting>
+      <setting name='amp release'>ver2:0.35</setting>
+      <setting name='amp sustain'>ver2:0.2</setting>
+      <setting name='amplitude exponential switch'>true</setting>
+      <setting name='amplitude jitter depth'>ver2:0.69</setting>
+      <setting name='amplitude jitter max'>ver2:40</setting>
+      <setting name='amplitude jitter min'>ver2:20.14</setting>
+      <setting name='amplitude pregain'>2.63</setting>
+      <setting name='autopanning if mono'>true</setting>
+      <setting name='check mono/stereo'>false</setting>
+      <setting name='envelope'>version=2@_@amplitude envelope:0.0:0.0:0.0:1.0:1.0:1.0:1.0:0.0@_@filter envelope:0.0:0.0:0.6229299363057325:1.0:0.778343949044586:0.013333333333333308:1.0:0.5@_@pitch bend envelope:0.0:1.0:0.25477707006369427:1.95:1.0:1.0</setting>
+      <setting name='envelope amplitude rate'>ver2:1</setting>
+      <setting name='envelope pitch bend ON'>false</setting>
+      <setting name='envelope pitch rate'>ver2:1</setting>
+      <setting name='file'>/media/menno/datae/EigenWerk/verzameling_ideejen/samples/robot.wav</setting>
+      <setting name='filter ads attack'>ver2:1</setting>
+      <setting name='filter ads decay'>ver2:0.15</setting>
+      <setting name='filter ads depth'>1.0</setting>
+      <setting name='filter ads sustain'>ver2:0.57</setting>
+      <setting name='filter bandpass gain'>0.0</setting>
+      <setting name='filter envelope depth'>0.0</setting>
+      <setting name='filter envelopes'>id:-2009231363</setting>
+      <setting name='filter exponential switch'>true</setting>
+      <setting name='filter follower'>id:-2009231356</setting>
+      <setting name='filter frequency cutoff'>ver2:8.131</setting>
+      <setting name='filter highpass gain'>0.5</setting>
+      <setting name='filter lowpass gain'>0.0</setting>
+      <setting name='filter resonance'>ver2:17.405</setting>
+      <setting name='filter total depth'>ver2:0.48</setting>
+      <setting name='filterON'>true</setting>
+      <setting name='gain Left'>2.0</setting>
+      <setting name='gain Right'>2.04</setting>
+      <setting name='loop direction'>id:-2009231354</setting>
+      <setting name='pitch jitter depth'>ver2:0</setting>
+      <setting name='pitch jitter max'>ver2:58</setting>
+      <setting name='pitch jitter min'>ver2:23</setting>
+      <setting name='pitch slider'>true</setting>
+      <setting name='rate filter envelope'>ver2:18.98</setting>
+      <setting name='sample begin loop'>0.314</setting>
+      <setting name='sample end loop'>0.358</setting>
+      <setting name='sample pitch'>0.187</setting>
+      <setting name='sample start playback'>0.293</setting>
+      <setting name='show sample length'>false</setting>
+      <setting name='tuning'>1.00001</setting>
+      <setting name='vibrato depth'>ver2:0.15</setting>
+      <setting name='vibrato fade in'>false</setting>
+      <setting name='vibrato speed'>ver2:4.7</setting>
+      <setting name='vibrato wave'>3.0</setting>
+    </preset>
+    <preset name='' uniqueId='-292557107'>
+      <setting name='ADSR envelope speed'>29.77</setting>
+      <setting name='ADSR trigger'>false</setting>
+      <setting name='SCORE_format_Sampler'>id:-2009231365</setting>
+      <setting name='VibratoON'>false</setting>
+      <setting name='Xfade'>-0.16099999999999998</setting>
+      <setting name='Xrandom'>ver2:0.082</setting>
+      <setting name='amp attack'>ver2:0</setting>
+      <setting name='amp decay'>ver2:0.14</setting>
+      <setting name='amp release'>ver2:0</setting>
+      <setting name='amp sustain'>ver2:0</setting>
+      <setting name='amplitude exponential switch'>false</setting>
+      <setting name='amplitude jitter depth'>ver2:0.69</setting>
+      <setting name='amplitude jitter max'>ver2:40</setting>
+      <setting name='amplitude jitter min'>ver2:20.14</setting>
+      <setting name='amplitude pregain'>4.63</setting>
+      <setting name='autopanning if mono'>false</setting>
+      <setting name='check mono/stereo'>false</setting>
+      <setting name='envelope'>version=2@_@amplitude envelope:0.0:0.0:0.0:1.0:0.30445859872611464:0.9866666666666667:0.6242038216560509:0.9533333333333334:0.8738853503184714:0.8866666666666667:0.9885350318471338:0.0:1.0:0.0@_@filter envelope:0.0:0.0:0.6229299363057325:1.0:0.778343949044586:0.013333333333333308:1.0:0.5@_@pitch bend envelope:0.0:1.0:0.25477707006369427:1.95:1.0:1.0</setting>
+      <setting name='envelope amplitude rate'>ver2:1</setting>
+      <setting name='envelope pitch bend ON'>false</setting>
+      <setting name='envelope pitch rate'>ver2:1</setting>
+      <setting name='file'>/media/menno/datae/EigenWerk/verzameling_ideejen/samples/gilpiepMONO.wav</setting>
+      <setting name='filter ads attack'>ver2:0</setting>
+      <setting name='filter ads decay'>ver2:0.58</setting>
+      <setting name='filter ads depth'>1.0</setting>
+      <setting name='filter ads sustain'>ver2:0.57</setting>
+      <setting name='filter bandpass gain'>0.0</setting>
+      <setting name='filter envelope depth'>0.0</setting>
+      <setting name='filter envelopes'>id:-2009231363</setting>
+      <setting name='filter exponential switch'>true</setting>
+      <setting name='filter follower'>id:-2009231356</setting>
+      <setting name='filter frequency cutoff'>ver2:10.6185</setting>
+      <setting name='filter highpass gain'>0.5</setting>
+      <setting name='filter lowpass gain'>2.5</setting>
+      <setting name='filter resonance'>ver2:12.995</setting>
+      <setting name='filter total depth'>ver2:0.53</setting>
+      <setting name='filterON'>false</setting>
+      <setting name='gain Left'>1.61</setting>
+      <setting name='gain Right'>1.62</setting>
+      <setting name='loop direction'>id:-2009231354</setting>
+      <setting name='pitch jitter depth'>ver2:0</setting>
+      <setting name='pitch jitter max'>ver2:58</setting>
+      <setting name='pitch jitter min'>ver2:23</setting>
+      <setting name='pitch slider'>true</setting>
+      <setting name='rate filter envelope'>ver2:1</setting>
+      <setting name='sample begin loop'>0.0</setting>
+      <setting name='sample end loop'>0.392</setting>
+      <setting name='sample pitch'>0.574</setting>
+      <setting name='sample start playback'>0.289</setting>
+      <setting name='show sample length'>false</setting>
+      <setting name='tuning'>1.00001</setting>
+      <setting name='vibrato depth'>ver2:0.15</setting>
+      <setting name='vibrato fade in'>false</setting>
+      <setting name='vibrato speed'>ver2:4.7</setting>
+      <setting name='vibrato wave'>3.0</setting>
+    </preset>
+    <preset name='' uniqueId='-1381955463'>
+      <setting name='ADSR envelope speed'>4.2</setting>
+      <setting name='ADSR trigger'>false</setting>
+      <setting name='SCORE_format_Sampler'>id:-2009231365</setting>
+      <setting name='VibratoON'>false</setting>
+      <setting name='Xfade'>0.008000000000000007</setting>
+      <setting name='Xrandom'>ver2:0.082</setting>
+      <setting name='amp attack'>ver2:0</setting>
+      <setting name='amp decay'>ver2:0.33</setting>
+      <setting name='amp release'>ver2:0.66</setting>
+      <setting name='amp sustain'>ver2:0.49</setting>
+      <setting name='amplitude exponential switch'>false</setting>
+      <setting name='amplitude jitter depth'>ver2:0.69</setting>
+      <setting name='amplitude jitter max'>ver2:40</setting>
+      <setting name='amplitude jitter min'>ver2:20.14</setting>
+      <setting name='amplitude pregain'>4.63</setting>
+      <setting name='autopanning if mono'>false</setting>
+      <setting name='check mono/stereo'>false</setting>
+      <setting name='envelope'>version=2@_@amplitude envelope:0.0:0.0:0.30445859872611464:0.9866666666666667:0.6242038216560509:0.9533333333333334:0.9885350318471338:0.0:1.0:0.0@_@filter envelope:0.0:0.0:0.6229299363057325:1.0:0.778343949044586:0.013333333333333308:1.0:0.5@_@pitch bend envelope:0.0:1.0:0.25477707006369427:1.95:1.0:1.0</setting>
+      <setting name='envelope amplitude rate'>ver2:1</setting>
+      <setting name='envelope pitch bend ON'>false</setting>
+      <setting name='envelope pitch rate'>ver2:1</setting>
+      <setting name='file'>/media/menno/datae/EigenWerk/verzameling_ideejen/samples/gilpiepMONO.wav</setting>
+      <setting name='filter ads attack'>ver2:0.18</setting>
+      <setting name='filter ads decay'>ver2:0.58</setting>
+      <setting name='filter ads depth'>1.0</setting>
+      <setting name='filter ads sustain'>ver2:0.57</setting>
+      <setting name='filter bandpass gain'>0.0</setting>
+      <setting name='filter envelope depth'>0.9</setting>
+      <setting name='filter envelopes'>id:-2009231363</setting>
+      <setting name='filter exponential switch'>false</setting>
+      <setting name='filter follower'>id:-2009231359</setting>
+      <setting name='filter frequency cutoff'>ver2:10.519</setting>
+      <setting name='filter highpass gain'>0.0</setting>
+      <setting name='filter lowpass gain'>2.5</setting>
+      <setting name='filter resonance'>ver2:6.87</setting>
+      <setting name='filter total depth'>ver2:1</setting>
+      <setting name='filterON'>true</setting>
+      <setting name='gain Left'>1.61</setting>
+      <setting name='gain Right'>1.62</setting>
+      <setting name='loop direction'>id:-2009231354</setting>
+      <setting name='pitch jitter depth'>ver2:0</setting>
+      <setting name='pitch jitter max'>ver2:58</setting>
+      <setting name='pitch jitter min'>ver2:23</setting>
+      <setting name='pitch slider'>true</setting>
+      <setting name='rate filter envelope'>ver2:26.23</setting>
+      <setting name='sample begin loop'>0.254</setting>
+      <setting name='sample end loop'>0.637</setting>
+      <setting name='sample pitch'>1.178</setting>
+      <setting name='sample start playback'>0.449</setting>
+      <setting name='show sample length'>false</setting>
+      <setting name='tuning'>1.00001</setting>
+      <setting name='vibrato depth'>ver2:0.15</setting>
+      <setting name='vibrato fade in'>false</setting>
+      <setting name='vibrato speed'>ver2:4.7</setting>
+      <setting name='vibrato wave'>3.0</setting>
+    </preset>
+    <preset name='' uniqueId='-292524512'>
+      <setting name='ADSR envelope speed'>12.59</setting>
+      <setting name='ADSR trigger'>false</setting>
+      <setting name='SCORE_format_Sampler'>id:-2009231365</setting>
+      <setting name='VibratoON'>false</setting>
+      <setting name='Xfade'>-0.16099999999999998</setting>
+      <setting name='Xrandom'>ver2:0.082</setting>
+      <setting name='amp attack'>ver2:0</setting>
+      <setting name='amp decay'>ver2:0.14</setting>
+      <setting name='amp release'>ver2:0</setting>
+      <setting name='amp sustain'>ver2:0</setting>
+      <setting name='amplitude exponential switch'>false</setting>
+      <setting name='amplitude jitter depth'>ver2:0.69</setting>
+      <setting name='amplitude jitter max'>ver2:40</setting>
+      <setting name='amplitude jitter min'>ver2:20.14</setting>
+      <setting name='amplitude pregain'>5.0</setting>
+      <setting name='autopanning if mono'>false</setting>
+      <setting name='check mono/stereo'>false</setting>
+      <setting name='envelope'>version=2@_@amplitude envelope:0.0:0.0:0.0:1.0:0.30445859872611464:0.9866666666666667:0.6242038216560509:0.9533333333333334:0.8738853503184714:0.8866666666666667:0.9885350318471338:0.0:1.0:0.0@_@filter envelope:0.0:0.0:0.6229299363057325:1.0:0.778343949044586:0.013333333333333308:1.0:0.5@_@pitch bend envelope:0.0:1.0:0.25477707006369427:1.95:1.0:1.0</setting>
+      <setting name='envelope amplitude rate'>ver2:1</setting>
+      <setting name='envelope pitch bend ON'>false</setting>
+      <setting name='envelope pitch rate'>ver2:1</setting>
+      <setting name='file'>/media/menno/datae/EigenWerk/verzameling_ideejen/samples/reverse.wav</setting>
+      <setting name='filter ads attack'>ver2:0</setting>
+      <setting name='filter ads decay'>ver2:0.58</setting>
+      <setting name='filter ads depth'>1.0</setting>
+      <setting name='filter ads sustain'>ver2:0.57</setting>
+      <setting name='filter bandpass gain'>0.0</setting>
+      <setting name='filter envelope depth'>0.0</setting>
+      <setting name='filter envelopes'>id:-2009231363</setting>
+      <setting name='filter exponential switch'>true</setting>
+      <setting name='filter follower'>id:-2009231356</setting>
+      <setting name='filter frequency cutoff'>ver2:10.6185</setting>
+      <setting name='filter highpass gain'>0.5</setting>
+      <setting name='filter lowpass gain'>2.5</setting>
+      <setting name='filter resonance'>ver2:12.995</setting>
+      <setting name='filter total depth'>ver2:0.53</setting>
+      <setting name='filterON'>false</setting>
+      <setting name='gain Left'>5.0</setting>
+      <setting name='gain Right'>5.0</setting>
+      <setting name='loop direction'>id:-2009231354</setting>
+      <setting name='pitch jitter depth'>ver2:0</setting>
+      <setting name='pitch jitter max'>ver2:58</setting>
+      <setting name='pitch jitter min'>ver2:23</setting>
+      <setting name='pitch slider'>true</setting>
+      <setting name='rate filter envelope'>ver2:1</setting>
+      <setting name='sample begin loop'>0.0</setting>
+      <setting name='sample end loop'>0.445</setting>
+      <setting name='sample pitch'>1.423</setting>
+      <setting name='sample start playback'>0.0</setting>
+      <setting name='show sample length'>false</setting>
+      <setting name='tuning'>1.00001</setting>
+      <setting name='vibrato depth'>ver2:0.15</setting>
+      <setting name='vibrato fade in'>false</setting>
+      <setting name='vibrato speed'>ver2:4.7</setting>
+      <setting name='vibrato wave'>3.0</setting>
+    </preset>
+    <preset name='' uniqueId='-1214155913'>
+      <setting name='ADSR envelope speed'>11.45</setting>
+      <setting name='ADSR trigger'>true</setting>
+      <setting name='SCORE_format_Sampler'>id:-1084426526</setting>
+      <setting name='VibratoON'>false</setting>
+      <setting name='Xfade'>-0.07700000000000001</setting>
+      <setting name='Xrandom'>ver2:0.1</setting>
+      <setting name='amp attack'>ver2:0</setting>
+      <setting name='amp decay'>ver2:0.1</setting>
+      <setting name='amp release'>ver2:0</setting>
+      <setting name='amp sustain'>ver2:0</setting>
+      <setting name='amplitude exponential switch'>false</setting>
+      <setting name='amplitude jitter depth'>ver2:0.6</setting>
+      <setting name='amplitude jitter max'>ver2:40</setting>
+      <setting name='amplitude jitter min'>ver2:20.14</setting>
+      <setting name='amplitude pregain'>3.06</setting>
+      <setting name='autopanning if mono'>true</setting>
+      <setting name='check mono/stereo'>false</setting>
+      <setting name='envelope'>version=2@_@amplitude envelope:0.0:0.0:0.0:1.0:0.8598726114649682:0.0:0.9885350318471338:0.0:1.0:0.0@_@filter envelope:0.0:0.0:0.6229299363057325:1.0:0.778343949044586:0.013333333333333308:1.0:0.5@_@pitch bend envelope:0.0:1.0:0.2585987261146497:1.01:1.0:1.0</setting>
+      <setting name='envelope amplitude rate'>ver2:7.65</setting>
+      <setting name='envelope pitch bend ON'>true</setting>
+      <setting name='envelope pitch rate'>ver2:1</setting>
+      <setting name='file'>/media/menno/datae/EigenWerk/samples/plopjes3.wav</setting>
+      <setting name='filter ads attack'>ver2:0</setting>
+      <setting name='filter ads decay'>ver2:0.58</setting>
+      <setting name='filter ads depth'>1.0</setting>
+      <setting name='filter ads sustain'>ver2:0.57</setting>
+      <setting name='filter bandpass gain'>0.1</setting>
+      <setting name='filter envelope depth'>0.0</setting>
+      <setting name='filter envelopes'>id:-1084426524</setting>
+      <setting name='filter exponential switch'>true</setting>
+      <setting name='filter follower'>id:-1084426519</setting>
+      <setting name='filter frequency cutoff'>ver2:5.6435</setting>
+      <setting name='filter highpass gain'>0.5</setting>
+      <setting name='filter lowpass gain'>2.5</setting>
+      <setting name='filter resonance'>ver2:8.83</setting>
+      <setting name='filter total depth'>ver2:0.53</setting>
+      <setting name='filterON'>false</setting>
+      <setting name='gain Left'>1.88</setting>
+      <setting name='gain Right'>1.98</setting>
+      <setting name='loop direction'>id:-1084426529</setting>
+      <setting name='output filters'>0.494</setting>
+      <setting name='pitch jitter depth'>ver2:0.07</setting>
+      <setting name='pitch jitter max'>ver2:58</setting>
+      <setting name='pitch jitter min'>ver2:23</setting>
+      <setting name='pitch slider'>true</setting>
+      <setting name='rate filter envelope'>ver2:1</setting>
+      <setting name='sample begin loop'>0.321</setting>
+      <setting name='sample end loop'>0.505</setting>
+      <setting name='sample pitch'>1.187</setting>
+      <setting name='sample start playback'>0.361</setting>
+      <setting name='show sample length'>false</setting>
+      <setting name='tuning'>1.00001</setting>
+      <setting name='vibrato depth'>ver2:0.15</setting>
+      <setting name='vibrato fade in'>false</setting>
+      <setting name='vibrato speed'>ver2:4.7</setting>
+      <setting name='vibrato wave'>3.0</setting>
+    </preset>
+    <preset name='' uniqueId='-1149000462'>
+      <setting name='ADSR attack'>ver2:0</setting>
+      <setting name='ADSR decay'>ver2:0.1</setting>
+      <setting name='ADSR envelope speed'>34.65</setting>
+      <setting name='ADSR release'>ver2:0</setting>
+      <setting name='ADSR sustain'>ver2:0</setting>
+      <setting name='ADSR trigger'>true</setting>
+      <setting name='SCORE_format_Sampler'>id:-1084426526</setting>
+      <setting name='VibratoON'>false</setting>
+      <setting name='Xfade'>-0.07700000000000001</setting>
+      <setting name='Xrandom'>ver2:0.1</setting>
+      <setting name='amplitude exponential switch'>false</setting>
+      <setting name='amplitude jitter depth'>ver2:0.6</setting>
+      <setting name='amplitude jitter max'>ver2:40</setting>
+      <setting name='amplitude jitter min'>ver2:20.14</setting>
+      <setting name='amplitude pregain'>3.06</setting>
+      <setting name='autopanning if mono'>true</setting>
+      <setting name='check mono/stereo'>false</setting>
+      <setting name='envelope'>version=2@_@amplitude envelope:0.0:0.0:0.0:1.0:0.8598726114649682:0.0:0.9885350318471338:0.0:1.0:0.0@_@filter envelope:0.0:0.0:0.6229299363057325:1.0:0.778343949044586:0.013333333333333308:1.0:0.5@_@pitch bend envelope:0.0:1.0:0.2585987261146497:1.01:1.0:1.0</setting>
+      <setting name='envelope amplitude rate'>ver2:7.65</setting>
+      <setting name='envelope pitch bend ON'>true</setting>
+      <setting name='envelope pitch rate'>ver2:1</setting>
+      <setting name='file'>/media/menno/datae/EigenWerk/samples/plopjes3.wav</setting>
+      <setting name='filter ads attack'>ver2:0</setting>
+      <setting name='filter ads decay'>ver2:0.58</setting>
+      <setting name='filter ads depth'>1.0</setting>
+      <setting name='filter ads sustain'>ver2:0.57</setting>
+      <setting name='filter bandpass gain'>0.1</setting>
+      <setting name='filter envelope depth'>0.0</setting>
+      <setting name='filter envelopes'>id:-1084426524</setting>
+      <setting name='filter exponential switch'>true</setting>
+      <setting name='filter follower'>id:-1084426519</setting>
+      <setting name='filter frequency cutoff'>ver2:5.6435</setting>
+      <setting name='filter highpass gain'>0.5</setting>
+      <setting name='filter lowpass gain'>2.5</setting>
+      <setting name='filter resonance'>ver2:8.83</setting>
+      <setting name='filter total depth'>ver2:0.53</setting>
+      <setting name='filterON'>false</setting>
+      <setting name='gain Left'>1.88</setting>
+      <setting name='gain Right'>1.98</setting>
+      <setting name='loop direction'>id:-1084426529</setting>
+      <setting name='output filters'>0.494</setting>
+      <setting name='pitch jitter depth'>ver2:0.07</setting>
+      <setting name='pitch jitter max'>ver2:58</setting>
+      <setting name='pitch jitter min'>ver2:23</setting>
+      <setting name='pitch slider'>true</setting>
+      <setting name='rate filter envelope'>ver2:1</setting>
+      <setting name='sample begin loop'>0.841</setting>
+      <setting name='sample end loop'>0.953</setting>
+      <setting name='sample pitch'>1.187</setting>
+      <setting name='sample start playback'>1.0</setting>
+      <setting name='show sample length'>false</setting>
+      <setting name='tuning'>1.00001</setting>
+      <setting name='vibrato depth'>ver2:0.15</setting>
+      <setting name='vibrato fade in'>false</setting>
+      <setting name='vibrato speed'>ver2:4.7</setting>
+      <setting name='vibrato wave'>3.0</setting>
+    </preset>
+  </presetGroup>
+  <opcodeList>
+    <udo>
+      <opcodeName>adsr140_calc_coef</opcodeName>
+      <outTypes>k</outTypes>
+      <inTypes>kk</inTypes>
+      <codeBody>  
+  knum_samps, kratio xin
+  xout exp( -log((1.0 + kratio) / kratio) / knum_samps)
+    
+</codeBody>
+      <comments></comments>
+    </udo>
+    <udo>
+      <opcodeName>adsr140</opcodeName>
+      <outTypes>a</outTypes>
+      <inTypes>aakkkk</inTypes>
+      <codeBody>agate, aretrig, kattack, kdecay, ksustain, krelease xin
+kstate init 0  ; 0 = attack, 1 = decay, 2 = sustain
+klasttrig init -1
+kval init 0.0
+asig init 0
+kindx = 0
+kattack_base init 0
+kdecay_base init 0
+krelease_base init 0
+kattack_samps init 0
+kdecay_samps init 0
+krelease_samps init 0
+kattack_coef init 0
+kdecay_coef init 0
+ksustain_coef init 0
+klast_attack init -1
+klast_decay init -1
+klast_release init -1
+if (klast_attack != kattack) then
+  klast_attack = kattack
+  if(kattack &gt; 0) then
+    kattack_samps = kattack * sr
+    kattack_coef = adsr140_calc_coef(kattack_samps, 0.3)
+    kattack_base = (1.0 + 0.3) * (1 - kattack_coef)
+  else 
+    kattack_samps = 0 
+    kattack_coef = 0 
+    kattack_base = 0 
+  endif
+endif
+if (klast_decay != kdecay) then
+  klast_decay = kdecay
+  kdecay_samps = kdecay * sr
+  kdecay_coef = adsr140_calc_coef(kdecay_samps, 0.0001)
+  kdecay_base = (ksustain - 0.0001) * (1.0 - kdecay_coef)
+endif
+if (klast_release != krelease) then
+  klast_release = krelease
+  krelease_samps = krelease * sr
+  krelease_coef = adsr140_calc_coef(krelease_samps, 0.0001)
+  krelease_base =  -0.0001 * (1.0 - krelease_coef)
+endif
+while (kindx &lt; ksmps) do
+  if (agate[kindx] &gt; 0) then
+    kretrig = aretrig[kindx]
+    if (kretrig &gt; 0 &amp;&amp; klasttrig &lt;= 0) then
+      kstate = 0
+    endif
+    klasttrig = kretrig
+    if (kstate == 0) then
+      if(kattack &lt;= 0) then
+        kval = 1.0
+        kstate = 1
+      else
+        kval = kattack_base + (kval * kattack_coef)
+        if(kval &gt;= 1.0) then
+          kval = 1.0
+          kstate = 1
+        endif
+        asig[kindx] = kval
+      endif
+    elseif (kstate == 1) then
+      kval = kdecay_base + (kval * kdecay_coef)
+      if(kval &lt;= ksustain) then
+        kval = ksustain
+        kstate = 2
+      endif
+      asig[kindx] = kval 
+    else
+      asig[kindx] = ksustain
+    endif
+  else ; in a release state
+    kstate = 0
+    if (kval == 0.0) then
+      asig[kindx] = 0
+    else 
+    ; releasing
+      kval = krelease_base + (kval * krelease_coef)
+    if(kval &lt;= 0.0) then
+      kval = 0.0
+    endif
+    asig[kindx] = kval  
+    endif
+  endif
+  kindx += 1
+od
+xout asig
+</codeBody>
+      <comments></comments>
+    </udo>
+    <udo>
+      <opcodeName>tieStatus</opcodeName>
+      <outTypes>i</outTypes>
+      <inTypes>0</inTypes>
+      <codeBody>itie tival
+if (itie == 0 &amp;&amp; p3 &lt; 0) ithen                                                  ; this is an initial note within a group of tied notes
+    itiestatus = 0   
+elseif (p3 &lt; 0 &amp;&amp; itie == 1) ithen                                              ; this is a middle note within a group of tied notes
+    itiestatus = 1
+elseif (p3 &gt; 0 &amp;&amp; itie == 1) ithen                                              ; this is an end note out of a group of tied notes
+    itiestatus = 2
+elseif (p3 &gt; 0 &amp;&amp; itie == 0) ithen                                              ; this note is a standalone note
+    itiestatus = -1
+endif  
+	xout	itiestatus
+</codeBody>
+      <comments></comments>
+    </udo>
+  </opcodeList>
+</instrument>
