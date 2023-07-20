@@ -132,7 +132,7 @@ blueMixerOut asig * aampdsr, asig * aampdsr
         <x>180</x>
         <y>0</y>
         <comment>4 envelopes for amplitude</comment>
-        <groupName>expADSR</groupName>
+        <groupName>MexpADSR</groupName>
         <backgroundColor>0x282828ff</backgroundColor>
         <borderColor>0x000000ff</borderColor>
         <labelTextColor>0xffffffff</labelTextColor>
