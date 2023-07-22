@@ -7,6 +7,7 @@ Most of these Module Instruments consists of code and UDOs and the BSB GUI. They
 Final adjustments in the code of your Instrument are probably needed to fully integrate the Module into your Blue Instrument. That is why i call them 'Nearly Ready Mades'.
 But i found that, when designing Instruments in Blue, it saves time to not to have to invent the wheel every time for every instrument, but just drop one of these Modules in your own Instrument and go from there.
 
+The Blue Modules can be recognized by their descriptive header, done in Italics.
 
 
 
