@@ -38,36 +38,36 @@ version 1, April 2023
   <globalOrc/>
   <globalSco/>
   <instrumentText>
-if  (&lt;Mod2ON&gt; == 0) then
-    kres1   k_lfo7  &lt;Mod1 speed&gt;, &lt;Mod1 scale&gt;, &lt;Mod1 wave&gt;                     ; 1 modulator
+if  (&lt;ModulatorTransmit_2ON&gt; == 0) then
+    kres1   k_lfo7  &lt;ModulatorTransmit_1speed&gt;, &lt;ModulatorTransmit_1scale&gt;, &lt;ModulatorTransmit_1wave&gt;                     ; 1 modulator
     kres2   =   0                                                               ; mod2 shutoff
 else
-    kres1   k_lfo7  &lt;Mod1 speed&gt;, &lt;Mod1 scale&gt;, &lt;Mod1 wave&gt;                     ; speed modulator 2
-    kres2   k_lfo7  &lt;Mod2 speed&gt;, &lt;Mod2 scale&gt;, &lt;Mod2 wave&gt;                     ; turned ON
+    kres1   k_lfo7  &lt;ModulatorTransmit_1speed&gt;, &lt;ModulatorTransmit_1scale&gt;, &lt;ModulatorTransmit_1wave&gt;                     ; speed modulator 2
+    kres2   k_lfo7  &lt;ModulatorTransmit_2speed&gt;, &lt;ModulatorTransmit_2scale&gt;, &lt;ModulatorTransmit_2wave&gt;                     ; turned ON
 endif    
 
-if (&lt;addON&gt; == 1) then                                                          ; action rule 1 = adding both modulators
+if (&lt;ModulatorTransmit_addON&gt; == 1) then                                                          ; action rule 1 = adding both modulators
     kadd    =   kres1 + kres2
     chnset  kadd, &quot;ADD&lt;INSTR_ID&gt;&quot;                                              
 else
     chnset  0, &quot;ADD&lt;INSTR_ID&gt;&quot;
 endif
 
-if (&lt;maxON&gt; == 1) then                                                          ; action rule 2 = max of both modulators
+if (&lt;ModulatorTransmit_maxON&gt; == 1) then                                                          ; action rule 2 = max of both modulators
     kmax    max kres1, kres2      
     chnset  kmax, &quot;MAX&lt;INSTR_ID&gt;&quot;                                     
 else
     chnset  0, &quot;MAX&lt;INSTR_ID&gt;&quot;
 endif
 
-if (&lt;minON&gt; == 1) then                                                          ; action rule 3 = min of both modulators 
+if (&lt;ModulatorTransmit_minON&gt; == 1) then                                                          ; action rule 3 = min of both modulators 
     kmin    min kres1, kres2                                            
     chnset  kmin, &quot;MIN&lt;INSTR_ID&gt;&quot;
 else
     chnset  0, &quot;MIN&lt;INSTR_ID&gt;&quot;
 endif
 
-if (&lt;multON&gt; == 1) then                                                         ; action rule 4 = multiply both modulators
+if (&lt;ModulatorTransmit_multON&gt; == 1) then                                                         ; action rule 4 = multiply both modulators
     kmult   =   kres1 * kres2    
     chnset  kmult, &quot;MULT&lt;INSTR_ID&gt;&quot;
 else
@@ -77,41 +77,41 @@ endif
 
 ;===============================2Mod4 Module====================================
 
-if (&lt;addON&gt; == 1) then
-    kaddition   chnget  &quot;ADD1&quot;                                                  ; get ADD values from the Modulator Transmit Instrument                                                       
-    kADDITION   =   (&lt;offset_ADD&gt; + kaddition) * &lt;scale_ADD&gt;                    ; k-rate variable
-    kADDPHASE   =   (&lt;offset_ADDPHASE&gt; + kADDITION) * -1
+if (&lt;ModulatorReceive_addON&gt; == 1) then
+    kaddition   chnget  &quot;ADD&lt;INSTR_ID&gt;&quot;                                                  ; get ADD values from the Modulator Transmit Instrument                                                       
+    kADDITION   =   (&lt;ModulatorReceive_offset_ADD&gt; + kaddition) * &lt;ModulatorReceive_scale_ADD&gt;                    ; k-rate variable
+    kADDPHASE   =   (&lt;ModulatorReceive_offset_ADDPHASE&gt; + kADDITION) * -1
     iADD        =   i(kADDITION)                                                ; &amp; i-rate variable
-    iADDPHASE   =   (i(&lt;offset_ADDPHASE&gt;) + iADD) * -1
+    iADDPHASE   =   (i(&lt;ModulatorReceive_offset_ADDPHASE&gt;) + iADD) * -1
 endif
 
-if (&lt;maxON&gt; == 1) then
-    kmaximum    chnget  &quot;MAX&quot;                                                   ; get MAX values from the Modulator Transmit Instrument  
-    kMAXIMUM    =   (&lt;offset_MAX&gt; + kmaximum) * &lt;scale_MAX&gt;                     ; k-rate variable 
-    kMAXPHASE   =   (&lt;offset_MAXPHASE&gt; + kMAXIMUM) * -1
+if (&lt;ModulatorReceive_maxON&gt; == 1) then
+    kmaximum    chnget  &quot;MAX&lt;INSTR_ID&gt;&quot;                                                   ; get MAX values from the Modulator Transmit Instrument  
+    kMAXIMUM    =   (&lt;ModulatorReceive_offset_MAX&gt; + kmaximum) * &lt;ModulatorReceive_scale_MAX&gt;                     ; k-rate variable 
+    kMAXPHASE   =   (&lt;ModulatorReceive_offset_MAXPHASE&gt; + kMAXIMUM) * -1
     iMAX        =   i(kMAXIMUM)                                                 ; &amp; i-rate variable
-    iMAXPHASE   =   (i(&lt;offset_MAXPHASE&gt;) + iMAX) * -1
+    iMAXPHASE   =   (i(&lt;ModulatorReceive_offset_MAXPHASE&gt;) + iMAX) * -1
 endif
 
-if (&lt;minON&gt; == 1) then
-    kminimum    chnget  &quot;MIN&quot;                                                   ; get MIN values from the Modulator Transmit Instrument  
-    kMINIMUM    =   (&lt;offset_MIN&gt; + kminimum) * &lt;scale_MIN&gt;                     ; k-rate variable 
-    kMINPHASE   =   (&lt;offset_MINPHASE&gt; + kMINIMUM) * -1
+if (&lt;ModulatorReceive_minON&gt; == 1) then
+    kminimum    chnget  &quot;MIN&lt;INSTR_ID&gt;&quot;                                                   ; get MIN values from the Modulator Transmit Instrument  
+    kMINIMUM    =   (&lt;ModulatorReceive_offset_MIN&gt; + kminimum) * &lt;ModulatorReceive_scale_MIN&gt;                     ; k-rate variable 
+    kMINPHASE   =   (&lt;ModulatorReceive_offset_MINPHASE&gt; + kMINIMUM) * -1
     iMIN        =   i(kMINIMUM)                                                 ; &amp; i-rate variable
-    iMINPHASE   =   (i(&lt;offset_MINPHASE&gt;) + iMIN) * -1
+    iMINPHASE   =   (i(&lt;ModulatorReceive_offset_MINPHASE&gt;) + iMIN) * -1
 endif
 
-if (&lt;multON&gt; == 1) then
-    kmultiply   chnget  &quot;MULT&quot;                                                  ; get MULT values from the Modulator Transmit Instrument  - only works when Mod1 &amp; Mod2 are activated
-    kMULTIPLY   =   (&lt;offset_MULT&gt; + kmultiply) * &lt;scale_MULT&gt;                  ; k-rate variable
-    kMULTIPLYPHASE   =  (&lt;offset_MULTPHASE&gt; + kMULTIPLY) * -1   
+if (&lt;ModulatorReceive_multON&gt; == 1) then
+    kmultiply   chnget  &quot;MULT&lt;INSTR_ID&gt;&quot;                                                  ; get MULT values from the Modulator Transmit Instrument  - only works when Mod1 &amp; Mod2 are activated
+    kMULTIPLY   =   (&lt;ModulatorReceive_offset_MULT&gt; + kmultiply) * &lt;ModulatorReceive_scale_MULT&gt;                  ; k-rate variable
+    kMULTIPLYPHASE   =  (&lt;ModulatorReceive_offset_MULTPHASE&gt; + kMULTIPLY) * -1   
     iMULT       =   i(kMULTIPLY)                                                ; &amp; i-rate variable
-    iMULTPHASE  =   (i(&lt;offset_MINPHASE&gt;) + iMULT) * -1
+    iMULTPHASE  =   (i(&lt;ModulatorReceive_offset_MINPHASE&gt;) + iMULT) * -1
 endif
 
 ;printk2 kADDITION etcetera</instrumentText>
   <alwaysOnInstrumentText></alwaysOnInstrumentText>
-  <graphicInterface editEnabled='false'>
+  <graphicInterface editEnabled='true'>
     <gridSettings>
       <width>5</width>
       <height>5</height>
@@ -168,172 +168,55 @@ endif
           </font>
           <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
             <objectName></objectName>
-            <x>10</x>
-            <y>10</y>
-            <comment>optional 2nd Modulator</comment>
-            <groupName>Modulator2</groupName>
+            <x>165</x>
+            <y>170</y>
+            <comment>activate the Outputs needed!</comment>
+            <groupName>outputs</groupName>
             <backgroundColor>0x3a3a3aff</backgroundColor>
             <borderColor>0x000000ff</borderColor>
             <labelTextColor>0xffffffff</labelTextColor>
             <titleEnabled>true</titleEnabled>
-            <width>20</width>
-            <height>20</height>
+            <width>105</width>
+            <height>137</height>
             <font>
               <name>Roboto</name>
               <size>12.0</size>
               <style>0</style>
             </font>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>28</x>
-              <y>120</y>
-              <label>1</label>
-              <font>
-                <name>Roboto</name>
-                <size>14.0</size>
-                <style>1</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
-              <objectName>Mod2 wave</objectName>
-              <x>6</x>
-              <y>98</y>
-              <comment>sine, triangle, square x 2, saw up, saw down, jitter and freestyle</comment>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+              <objectName>ModulatorTransmit_multON</objectName>
+              <x>24</x>
+              <y>105</y>
               <automationAllowed>true</automationAllowed>
-              <minimum>0.0</minimum>
-              <maximum>7.0</maximum>
-              <bdresolution>1</bdresolution>
-              <value>0.0</value>
-              <sliderWidth>133</sliderWidth>
+              <label>multiply</label>
+              <selected>true</selected>
               <randomizable>true</randomizable>
-              <valueDisplayEnabled>false</valueDisplayEnabled>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>12</x>
-              <y>120</y>
-              <label>0</label>
-              <font>
-                <name>Roboto</name>
-                <size>14.0</size>
-                <style>1</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>124</x>
-              <y>120</y>
-              <label>7</label>
-              <font>
-                <name>Roboto</name>
-                <size>14.0</size>
-                <style>1</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>92</x>
-              <y>120</y>
-              <label>5</label>
-              <font>
-                <name>Roboto</name>
-                <size>14.0</size>
-                <style>1</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>76</x>
-              <y>120</y>
-              <label>4</label>
-              <font>
-                <name>Roboto</name>
-                <size>14.0</size>
-                <style>1</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
-              <objectName>Mod2 scale</objectName>
-              <x>80</x>
-              <y>10</y>
-              <comment>depth </comment>
-              <automationAllowed>true</automationAllowed>
-              <minimum>0.0</minimum>
-              <maximum>1.0</maximum>
-              <value>0.5751636548328973</value>
-              <knobWidth>60</knobWidth>
-              <randomizable>true</randomizable>
-              <valueDisplayEnabled>true</valueDisplayEnabled>
-              <label>scale</label>
-              <labelEnabled>true</labelEnabled>
-              <font>
-                <name>Roboto</name>
-                <size>12.0</size>
-                <style>0</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>108</x>
-              <y>120</y>
-              <label>6</label>
-              <font>
-                <name>Roboto</name>
-                <size>14.0</size>
-                <style>1</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>60</x>
-              <y>120</y>
-              <label>3</label>
-              <font>
-                <name>Roboto</name>
-                <size>14.0</size>
-                <style>1</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
-              <objectName>Mod2 speed</objectName>
-              <x>10</x>
-              <y>10</y>
-              <comment>frequency rate</comment>
-              <automationAllowed>true</automationAllowed>
-              <minimum>0.0</minimum>
-              <maximum>20.0</maximum>
-              <value>5.691416758753009</value>
-              <knobWidth>60</knobWidth>
-              <randomizable>true</randomizable>
-              <valueDisplayEnabled>true</valueDisplayEnabled>
-              <label>speed</label>
-              <labelEnabled>true</labelEnabled>
-              <font>
-                <name>Roboto</name>
-                <size>12.0</size>
-                <style>0</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>44</x>
-              <y>120</y>
-              <label>2</label>
-              <font>
-                <name>Roboto</name>
-                <size>14.0</size>
-                <style>1</style>
-              </font>
             </bsbObject>
             <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
-              <objectName>Mod2ON</objectName>
-              <x>5</x>
-              <y>5</y>
-              <comment>activate 2nd modulator</comment>
+              <objectName>ModulatorTransmit_addON</objectName>
+              <x>24</x>
+              <y>15</y>
               <automationAllowed>true</automationAllowed>
-              <label>
-</label>
+              <label>add</label>
               <selected>true</selected>
+              <randomizable>true</randomizable>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+              <objectName>ModulatorTransmit_maxON</objectName>
+              <x>24</x>
+              <y>45</y>
+              <automationAllowed>true</automationAllowed>
+              <label>max</label>
+              <selected>false</selected>
+              <randomizable>true</randomizable>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+              <objectName>ModulatorTransmit_minON</objectName>
+              <x>24</x>
+              <y>75</y>
+              <automationAllowed>true</automationAllowed>
+              <label>min</label>
+              <selected>false</selected>
               <randomizable>true</randomizable>
             </bsbObject>
           </bsbObject>
@@ -354,20 +237,6 @@ endif
               <size>12.0</size>
               <style>0</style>
             </font>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
-              <objectName>Mod1 wave</objectName>
-              <x>6</x>
-              <y>98</y>
-              <comment>sine, triangle, square x 2, saw up, saw down, jitter &amp; freestyle</comment>
-              <automationAllowed>true</automationAllowed>
-              <minimum>0.0</minimum>
-              <maximum>7.0</maximum>
-              <bdresolution>1</bdresolution>
-              <value>4.0</value>
-              <sliderWidth>133</sliderWidth>
-              <randomizable>true</randomizable>
-              <valueDisplayEnabled>false</valueDisplayEnabled>
-            </bsbObject>
             <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
               <objectName></objectName>
               <x>44</x>
@@ -380,49 +249,7 @@ endif
               </font>
             </bsbObject>
             <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
-              <objectName>Mod1 scale</objectName>
-              <x>80</x>
-              <y>10</y>
-              <comment>depth</comment>
-              <automationAllowed>true</automationAllowed>
-              <minimum>0.0</minimum>
-              <maximum>1.0</maximum>
-              <value>1.0</value>
-              <knobWidth>60</knobWidth>
-              <randomizable>true</randomizable>
-              <valueDisplayEnabled>true</valueDisplayEnabled>
-              <label>scale</label>
-              <labelEnabled>true</labelEnabled>
-              <font>
-                <name>Roboto</name>
-                <size>12.0</size>
-                <style>0</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>92</x>
-              <y>120</y>
-              <label>5</label>
-              <font>
-                <name>Roboto</name>
-                <size>14.0</size>
-                <style>1</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>28</x>
-              <y>120</y>
-              <label>1</label>
-              <font>
-                <name>Roboto</name>
-                <size>14.0</size>
-                <style>1</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
-              <objectName>Mod1 speed</objectName>
+              <objectName>ModulatorTransmit_1speed</objectName>
               <x>5</x>
               <y>10</y>
               <comment>frequency rate
@@ -444,9 +271,9 @@ endif
             </bsbObject>
             <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
               <objectName></objectName>
-              <x>124</x>
+              <x>12</x>
               <y>120</y>
-              <label>7</label>
+              <label>0</label>
               <font>
                 <name>Roboto</name>
                 <size>14.0</size>
@@ -466,9 +293,9 @@ endif
             </bsbObject>
             <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
               <objectName></objectName>
-              <x>12</x>
+              <x>28</x>
               <y>120</y>
-              <label>0</label>
+              <label>1</label>
               <font>
                 <name>Roboto</name>
                 <size>14.0</size>
@@ -486,6 +313,40 @@ endif
                 <style>1</style>
               </font>
             </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+              <objectName>ModulatorTransmit_1scale</objectName>
+              <x>80</x>
+              <y>10</y>
+              <comment>depth</comment>
+              <automationAllowed>true</automationAllowed>
+              <minimum>0.0</minimum>
+              <maximum>1.0</maximum>
+              <value>1.0</value>
+              <knobWidth>60</knobWidth>
+              <randomizable>true</randomizable>
+              <valueDisplayEnabled>true</valueDisplayEnabled>
+              <label>scale</label>
+              <labelEnabled>true</labelEnabled>
+              <font>
+                <name>Roboto</name>
+                <size>12.0</size>
+                <style>0</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
+              <objectName>ModulatorTransmit_1wave</objectName>
+              <x>6</x>
+              <y>98</y>
+              <comment>sine, triangle, square x 2, saw up, saw down, jitter &amp; freestyle</comment>
+              <automationAllowed>true</automationAllowed>
+              <minimum>0.0</minimum>
+              <maximum>7.0</maximum>
+              <bdresolution>1</bdresolution>
+              <value>4.0</value>
+              <sliderWidth>133</sliderWidth>
+              <randomizable>true</randomizable>
+              <valueDisplayEnabled>false</valueDisplayEnabled>
+            </bsbObject>
             <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
               <objectName></objectName>
               <x>76</x>
@@ -497,59 +358,27 @@ endif
                 <style>1</style>
               </font>
             </bsbObject>
-          </bsbObject>
-          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
-            <objectName></objectName>
-            <x>165</x>
-            <y>170</y>
-            <comment>activate the Outputs needed!</comment>
-            <groupName>outputs</groupName>
-            <backgroundColor>0x3a3a3aff</backgroundColor>
-            <borderColor>0x000000ff</borderColor>
-            <labelTextColor>0xffffffff</labelTextColor>
-            <titleEnabled>true</titleEnabled>
-            <width>105</width>
-            <height>137</height>
-            <font>
-              <name>Roboto</name>
-              <size>12.0</size>
-              <style>0</style>
-            </font>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
-              <objectName>multON</objectName>
-              <x>24</x>
-              <y>105</y>
-              <automationAllowed>true</automationAllowed>
-              <label>multiply</label>
-              <selected>true</selected>
-              <randomizable>true</randomizable>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>124</x>
+              <y>120</y>
+              <label>7</label>
+              <font>
+                <name>Roboto</name>
+                <size>14.0</size>
+                <style>1</style>
+              </font>
             </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
-              <objectName>addON</objectName>
-              <x>24</x>
-              <y>15</y>
-              <automationAllowed>true</automationAllowed>
-              <label>add</label>
-              <selected>true</selected>
-              <randomizable>true</randomizable>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
-              <objectName>maxON</objectName>
-              <x>24</x>
-              <y>45</y>
-              <automationAllowed>true</automationAllowed>
-              <label>max</label>
-              <selected>false</selected>
-              <randomizable>true</randomizable>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
-              <objectName>minON</objectName>
-              <x>24</x>
-              <y>75</y>
-              <automationAllowed>true</automationAllowed>
-              <label>min</label>
-              <selected>false</selected>
-              <randomizable>true</randomizable>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>92</x>
+              <y>120</y>
+              <label>5</label>
+              <font>
+                <name>Roboto</name>
+                <size>14.0</size>
+                <style>1</style>
+              </font>
             </bsbObject>
           </bsbObject>
           <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
@@ -571,72 +400,6 @@ endif
             </font>
             <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
               <objectName></objectName>
-              <x>15</x>
-              <y>120</y>
-              <label>8</label>
-              <font>
-                <name>Roboto</name>
-                <size>12.0</size>
-                <style>0</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>33</x>
-              <y>30</y>
-              <label>square</label>
-              <font>
-                <name>Roboto</name>
-                <size>12.0</size>
-                <style>0</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>33</x>
-              <y>45</y>
-              <label>cosine</label>
-              <font>
-                <name>Roboto</name>
-                <size>12.0</size>
-                <style>0</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>15</x>
-              <y>0</y>
-              <label>0</label>
-              <font>
-                <name>Roboto</name>
-                <size>12.0</size>
-                <style>0</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>15</x>
-              <y>30</y>
-              <label>2</label>
-              <font>
-                <name>Roboto</name>
-                <size>12.0</size>
-                <style>0</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>15</x>
-              <y>75</y>
-              <label>5</label>
-              <font>
-                <name>Roboto</name>
-                <size>12.0</size>
-                <style>0</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
               <x>33</x>
               <y>15</y>
               <label>triangle</label>
@@ -648,9 +411,9 @@ endif
             </bsbObject>
             <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
               <objectName></objectName>
-              <x>33</x>
-              <y>90</y>
-              <label>random</label>
+              <x>15</x>
+              <y>15</y>
+              <label>1</label>
               <font>
                 <name>Roboto</name>
                 <size>12.0</size>
@@ -660,8 +423,8 @@ endif
             <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
               <objectName></objectName>
               <x>33</x>
-              <y>105</y>
-              <label>freeze</label>
+              <y>0</y>
+              <label>sine</label>
               <font>
                 <name>Roboto</name>
                 <size>12.0</size>
@@ -683,8 +446,85 @@ endif
             <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
               <objectName></objectName>
               <x>33</x>
+              <y>30</y>
+              <label>square</label>
+              <font>
+                <name>Roboto</name>
+                <size>12.0</size>
+                <style>0</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>15</x>
+              <y>30</y>
+              <label>2</label>
+              <font>
+                <name>Roboto</name>
+                <size>12.0</size>
+                <style>0</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>33</x>
               <y>75</y>
               <label>saw down</label>
+              <font>
+                <name>Roboto</name>
+                <size>12.0</size>
+                <style>0</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>15</x>
+              <y>0</y>
+              <label>0</label>
+              <font>
+                <name>Roboto</name>
+                <size>12.0</size>
+                <style>0</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>15</x>
+              <y>120</y>
+              <label>8</label>
+              <font>
+                <name>Roboto</name>
+                <size>12.0</size>
+                <style>0</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>33</x>
+              <y>45</y>
+              <label>cosine</label>
+              <font>
+                <name>Roboto</name>
+                <size>12.0</size>
+                <style>0</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>15</x>
+              <y>75</y>
+              <label>5</label>
+              <font>
+                <name>Roboto</name>
+                <size>12.0</size>
+                <style>0</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>15</x>
+              <y>46</y>
+              <label>3</label>
               <font>
                 <name>Roboto</name>
                 <size>12.0</size>
@@ -704,31 +544,9 @@ endif
             </bsbObject>
             <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
               <objectName></objectName>
-              <x>15</x>
-              <y>90</y>
-              <label>6</label>
-              <font>
-                <name>Roboto</name>
-                <size>12.0</size>
-                <style>0</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>15</x>
-              <y>15</y>
-              <label>1</label>
-              <font>
-                <name>Roboto</name>
-                <size>12.0</size>
-                <style>0</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>15</x>
-              <y>46</y>
-              <label>3</label>
+              <x>33</x>
+              <y>105</y>
+              <label>freeze</label>
               <font>
                 <name>Roboto</name>
                 <size>12.0</size>
@@ -760,13 +578,195 @@ endif
             <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
               <objectName></objectName>
               <x>33</x>
-              <y>0</y>
-              <label>sine</label>
+              <y>90</y>
+              <label>random</label>
               <font>
                 <name>Roboto</name>
                 <size>12.0</size>
                 <style>0</style>
               </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>15</x>
+              <y>90</y>
+              <label>6</label>
+              <font>
+                <name>Roboto</name>
+                <size>12.0</size>
+                <style>0</style>
+              </font>
+            </bsbObject>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+            <objectName></objectName>
+            <x>10</x>
+            <y>10</y>
+            <comment>optional 2nd Modulator</comment>
+            <groupName>Modulator2</groupName>
+            <backgroundColor>0x3a3a3aff</backgroundColor>
+            <borderColor>0x000000ff</borderColor>
+            <labelTextColor>0xffffffff</labelTextColor>
+            <titleEnabled>true</titleEnabled>
+            <width>20</width>
+            <height>20</height>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>28</x>
+              <y>120</y>
+              <label>1</label>
+              <font>
+                <name>Roboto</name>
+                <size>14.0</size>
+                <style>1</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>44</x>
+              <y>120</y>
+              <label>2</label>
+              <font>
+                <name>Roboto</name>
+                <size>14.0</size>
+                <style>1</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>108</x>
+              <y>120</y>
+              <label>6</label>
+              <font>
+                <name>Roboto</name>
+                <size>14.0</size>
+                <style>1</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>60</x>
+              <y>120</y>
+              <label>3</label>
+              <font>
+                <name>Roboto</name>
+                <size>14.0</size>
+                <style>1</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>124</x>
+              <y>120</y>
+              <label>7</label>
+              <font>
+                <name>Roboto</name>
+                <size>14.0</size>
+                <style>1</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>92</x>
+              <y>120</y>
+              <label>5</label>
+              <font>
+                <name>Roboto</name>
+                <size>14.0</size>
+                <style>1</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>12</x>
+              <y>120</y>
+              <label>0</label>
+              <font>
+                <name>Roboto</name>
+                <size>14.0</size>
+                <style>1</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+              <objectName>ModulatorTransmit_2ON</objectName>
+              <x>5</x>
+              <y>5</y>
+              <comment>activate 2nd modulator</comment>
+              <automationAllowed>true</automationAllowed>
+              <label>
+</label>
+              <selected>true</selected>
+              <randomizable>true</randomizable>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+              <objectName>ModulatorTransmit_2scale</objectName>
+              <x>80</x>
+              <y>10</y>
+              <comment>depth </comment>
+              <automationAllowed>true</automationAllowed>
+              <minimum>0.0</minimum>
+              <maximum>1.0</maximum>
+              <value>0.5751636548328973</value>
+              <knobWidth>60</knobWidth>
+              <randomizable>true</randomizable>
+              <valueDisplayEnabled>true</valueDisplayEnabled>
+              <label>scale</label>
+              <labelEnabled>true</labelEnabled>
+              <font>
+                <name>Roboto</name>
+                <size>12.0</size>
+                <style>0</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBKnob' version='2'>
+              <objectName>ModulatorTransmit_2speed</objectName>
+              <x>10</x>
+              <y>10</y>
+              <comment>frequency rate</comment>
+              <automationAllowed>true</automationAllowed>
+              <minimum>0.0</minimum>
+              <maximum>20.0</maximum>
+              <value>5.691416758753009</value>
+              <knobWidth>60</knobWidth>
+              <randomizable>true</randomizable>
+              <valueDisplayEnabled>true</valueDisplayEnabled>
+              <label>speed</label>
+              <labelEnabled>true</labelEnabled>
+              <font>
+                <name>Roboto</name>
+                <size>12.0</size>
+                <style>0</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>76</x>
+              <y>120</y>
+              <label>4</label>
+              <font>
+                <name>Roboto</name>
+                <size>14.0</size>
+                <style>1</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
+              <objectName>ModulatorTransmit_2wave</objectName>
+              <x>6</x>
+              <y>98</y>
+              <comment>sine, triangle, square x 2, saw up, saw down, jitter and freestyle</comment>
+              <automationAllowed>true</automationAllowed>
+              <minimum>0.0</minimum>
+              <maximum>7.0</maximum>
+              <bdresolution>1</bdresolution>
+              <value>0.0</value>
+              <sliderWidth>133</sliderWidth>
+              <randomizable>true</randomizable>
+              <valueDisplayEnabled>false</valueDisplayEnabled>
             </bsbObject>
           </bsbObject>
         </bsbObject>
@@ -821,8 +821,19 @@ endif
             </font>
             <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
               <objectName></objectName>
+              <x>60</x>
+              <y>165</y>
+              <label>f</label>
+              <font>
+                <name>Standard Symbols PS</name>
+                <size>20.0</size>
+                <style>0</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
               <x>530</x>
-              <y>170</y>
+              <y>110</y>
               <label>scale</label>
               <font>
                 <name>Roboto</name>
@@ -830,72 +841,43 @@ endif
                 <style>0</style>
               </font>
             </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
-              <objectName>maxON1</objectName>
-              <x>9</x>
-              <y>80</y>
-              <automationAllowed>true</automationAllowed>
-              <label>max</label>
-              <selected>false</selected>
-              <randomizable>true</randomizable>
-            </bsbObject>
             <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
               <objectName></objectName>
-              <x>195</x>
-              <y>145</y>
-              <label>l</label>
+              <x>295</x>
+              <y>15</y>
+              <label>offset </label>
               <font>
                 <name>Roboto</name>
-                <size>18.0</size>
-                <style>1</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>80</x>
-              <y>225</y>
-              <label>f</label>
-              <font>
-                <name>Standard Symbols PS</name>
-                <size>20.0</size>
+                <size>12.0</size>
                 <style>0</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>65</x>
-              <y>105</y>
-              <label>f</label>
-              <font>
-                <name>Standard Symbols PS</name>
-                <size>20.0</size>
-                <style>0</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>413</x>
-              <y>170</y>
-              <label>l</label>
-              <font>
-                <name>Roboto</name>
-                <size>18.0</size>
-                <style>1</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>413</x>
-              <y>110</y>
-              <label>l</label>
-              <font>
-                <name>Roboto</name>
-                <size>18.0</size>
-                <style>1</style>
               </font>
             </bsbObject>
             <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
-              <objectName>offset_MULTPHASE</objectName>
+              <objectName>ModulatorReceive_scale_MIN</objectName>
+              <x>325</x>
+              <y>165</y>
+              <automationAllowed>true</automationAllowed>
+              <minimum>-2.0</minimum>
+              <maximum>2.0</maximum>
+              <bdresolution>0.01</bdresolution>
+              <value>1.0</value>
+              <sliderWidth>150</sliderWidth>
+              <randomizable>true</randomizable>
+              <valueDisplayEnabled>true</valueDisplayEnabled>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>60</x>
+              <y>35</y>
+              <label>f</label>
+              <font>
+                <name>Standard Symbols PS</name>
+                <size>20.0</size>
+                <style>0</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
+              <objectName>ModulatorReceive_offset_MULTPHASE</objectName>
               <x>90</x>
               <y>225</y>
               <comment>out of phase </comment>
@@ -910,19 +892,54 @@ endif
             </bsbObject>
             <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
               <objectName></objectName>
-              <x>530</x>
-              <y>110</y>
-              <label>scale</label>
+              <x>163</x>
+              <y>205</y>
+              <label>l</label>
               <font>
                 <name>Roboto</name>
-                <size>12.0</size>
-                <style>0</style>
+                <size>18.0</size>
+                <style>1</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
+              <objectName>ModulatorReceive_scale_MAX</objectName>
+              <x>325</x>
+              <y>105</y>
+              <automationAllowed>true</automationAllowed>
+              <minimum>-2.0</minimum>
+              <maximum>2.0</maximum>
+              <bdresolution>0.01</bdresolution>
+              <value>1.0</value>
+              <sliderWidth>150</sliderWidth>
+              <randomizable>true</randomizable>
+              <valueDisplayEnabled>true</valueDisplayEnabled>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>430</x>
+              <y>40</y>
+              <label>l</label>
+              <font>
+                <name>Roboto</name>
+                <size>18.0</size>
+                <style>1</style>
               </font>
             </bsbObject>
             <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
               <objectName></objectName>
-              <x>60</x>
-              <y>165</y>
+              <x>195</x>
+              <y>145</y>
+              <label>l</label>
+              <font>
+                <name>Roboto</name>
+                <size>18.0</size>
+                <style>1</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>65</x>
+              <y>105</y>
               <label>f</label>
               <font>
                 <name>Standard Symbols PS</name>
@@ -931,249 +948,7 @@ endif
               </font>
             </bsbObject>
             <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
-              <objectName>offset_MIN</objectName>
-              <x>90</x>
-              <y>140</y>
-              <automationAllowed>true</automationAllowed>
-              <minimum>-2.0</minimum>
-              <maximum>2.0</maximum>
-              <bdresolution>0.01</bdresolution>
-              <value>1.0</value>
-              <sliderWidth>150</sliderWidth>
-              <randomizable>true</randomizable>
-              <valueDisplayEnabled>true</valueDisplayEnabled>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>295</x>
-              <y>85</y>
-              <label>offset</label>
-              <font>
-                <name>Roboto</name>
-                <size>12.0</size>
-                <style>0</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>163</x>
-              <y>85</y>
-              <label>l</label>
-              <font>
-                <name>Roboto</name>
-                <size>18.0</size>
-                <style>1</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>295</x>
-              <y>205</y>
-              <label>offset </label>
-              <font>
-                <name>Roboto</name>
-                <size>12.0</size>
-                <style>0</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
-              <objectName>scale_MAX</objectName>
-              <x>325</x>
-              <y>105</y>
-              <automationAllowed>true</automationAllowed>
-              <minimum>-2.0</minimum>
-              <maximum>2.0</maximum>
-              <bdresolution>0.01</bdresolution>
-              <value>1.0</value>
-              <sliderWidth>150</sliderWidth>
-              <randomizable>true</randomizable>
-              <valueDisplayEnabled>true</valueDisplayEnabled>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
-              <objectName>offset_MAXPHASE</objectName>
-              <x>90</x>
-              <y>105</y>
-              <comment>out of phase </comment>
-              <automationAllowed>true</automationAllowed>
-              <minimum>-2.0</minimum>
-              <maximum>2.0</maximum>
-              <bdresolution>0.01</bdresolution>
-              <value>-2.0</value>
-              <sliderWidth>150</sliderWidth>
-              <randomizable>true</randomizable>
-              <valueDisplayEnabled>true</valueDisplayEnabled>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
-              <objectName>scale_ADD</objectName>
-              <x>325</x>
-              <y>35</y>
-              <automationAllowed>true</automationAllowed>
-              <minimum>-2.0</minimum>
-              <maximum>2.0</maximum>
-              <bdresolution>0.01</bdresolution>
-              <value>0.5</value>
-              <sliderWidth>150</sliderWidth>
-              <randomizable>true</randomizable>
-              <valueDisplayEnabled>true</valueDisplayEnabled>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
-              <objectName>offset_MAX</objectName>
-              <x>90</x>
-              <y>80</y>
-              <automationAllowed>true</automationAllowed>
-              <minimum>-2.0</minimum>
-              <maximum>2.0</maximum>
-              <bdresolution>0.01</bdresolution>
-              <value>0.0</value>
-              <sliderWidth>150</sliderWidth>
-              <randomizable>true</randomizable>
-              <valueDisplayEnabled>true</valueDisplayEnabled>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>430</x>
-              <y>40</y>
-              <label>l</label>
-              <font>
-                <name>Roboto</name>
-                <size>18.0</size>
-                <style>1</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
-              <objectName>multON1</objectName>
-              <x>9</x>
-              <y>205</y>
-              <automationAllowed>true</automationAllowed>
-              <label>multiply</label>
-              <selected>false</selected>
-              <randomizable>true</randomizable>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>413</x>
-              <y>230</y>
-              <label>l</label>
-              <font>
-                <name>Roboto</name>
-                <size>18.0</size>
-                <style>1</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>413</x>
-              <y>40</y>
-              <label>l</label>
-              <font>
-                <name>Roboto</name>
-                <size>18.0</size>
-                <style>1</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>295</x>
-              <y>15</y>
-              <label>offset </label>
-              <font>
-                <name>Roboto</name>
-                <size>12.0</size>
-                <style>0</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
-              <objectName>scale_MIN</objectName>
-              <x>325</x>
-              <y>165</y>
-              <automationAllowed>true</automationAllowed>
-              <minimum>-2.0</minimum>
-              <maximum>2.0</maximum>
-              <bdresolution>0.01</bdresolution>
-              <value>1.0</value>
-              <sliderWidth>150</sliderWidth>
-              <randomizable>true</randomizable>
-              <valueDisplayEnabled>true</valueDisplayEnabled>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
-              <objectName>offset_ADD</objectName>
-              <x>90</x>
-              <y>10</y>
-              <automationAllowed>true</automationAllowed>
-              <minimum>-2.0</minimum>
-              <maximum>2.0</maximum>
-              <bdresolution>0.01</bdresolution>
-              <value>1.0</value>
-              <sliderWidth>150</sliderWidth>
-              <randomizable>true</randomizable>
-              <valueDisplayEnabled>true</valueDisplayEnabled>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>30</x>
-              <y>37</y>
-              <label>add - </label>
-              <font>
-                <name>Roboto</name>
-                <size>12.0</size>
-                <style>0</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
-              <objectName>minON1</objectName>
-              <x>9</x>
-              <y>140</y>
-              <automationAllowed>true</automationAllowed>
-              <label>min</label>
-              <selected>false</selected>
-              <randomizable>true</randomizable>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>530</x>
-              <y>230</y>
-              <label>scale</label>
-              <font>
-                <name>Roboto</name>
-                <size>12.0</size>
-                <style>0</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>163</x>
-              <y>205</y>
-              <label>l</label>
-              <font>
-                <name>Roboto</name>
-                <size>18.0</size>
-                <style>1</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>430</x>
-              <y>170</y>
-              <label>l</label>
-              <font>
-                <name>Roboto</name>
-                <size>18.0</size>
-                <style>1</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>30</x>
-              <y>169</y>
-              <label>min -</label>
-              <font>
-                <name>Roboto</name>
-                <size>12.0</size>
-                <style>0</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
-              <objectName>offset_MULT</objectName>
+              <objectName>ModulatorReceive_offset_MULT</objectName>
               <x>90</x>
               <y>200</y>
               <automationAllowed>true</automationAllowed>
@@ -1187,14 +962,49 @@ endif
             </bsbObject>
             <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
               <objectName></objectName>
-              <x>295</x>
-              <y>145</y>
-              <label>offset</label>
+              <x>30</x>
+              <y>169</y>
+              <label>min -</label>
               <font>
                 <name>Roboto</name>
                 <size>12.0</size>
                 <style>0</style>
               </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>413</x>
+              <y>40</y>
+              <label>l</label>
+              <font>
+                <name>Roboto</name>
+                <size>18.0</size>
+                <style>1</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>530</x>
+              <y>170</y>
+              <label>scale</label>
+              <font>
+                <name>Roboto</name>
+                <size>12.0</size>
+                <style>0</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
+              <objectName>ModulatorReceive_scale_ADD</objectName>
+              <x>325</x>
+              <y>35</y>
+              <automationAllowed>true</automationAllowed>
+              <minimum>-2.0</minimum>
+              <maximum>2.0</maximum>
+              <bdresolution>0.01</bdresolution>
+              <value>0.5</value>
+              <sliderWidth>150</sliderWidth>
+              <randomizable>true</randomizable>
+              <valueDisplayEnabled>true</valueDisplayEnabled>
             </bsbObject>
             <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
               <objectName></objectName>
@@ -1208,7 +1018,72 @@ endif
               </font>
             </bsbObject>
             <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
-              <objectName>offset_ADDPHASE</objectName>
+              <objectName>ModulatorReceive_offset_MAXPHASE</objectName>
+              <x>90</x>
+              <y>105</y>
+              <comment>out of phase </comment>
+              <automationAllowed>true</automationAllowed>
+              <minimum>-2.0</minimum>
+              <maximum>2.0</maximum>
+              <bdresolution>0.01</bdresolution>
+              <value>-2.0</value>
+              <sliderWidth>150</sliderWidth>
+              <randomizable>true</randomizable>
+              <valueDisplayEnabled>true</valueDisplayEnabled>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
+              <objectName>ModulatorReceive_offset_MIN</objectName>
+              <x>90</x>
+              <y>140</y>
+              <automationAllowed>true</automationAllowed>
+              <minimum>-2.0</minimum>
+              <maximum>2.0</maximum>
+              <bdresolution>0.01</bdresolution>
+              <value>1.0</value>
+              <sliderWidth>150</sliderWidth>
+              <randomizable>true</randomizable>
+              <valueDisplayEnabled>true</valueDisplayEnabled>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>430</x>
+              <y>170</y>
+              <label>l</label>
+              <font>
+                <name>Roboto</name>
+                <size>18.0</size>
+                <style>1</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
+              <objectName>ModulatorReceive_offset_MINPHASE</objectName>
+              <x>90</x>
+              <y>165</y>
+              <comment>out of phase </comment>
+              <automationAllowed>true</automationAllowed>
+              <minimum>-2.0</minimum>
+              <maximum>2.0</maximum>
+              <bdresolution>0.01</bdresolution>
+              <value>0.3700000000000001</value>
+              <sliderWidth>150</sliderWidth>
+              <randomizable>true</randomizable>
+              <valueDisplayEnabled>true</valueDisplayEnabled>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
+              <objectName>ModulatorReceive_offset_ADD</objectName>
+              <x>90</x>
+              <y>10</y>
+              <automationAllowed>true</automationAllowed>
+              <minimum>-2.0</minimum>
+              <maximum>2.0</maximum>
+              <bdresolution>0.01</bdresolution>
+              <value>1.0</value>
+              <sliderWidth>150</sliderWidth>
+              <randomizable>true</randomizable>
+              <valueDisplayEnabled>true</valueDisplayEnabled>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
+              <objectName>ModulatorReceive_offset_ADDPHASE</objectName>
               <x>90</x>
               <y>35</y>
               <comment>out of phase </comment>
@@ -1220,6 +1095,61 @@ endif
               <sliderWidth>150</sliderWidth>
               <randomizable>true</randomizable>
               <valueDisplayEnabled>true</valueDisplayEnabled>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>295</x>
+              <y>205</y>
+              <label>offset </label>
+              <font>
+                <name>Roboto</name>
+                <size>12.0</size>
+                <style>0</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
+              <objectName>ModulatorReceive_scale_MULT</objectName>
+              <x>325</x>
+              <y>225</y>
+              <automationAllowed>true</automationAllowed>
+              <minimum>-2.0</minimum>
+              <maximum>2.0</maximum>
+              <bdresolution>0.01</bdresolution>
+              <value>0.5</value>
+              <sliderWidth>150</sliderWidth>
+              <randomizable>true</randomizable>
+              <valueDisplayEnabled>true</valueDisplayEnabled>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>430</x>
+              <y>110</y>
+              <label>l</label>
+              <font>
+                <name>Roboto</name>
+                <size>18.0</size>
+                <style>1</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>413</x>
+              <y>110</y>
+              <label>l</label>
+              <font>
+                <name>Roboto</name>
+                <size>18.0</size>
+                <style>1</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+              <objectName>ModulatorReceive_multON</objectName>
+              <x>9</x>
+              <y>205</y>
+              <automationAllowed>true</automationAllowed>
+              <label>multiply</label>
+              <selected>false</selected>
+              <randomizable>true</randomizable>
             </bsbObject>
             <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
               <objectName></objectName>
@@ -1234,8 +1164,8 @@ endif
             </bsbObject>
             <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
               <objectName></objectName>
-              <x>430</x>
-              <y>110</y>
+              <x>195</x>
+              <y>40</y>
               <label>l</label>
               <font>
                 <name>Roboto</name>
@@ -1243,8 +1173,94 @@ endif
                 <style>1</style>
               </font>
             </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>413</x>
+              <y>170</y>
+              <label>l</label>
+              <font>
+                <name>Roboto</name>
+                <size>18.0</size>
+                <style>1</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>30</x>
+              <y>37</y>
+              <label>add - </label>
+              <font>
+                <name>Roboto</name>
+                <size>12.0</size>
+                <style>0</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>530</x>
+              <y>230</y>
+              <label>scale</label>
+              <font>
+                <name>Roboto</name>
+                <size>12.0</size>
+                <style>0</style>
+              </font>
+            </bsbObject>
             <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
-              <objectName>addON1</objectName>
+              <objectName>ModulatorReceive_maxON</objectName>
+              <x>9</x>
+              <y>80</y>
+              <automationAllowed>true</automationAllowed>
+              <label>max</label>
+              <selected>false</selected>
+              <randomizable>true</randomizable>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>80</x>
+              <y>225</y>
+              <label>f</label>
+              <font>
+                <name>Standard Symbols PS</name>
+                <size>20.0</size>
+                <style>0</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>163</x>
+              <y>85</y>
+              <label>l</label>
+              <font>
+                <name>Roboto</name>
+                <size>18.0</size>
+                <style>1</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>295</x>
+              <y>85</y>
+              <label>offset</label>
+              <font>
+                <name>Roboto</name>
+                <size>12.0</size>
+                <style>0</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>530</x>
+              <y>40</y>
+              <label>scale</label>
+              <font>
+                <name>Roboto</name>
+                <size>12.0</size>
+                <style>0</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+              <objectName>ModulatorReceive_addON</objectName>
               <x>9</x>
               <y>10</y>
               <automationAllowed>true</automationAllowed>
@@ -1252,27 +1268,15 @@ endif
               <selected>false</selected>
               <randomizable>true</randomizable>
             </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>30</x>
-              <y>109</y>
-              <label>max -</label>
-              <font>
-                <name>Roboto</name>
-                <size>12.0</size>
-                <style>0</style>
-              </font>
-            </bsbObject>
             <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
-              <objectName>offset_MINPHASE</objectName>
+              <objectName>ModulatorReceive_offset_MAX</objectName>
               <x>90</x>
-              <y>165</y>
-              <comment>out of phase </comment>
+              <y>80</y>
               <automationAllowed>true</automationAllowed>
               <minimum>-2.0</minimum>
               <maximum>2.0</maximum>
               <bdresolution>0.01</bdresolution>
-              <value>0.3700000000000001</value>
+              <value>0.0</value>
               <sliderWidth>150</sliderWidth>
               <randomizable>true</randomizable>
               <valueDisplayEnabled>true</valueDisplayEnabled>
@@ -1290,9 +1294,29 @@ endif
             </bsbObject>
             <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
               <objectName></objectName>
-              <x>530</x>
-              <y>40</y>
-              <label>scale</label>
+              <x>413</x>
+              <y>230</y>
+              <label>l</label>
+              <font>
+                <name>Roboto</name>
+                <size>18.0</size>
+                <style>1</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+              <objectName>ModulatorReceive_minON</objectName>
+              <x>9</x>
+              <y>140</y>
+              <automationAllowed>true</automationAllowed>
+              <label>min</label>
+              <selected>false</selected>
+              <randomizable>true</randomizable>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>295</x>
+              <y>145</y>
+              <label>offset</label>
               <font>
                 <name>Roboto</name>
                 <size>12.0</size>
@@ -1301,38 +1325,14 @@ endif
             </bsbObject>
             <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
               <objectName></objectName>
-              <x>60</x>
-              <y>35</y>
-              <label>f</label>
-              <font>
-                <name>Standard Symbols PS</name>
-                <size>20.0</size>
-                <style>0</style>
-              </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
-              <objectName></objectName>
-              <x>195</x>
-              <y>40</y>
-              <label>l</label>
+              <x>30</x>
+              <y>109</y>
+              <label>max -</label>
               <font>
                 <name>Roboto</name>
-                <size>18.0</size>
-                <style>1</style>
+                <size>12.0</size>
+                <style>0</style>
               </font>
-            </bsbObject>
-            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
-              <objectName>scale_MULT</objectName>
-              <x>325</x>
-              <y>225</y>
-              <automationAllowed>true</automationAllowed>
-              <minimum>-2.0</minimum>
-              <maximum>2.0</maximum>
-              <bdresolution>0.01</bdresolution>
-              <value>0.5</value>
-              <sliderWidth>150</sliderWidth>
-              <randomizable>true</randomizable>
-              <valueDisplayEnabled>true</valueDisplayEnabled>
             </bsbObject>
           </bsbObject>
         </bsbObject>
@@ -1340,139 +1340,139 @@ endif
     </bsbObject>
   </graphicInterface>
   <parameterList>
-    <parameter uniqueId='-1984279000' name='minON' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='0.0'>
+    <parameter uniqueId='2114042873' name='ModulatorTransmit_multON' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='1.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='1.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='2114042875' name='ModulatorTransmit_addON' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='1.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='1.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='2114042877' name='ModulatorTransmit_maxON' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='0.0'>
       <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
         <linePoint x='0.0' y='0.0'/>
       </line>
     </parameter>
-    <parameter uniqueId='-1984278998' name='multON' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='1.0'>
-      <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
-        <linePoint x='0.0' y='1.0'/>
-      </line>
-    </parameter>
-    <parameter uniqueId='-1984278994' name='maxON' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='0.0'>
+    <parameter uniqueId='2114042879' name='ModulatorTransmit_minON' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='0.0'>
       <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
         <linePoint x='0.0' y='0.0'/>
       </line>
     </parameter>
-    <parameter uniqueId='-1984278992' name='addON' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='1.0'>
-      <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
-        <linePoint x='0.0' y='1.0'/>
-      </line>
-    </parameter>
-    <parameter uniqueId='-1984278990' name='Mod2ON' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='1.0'>
-      <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
-        <linePoint x='0.0' y='1.0'/>
-      </line>
-    </parameter>
-    <parameter uniqueId='-1984278988' name='Mod2 scale' label='' min='0.0' max='1.0' bdresolution='-1' automationEnabled='false' value='0.5751636548328973'>
-      <line name='' version='2' max='1.0' min='0.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
-        <linePoint x='0.0' y='0.5751636548328973'/>
-      </line>
-    </parameter>
-    <parameter uniqueId='-1984278986' name='Mod2 wave' label='' min='0.0' max='7.0' bdresolution='1' automationEnabled='false' value='0.0'>
-      <line name='' version='2' max='7.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
-        <linePoint x='0.0' y='0.0'/>
-      </line>
-    </parameter>
-    <parameter uniqueId='-1984278984' name='Mod2 speed' label='' min='0.0' max='20.0' bdresolution='-1' automationEnabled='false' value='5.691416758753009'>
-      <line name='' version='2' max='20.0' min='0.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
-        <linePoint x='0.0' y='5.691416758753009'/>
-      </line>
-    </parameter>
-    <parameter uniqueId='-1984278980' name='Mod1 scale' label='' min='0.0' max='1.0' bdresolution='-1' automationEnabled='false' value='1.0'>
-      <line name='' version='2' max='1.0' min='0.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
-        <linePoint x='0.0' y='1.0'/>
-      </line>
-    </parameter>
-    <parameter uniqueId='-1984278978' name='Mod1 speed' label='' min='0.0' max='20.0' bdresolution='-1' automationEnabled='false' value='12.51642743190612'>
+    <parameter uniqueId='2114042881' name='ModulatorTransmit_1speed' label='' min='0.0' max='20.0' bdresolution='-1' automationEnabled='false' value='12.51642743190612'>
       <line name='' version='2' max='20.0' min='0.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
         <linePoint x='0.0' y='12.51642743190612'/>
       </line>
     </parameter>
-    <parameter uniqueId='-1720708168' name='Mod1 wave' label='' min='0.0' max='7.0' bdresolution='1' automationEnabled='false' value='4.0'>
+    <parameter uniqueId='2114042883' name='ModulatorTransmit_1scale' label='' min='0.0' max='1.0' bdresolution='-1' automationEnabled='false' value='1.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='1.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='2114042885' name='ModulatorTransmit_1wave' label='' min='0.0' max='7.0' bdresolution='1' automationEnabled='false' value='4.0'>
       <line name='' version='2' max='7.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
         <linePoint x='0.0' y='4.0'/>
       </line>
     </parameter>
-    <parameter uniqueId='2105457534' name='maxON1' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='0.0'>
+    <parameter uniqueId='2114042887' name='ModulatorTransmit_2ON' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='1.0'>
       <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='1.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='2114042889' name='ModulatorTransmit_2scale' label='' min='0.0' max='1.0' bdresolution='-1' automationEnabled='false' value='0.5751636548328973'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.5751636548328973'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='2114042891' name='ModulatorTransmit_2speed' label='' min='0.0' max='20.0' bdresolution='-1' automationEnabled='false' value='5.691416758753009'>
+      <line name='' version='2' max='20.0' min='0.0' bdresolution='-1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='5.691416758753009'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='2114042893' name='ModulatorTransmit_2wave' label='' min='0.0' max='7.0' bdresolution='1' automationEnabled='false' value='0.0'>
+      <line name='' version='2' max='7.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
         <linePoint x='0.0' y='0.0'/>
       </line>
     </parameter>
-    <parameter uniqueId='2105457536' name='offset_MULTPHASE' label='' min='-2.0' max='2.0' bdresolution='0.01' automationEnabled='false' value='-1.0'>
+    <parameter uniqueId='2114042895' name='ModulatorReceive_scale_MIN' label='' min='-2.0' max='2.0' bdresolution='0.01' automationEnabled='false' value='1.0'>
+      <line name='' version='2' max='2.0' min='-2.0' bdresolution='0.01' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='1.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='2114042897' name='ModulatorReceive_offset_MULTPHASE' label='' min='-2.0' max='2.0' bdresolution='0.01' automationEnabled='false' value='-1.0'>
       <line name='' version='2' max='2.0' min='-2.0' bdresolution='0.01' color='-8355712' rightBound='false' endPointsLinked='false'>
         <linePoint x='0.0' y='-1.0'/>
       </line>
     </parameter>
-    <parameter uniqueId='2105457538' name='offset_MIN' label='' min='-2.0' max='2.0' bdresolution='0.01' automationEnabled='false' value='1.0'>
+    <parameter uniqueId='2114042899' name='ModulatorReceive_scale_MAX' label='' min='-2.0' max='2.0' bdresolution='0.01' automationEnabled='false' value='1.0'>
       <line name='' version='2' max='2.0' min='-2.0' bdresolution='0.01' color='-8355712' rightBound='false' endPointsLinked='false'>
         <linePoint x='0.0' y='1.0'/>
       </line>
     </parameter>
-    <parameter uniqueId='2105457540' name='scale_MAX' label='' min='-2.0' max='2.0' bdresolution='0.01' automationEnabled='false' value='1.0'>
+    <parameter uniqueId='2114042901' name='ModulatorReceive_offset_MULT' label='' min='-2.0' max='2.0' bdresolution='0.01' automationEnabled='false' value='1.0'>
       <line name='' version='2' max='2.0' min='-2.0' bdresolution='0.01' color='-8355712' rightBound='false' endPointsLinked='false'>
         <linePoint x='0.0' y='1.0'/>
       </line>
     </parameter>
-    <parameter uniqueId='2105457542' name='offset_MAXPHASE' label='' min='-2.0' max='2.0' bdresolution='0.01' automationEnabled='false' value='-2.0'>
+    <parameter uniqueId='2114042903' name='ModulatorReceive_scale_ADD' label='' min='-2.0' max='2.0' bdresolution='0.01' automationEnabled='false' value='0.5'>
+      <line name='' version='2' max='2.0' min='-2.0' bdresolution='0.01' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.5'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='2114042905' name='ModulatorReceive_offset_MAXPHASE' label='' min='-2.0' max='2.0' bdresolution='0.01' automationEnabled='false' value='-2.0'>
       <line name='' version='2' max='2.0' min='-2.0' bdresolution='0.01' color='-8355712' rightBound='false' endPointsLinked='false'>
         <linePoint x='0.0' y='-2.0'/>
       </line>
     </parameter>
-    <parameter uniqueId='2105457544' name='scale_ADD' label='' min='-2.0' max='2.0' bdresolution='0.01' automationEnabled='false' value='0.5'>
-      <line name='' version='2' max='2.0' min='-2.0' bdresolution='0.01' color='-8355712' rightBound='false' endPointsLinked='false'>
-        <linePoint x='0.0' y='0.5'/>
-      </line>
-    </parameter>
-    <parameter uniqueId='2105457546' name='offset_MAX' label='' min='-2.0' max='2.0' bdresolution='0.01' automationEnabled='false' value='0.0'>
-      <line name='' version='2' max='2.0' min='-2.0' bdresolution='0.01' color='-8355712' rightBound='false' endPointsLinked='false'>
-        <linePoint x='0.0' y='0.0'/>
-      </line>
-    </parameter>
-    <parameter uniqueId='2105457548' name='multON1' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='0.0'>
-      <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
-        <linePoint x='0.0' y='0.0'/>
-      </line>
-    </parameter>
-    <parameter uniqueId='2105457550' name='scale_MIN' label='' min='-2.0' max='2.0' bdresolution='0.01' automationEnabled='false' value='1.0'>
+    <parameter uniqueId='2114042907' name='ModulatorReceive_offset_MIN' label='' min='-2.0' max='2.0' bdresolution='0.01' automationEnabled='false' value='1.0'>
       <line name='' version='2' max='2.0' min='-2.0' bdresolution='0.01' color='-8355712' rightBound='false' endPointsLinked='false'>
         <linePoint x='0.0' y='1.0'/>
       </line>
     </parameter>
-    <parameter uniqueId='2105457552' name='offset_ADD' label='' min='-2.0' max='2.0' bdresolution='0.01' automationEnabled='false' value='1.0'>
-      <line name='' version='2' max='2.0' min='-2.0' bdresolution='0.01' color='-8355712' rightBound='false' endPointsLinked='false'>
-        <linePoint x='0.0' y='1.0'/>
-      </line>
-    </parameter>
-    <parameter uniqueId='2105457554' name='minON1' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='0.0'>
-      <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
-        <linePoint x='0.0' y='0.0'/>
-      </line>
-    </parameter>
-    <parameter uniqueId='2105457556' name='offset_MULT' label='' min='-2.0' max='2.0' bdresolution='0.01' automationEnabled='false' value='1.0'>
-      <line name='' version='2' max='2.0' min='-2.0' bdresolution='0.01' color='-8355712' rightBound='false' endPointsLinked='false'>
-        <linePoint x='0.0' y='1.0'/>
-      </line>
-    </parameter>
-    <parameter uniqueId='2105457558' name='offset_ADDPHASE' label='' min='-2.0' max='2.0' bdresolution='0.01' automationEnabled='false' value='1.0'>
-      <line name='' version='2' max='2.0' min='-2.0' bdresolution='0.01' color='-8355712' rightBound='false' endPointsLinked='false'>
-        <linePoint x='0.0' y='1.0'/>
-      </line>
-    </parameter>
-    <parameter uniqueId='2105457560' name='addON1' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='0.0'>
-      <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
-        <linePoint x='0.0' y='0.0'/>
-      </line>
-    </parameter>
-    <parameter uniqueId='2105457562' name='offset_MINPHASE' label='' min='-2.0' max='2.0' bdresolution='0.01' automationEnabled='false' value='0.3700000000000001'>
+    <parameter uniqueId='2114042909' name='ModulatorReceive_offset_MINPHASE' label='' min='-2.0' max='2.0' bdresolution='0.01' automationEnabled='false' value='0.3700000000000001'>
       <line name='' version='2' max='2.0' min='-2.0' bdresolution='0.01' color='-8355712' rightBound='false' endPointsLinked='false'>
         <linePoint x='0.0' y='0.3700000000000001'/>
       </line>
     </parameter>
-    <parameter uniqueId='2105457564' name='scale_MULT' label='' min='-2.0' max='2.0' bdresolution='0.01' automationEnabled='false' value='0.5'>
+    <parameter uniqueId='2114042911' name='ModulatorReceive_offset_ADD' label='' min='-2.0' max='2.0' bdresolution='0.01' automationEnabled='false' value='1.0'>
+      <line name='' version='2' max='2.0' min='-2.0' bdresolution='0.01' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='1.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='2114042913' name='ModulatorReceive_offset_ADDPHASE' label='' min='-2.0' max='2.0' bdresolution='0.01' automationEnabled='false' value='1.0'>
+      <line name='' version='2' max='2.0' min='-2.0' bdresolution='0.01' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='1.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='2114042915' name='ModulatorReceive_scale_MULT' label='' min='-2.0' max='2.0' bdresolution='0.01' automationEnabled='false' value='0.5'>
       <line name='' version='2' max='2.0' min='-2.0' bdresolution='0.01' color='-8355712' rightBound='false' endPointsLinked='false'>
         <linePoint x='0.0' y='0.5'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='2114042917' name='ModulatorReceive_multON' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='0.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='2114042919' name='ModulatorReceive_maxON' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='0.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='2114042921' name='ModulatorReceive_addON' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='0.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='2114042923' name='ModulatorReceive_offset_MAX' label='' min='-2.0' max='2.0' bdresolution='0.01' automationEnabled='false' value='0.0'>
+      <line name='' version='2' max='2.0' min='-2.0' bdresolution='0.01' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='2114042925' name='ModulatorReceive_minON' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='0.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.0'/>
       </line>
     </parameter>
   </parameterList>
