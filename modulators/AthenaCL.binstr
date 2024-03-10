@@ -1,0 +1,2291 @@
+<instrument type='blue.orchestra.BlueSynthBuilder' editEnabled='true'>
+  <name>AthenaCLModule</name>
+  <comment>
+
+DESCRIPTION:
+
+The AthenaCL Module is a modulator. AthenaCL is a Python program. For this Module to work, you have to have AthenaCL installed: https://github.com/ales-tsurko/athenaCL
+This Module works at k rate. For example, sr = 48kHz and ksmps means the k rate = 375;
+375 values will be produced per second.
+Normally this is enough to get fluent and inaudible flows of signals. If not, you&apos;ll need to add interpolation.
+Be sure to use the same k rate and sr every time, else the result may sound different.
+
+The parameters in the ParameterObject are strings, so all text must be entered &quot;text&quot;
+Numbers are to be entered as float numbers.
+It is easy to make small mistakes in text or , or &quot;
+Advised is to use the acronyms, so: &quot;c&quot; instead of &quot;constant&quot; as it makes it more readable.
+
+wsd, e,                 30,         0,      0,              1
+is the same as:
+waveSawDown, event, (constant, 30), 0, (constant, 0), (constant, 1)
+
+This Module is based on the article https://www.csounds.com/journal/issue9/pcragcs.html from Ariza.
+
+
+---
+
+version 1, March 2024
+- initial version
+
+</comment>
+  <globalOrc>pyinit 
+
+
+ ; </globalOrc>
+  <globalSco/>
+  <instrumentText>
+pyruni {{ 
+from athenaCL.libATH.libPmtr import parameter 
+&lt;active1&gt;&lt;variable name1&gt;&lt;INSTR_ID&gt; = parameter.factory([&quot;&lt;name1&gt;&quot;,&lt;stepString1&gt; &lt;ParameterObject1&gt;]) 
+&lt;active2&gt;&lt;variable name2&gt;&lt;INSTR_ID&gt; = parameter.factory([&quot;&lt;name2&gt;&quot;,&lt;stepString2&gt; &lt;ParameterObject2&gt;])
+&lt;active3&gt;&lt;variable name3&gt;&lt;INSTR_ID&gt; = parameter.factory([&quot;&lt;name3&gt;&quot;,&lt;stepString3&gt; &lt;ParameterObject3&gt;])
+&lt;active4&gt;&lt;variable name4&gt;&lt;INSTR_ID&gt; = parameter.factory([&quot;&lt;name4&gt;&quot;,&lt;stepString4&gt; &lt;ParameterObject4&gt;])
+&lt;active5&gt;&lt;variable name5&gt;&lt;INSTR_ID&gt; = parameter.factory([&quot;&lt;name5&gt;&quot;,&lt;stepString5&gt; &lt;ParameterObject5&gt;])
+}} 
+
+
+   kPhaseEv    line      0, p3, p3              
+
+   kFq         pycall1   &quot;&lt;variable name1&gt;&lt;INSTR_ID&gt;&quot;, kPhaseEv
+  ; kAmp        pycall1   &quot;&lt;variable name2&gt;&lt;INSTR_ID&gt;&quot;, kPhaseEv
+   aSig       vco2    .2, 100+kFq;+kAmp
+    aSig    lowpass2 aSig, (kFq*10000), 5
+aSig    dcblock2    aSig
+               outs       aSig, aSig
+printk2 (kFq*10000)
+ 
+</instrumentText>
+  <alwaysOnInstrumentText></alwaysOnInstrumentText>
+  <graphicInterface editEnabled='false'>
+    <gridSettings>
+      <width>5</width>
+      <height>5</height>
+      <gridStyle>DOT</gridStyle>
+      <snapGridEnabled>true</snapGridEnabled>
+    </gridSettings>
+    <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+      <objectName></objectName>
+      <x>0</x>
+      <y>0</y>
+      <groupName>Group</groupName>
+      <backgroundColor>0x00000033</backgroundColor>
+      <borderColor>0x000000ff</borderColor>
+      <labelTextColor>0xffffffff</labelTextColor>
+      <titleEnabled>true</titleEnabled>
+      <width>20</width>
+      <height>20</height>
+      <font>
+        <name>Roboto</name>
+        <size>12.0</size>
+        <style>0</style>
+      </font>
+      <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+        <objectName></objectName>
+        <x>0</x>
+        <y>0</y>
+        <comment>CAVEAT: the sounding result of this Module is depending on the k rate. Different k rates will produce a different result!!</comment>
+        <groupName>AthenaCL ParameterObjects
+</groupName>
+        <backgroundColor>0x4d4d4dff</backgroundColor>
+        <borderColor>0x000000ff</borderColor>
+        <labelTextColor>0xffffffff</labelTextColor>
+        <titleEnabled>true</titleEnabled>
+        <width>20</width>
+        <height>20</height>
+        <font>
+          <name>Roboto</name>
+          <size>12.0</size>
+          <style>2</style>
+        </font>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+          <objectName></objectName>
+          <x>10</x>
+          <y>10</y>
+          <groupName>2channel Modulate</groupName>
+          <backgroundColor>0x282828ff</backgroundColor>
+          <borderColor>0x000000ff</borderColor>
+          <labelTextColor>0xffffffff</labelTextColor>
+          <titleEnabled>false</titleEnabled>
+          <width>860</width>
+          <height>100</height>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>2</style>
+          </font>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+            <objectName>ParameterObject4</objectName>
+            <x>335</x>
+            <y>105</y>
+            <comment>enter values for ParameterObject</comment>
+            <value>&quot;ud&quot;, 0, 1, 0.13</value>
+            <textFieldWidth>400</textFieldWidth>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+            <objectName>variable name2</objectName>
+            <x>750</x>
+            <y>55</y>
+            <value>amplitudeCL</value>
+            <textFieldWidth>100</textFieldWidth>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBDropdown' version='2'>
+            <objectName>name2</objectName>
+            <x>85</x>
+            <y>55</y>
+            <comment>Generator ParameterObjects</comment>
+            <automationAllowed>false</automationAllowed>
+            <selectedIndex>15</selectedIndex>
+            <fontSize>12</fontSize>
+            <randomizable>false</randomizable>
+            <bsbDropdownItemList>
+              <bsbDropdownItem uniqueId='243306247'>
+                <name>accumulator</name>
+                <value>a</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306248'>
+                <name>basketFill</name>
+                <value>bf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306249'>
+                <name>basketFillSelect</name>
+                <value>bfs</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306250'>
+                <name>basketGen</name>
+                <value>bg</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306251'>
+                <name>breakGraphFlat</name>
+                <value>bgf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306252'>
+                <name>breakGraphHalfCosine</name>
+                <value>bghc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306253'>
+                <name>breakGraphLinear</name>
+                <value>bgl</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306254'>
+                <name>breakGraphPower</name>
+                <value>bgp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306255'>
+                <name>breakPointFlat</name>
+                <value>bpf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306256'>
+                <name>breakPointHalfCosine</name>
+                <value>bphc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306257'>
+                <name>breakPointLinear</name>
+                <value>bpl</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306258'>
+                <name>breakPointPower</name>
+                <value>bpp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306259'>
+                <name>basketSelect</name>
+                <value>bs</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306260'>
+                <name>constant</name>
+                <value>c</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306261'>
+                <name>constantFile</name>
+                <value>cf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306262'>
+                <name>cyclicGen</name>
+                <value>cg</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306263'>
+                <name>caList</name>
+                <value>cl</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306264'>
+                <name>caValue</name>
+                <value>cv</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306265'>
+                <name>directorySelect</name>
+                <value>ds</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306266'>
+                <name>envelopeGen.Adsr</name>
+                <value>ega</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306267'>
+                <name>envelopeGen.Trapezoid</name>
+                <value>egt</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306268'>
+                <name>envelopeGeneratorUnit</name>
+                <value>egu</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306269'>
+                <name>funnelBinary</name>
+                <value>fb</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306270'>
+                <name>feedbackModelLibrary</name>
+                <value>fml</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306271'>
+                <name>fibonacciSeries</name>
+                <value>fs</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306272'>
+                <name>grammarTerminus</name>
+                <value>gt</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306273'>
+                <name>henonBasket</name>
+                <value>hb</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306274'>
+                <name>iterateCross</name>
+                <value>ic</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306275'>
+                <name>iterateGroup</name>
+                <value>ig</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306276'>
+                <name>iterateHold</name>
+                <value>ih</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306277'>
+                <name>iterateSelect</name>
+                <value>is</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306278'>
+                <name>iterateWindow</name>
+                <value>iw</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306279'>
+                <name>lorenzBasket</name>
+                <value>lb</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306280'>
+                <name>logisticMap</name>
+                <value>lm</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306281'>
+                <name>listPrime</name>
+                <value>lp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306282'>
+                <name>lineSegment</name>
+                <value>ls</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306283'>
+                <name>mask</name>
+                <value>m</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306284'>
+                <name>markovGeneratorAnal.</name>
+                <value>mga</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306285'>
+                <name>maskReject</name>
+                <value>mr</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306286'>
+                <name>maskScale</name>
+                <value>ms</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306287'>
+                <name>markovValue</name>
+                <value>mv</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306288'>
+                <name>noise</name>
+                <value>n</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306289'>
+                <name>operatorAdd</name>
+                <value>oa</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306290'>
+                <name>operatorCongruence</name>
+                <value>oc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306291'>
+                <name>operatorDivide</name>
+                <value>od</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306292'>
+                <name>operatorMultiply</name>
+                <value>om</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306293'>
+                <name>oneOver</name>
+                <value>oo</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306294'>
+                <name>operatorPower</name>
+                <value>op</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306295'>
+                <name>operatorSubtract</name>
+                <value>os</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306296'>
+                <name>pathRead --&gt; freq.</name>
+                <value>pr, fq</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306297'>
+                <name>pathRead --&gt; psReal</name>
+                <value>pr, ps</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306298'>
+                <name>pathRead --&gt; midi</name>
+                <value>pr, midi</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306299'>
+                <name>pathRead --&gt; pch</name>
+                <value>pr, pch</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306300'>
+                <name>pathRead --&gt; name</name>
+                <value>pr, name</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306301'>
+                <name>quantize</name>
+                <value>q</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306302'>
+                <name>randomBeta</name>
+                <value>rb</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306303'>
+                <name>randomBilateralExp.</name>
+                <value>rbe</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306304'>
+                <name>randomCauchy</name>
+                <value>rc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306305'>
+                <name>randomExponential</name>
+                <value>re</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306306'>
+                <name>randomGauss</name>
+                <value>rg</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306307'>
+                <name>randomInverseExp.</name>
+                <value>rie</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306308'>
+                <name>randomInverseLinear</name>
+                <value>ril</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306309'>
+                <name>randomInverseTriang.</name>
+                <value>rit</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306310'>
+                <name>randomLinear</name>
+                <value>rl</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306311'>
+                <name>randomTriangular</name>
+                <value>rt</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306312'>
+                <name>randomUniform</name>
+                <value>ru</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306313'>
+                <name>randomWeibull</name>
+                <value>rw</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306314'>
+                <name>sampleAndHold</name>
+                <value>sah</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306315'>
+                <name>sieveFunnel</name>
+                <value>sf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306316'>
+                <name>sieveList</name>
+                <value>sl</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306317'>
+                <name>sampleSelect</name>
+                <value>ss</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306318'>
+                <name>typeFormat</name>
+                <value>tf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306319'>
+                <name>valuePrime</name>
+                <value>vp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306320'>
+                <name>valueSieve</name>
+                <value>vs</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306321'>
+                <name>waveCosine</name>
+                <value>wc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306322'>
+                <name>waveHalfPeriodCosine</name>
+                <value>whpc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306323'>
+                <name>waveHalfPeriodPulse</name>
+                <value>whpp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306324'>
+                <name>waveHalfPeriodSine</name>
+                <value>whps</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306325'>
+                <name>waveHalfPeriodTriang.</name>
+                <value>whpt</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306326'>
+                <name>wavePulse</name>
+                <value>wp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306327'>
+                <name>wavePowerDown</name>
+                <value>wpd</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306328'>
+                <name>wavePowerUp</name>
+                <value>wpu</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306329'>
+                <name>waveSine</name>
+                <value>ws</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306330'>
+                <name>waveSawDown</name>
+                <value>wsd</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306331'>
+                <name>waveSawUp</name>
+                <value>wsu</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306332'>
+                <name>waveTriangle</name>
+                <value>wt</value>
+              </bsbDropdownItem>
+            </bsbDropdownItemList>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBDropdown' version='2'>
+            <objectName>active4</objectName>
+            <x>15</x>
+            <y>105</y>
+            <automationAllowed>false</automationAllowed>
+            <selectedIndex>1</selectedIndex>
+            <fontSize>12</fontSize>
+            <randomizable>true</randomizable>
+            <bsbDropdownItemList>
+              <bsbDropdownItem uniqueId='411448551'>
+                <name>ON</name>
+                <value></value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='411448552'>
+                <name>OFF</name>
+                <value>#</value>
+              </bsbDropdownItem>
+            </bsbDropdownItemList>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBDropdown' version='2'>
+            <objectName>name5</objectName>
+            <x>85</x>
+            <y>130</y>
+            <comment>Generator ParameterObjects</comment>
+            <automationAllowed>false</automationAllowed>
+            <selectedIndex>74</selectedIndex>
+            <fontSize>12</fontSize>
+            <randomizable>false</randomizable>
+            <bsbDropdownItemList>
+              <bsbDropdownItem uniqueId='243307709'>
+                <name>accumulator</name>
+                <value>a</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307710'>
+                <name>basketFill</name>
+                <value>bf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307711'>
+                <name>basketFillSelect</name>
+                <value>bfs</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307712'>
+                <name>basketGen</name>
+                <value>bg</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307713'>
+                <name>breakGraphFlat</name>
+                <value>bgf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307714'>
+                <name>breakGraphHalfCosine</name>
+                <value>bghc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307715'>
+                <name>breakGraphLinear</name>
+                <value>bgl</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307716'>
+                <name>breakGraphPower</name>
+                <value>bgp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307717'>
+                <name>breakPointFlat</name>
+                <value>bpf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307718'>
+                <name>breakPointHalfCosine</name>
+                <value>bphc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307719'>
+                <name>breakPointLinear</name>
+                <value>bpl</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307720'>
+                <name>breakPointPower</name>
+                <value>bpp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307721'>
+                <name>basketSelect</name>
+                <value>bs</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307722'>
+                <name>constant</name>
+                <value>c</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307723'>
+                <name>constantFile</name>
+                <value>cf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307724'>
+                <name>cyclicGen</name>
+                <value>cg</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307725'>
+                <name>caList</name>
+                <value>cl</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307726'>
+                <name>caValue</name>
+                <value>cv</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307727'>
+                <name>directorySelect</name>
+                <value>ds</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307728'>
+                <name>envelopeGen.Adsr</name>
+                <value>ega</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307729'>
+                <name>envelopeGen.Trapezoid</name>
+                <value>egt</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307730'>
+                <name>envelopeGeneratorUnit</name>
+                <value>egu</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307731'>
+                <name>funnelBinary</name>
+                <value>fb</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307732'>
+                <name>feedbackModelLibrary</name>
+                <value>fml</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307733'>
+                <name>fibonacciSeries</name>
+                <value>fs</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307734'>
+                <name>grammarTerminus</name>
+                <value>gt</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307735'>
+                <name>henonBasket</name>
+                <value>hb</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307736'>
+                <name>iterateCross</name>
+                <value>ic</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307737'>
+                <name>iterateGroup</name>
+                <value>ig</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307738'>
+                <name>iterateHold</name>
+                <value>ih</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307739'>
+                <name>iterateSelect</name>
+                <value>is</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307740'>
+                <name>iterateWindow</name>
+                <value>iw</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307741'>
+                <name>lorenzBasket</name>
+                <value>lb</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307742'>
+                <name>logisticMap</name>
+                <value>lm</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307743'>
+                <name>listPrime</name>
+                <value>lp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307744'>
+                <name>lineSegment</name>
+                <value>ls</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307745'>
+                <name>mask</name>
+                <value>m</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307746'>
+                <name>markovGeneratorAnal.</name>
+                <value>mga</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307747'>
+                <name>maskReject</name>
+                <value>mr</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307748'>
+                <name>maskScale</name>
+                <value>ms</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307749'>
+                <name>markovValue</name>
+                <value>mv</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307750'>
+                <name>noise</name>
+                <value>n</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307751'>
+                <name>operatorAdd</name>
+                <value>oa</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307752'>
+                <name>operatorCongruence</name>
+                <value>oc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307753'>
+                <name>operatorDivide</name>
+                <value>od</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307754'>
+                <name>operatorMultiply</name>
+                <value>om</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307755'>
+                <name>oneOver</name>
+                <value>oo</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307756'>
+                <name>operatorPower</name>
+                <value>op</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307757'>
+                <name>operatorSubtract</name>
+                <value>os</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307758'>
+                <name>pathRead --&gt; freq.</name>
+                <value>pr, fq</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307759'>
+                <name>pathRead --&gt; psReal</name>
+                <value>pr, ps</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307760'>
+                <name>pathRead --&gt; midi</name>
+                <value>pr, midi</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307761'>
+                <name>pathRead --&gt; pch</name>
+                <value>pr, pch</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307762'>
+                <name>pathRead --&gt; name</name>
+                <value>pr, name</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307763'>
+                <name>quantize</name>
+                <value>q</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307764'>
+                <name>randomBeta</name>
+                <value>rb</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307765'>
+                <name>randomBilateralExp.</name>
+                <value>rbe</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307766'>
+                <name>randomCauchy</name>
+                <value>rc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307767'>
+                <name>randomExponential</name>
+                <value>re</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307768'>
+                <name>randomGauss</name>
+                <value>rg</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307769'>
+                <name>randomInverseExp.</name>
+                <value>rie</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307770'>
+                <name>randomInverseLinear</name>
+                <value>ril</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307771'>
+                <name>randomInverseTriang.</name>
+                <value>rit</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307772'>
+                <name>randomLinear</name>
+                <value>rl</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307773'>
+                <name>randomTriangular</name>
+                <value>rt</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307774'>
+                <name>randomUniform</name>
+                <value>ru</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307775'>
+                <name>randomWeibull</name>
+                <value>rw</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307776'>
+                <name>sampleAndHold</name>
+                <value>sah</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307777'>
+                <name>sieveFunnel</name>
+                <value>sf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307778'>
+                <name>sieveList</name>
+                <value>sl</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307779'>
+                <name>sampleSelect</name>
+                <value>ss</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307780'>
+                <name>typeFormat</name>
+                <value>tf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307781'>
+                <name>valuePrime</name>
+                <value>vp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307782'>
+                <name>valueSieve</name>
+                <value>vs</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307783'>
+                <name>waveCosine</name>
+                <value>wc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307784'>
+                <name>waveHalfPeriodCosine</name>
+                <value>whpc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307785'>
+                <name>waveHalfPeriodPulse</name>
+                <value>whpp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307786'>
+                <name>waveHalfPeriodSine</name>
+                <value>whps</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307787'>
+                <name>waveHalfPeriodTriang.</name>
+                <value>whpt</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307788'>
+                <name>wavePulse</name>
+                <value>wp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307789'>
+                <name>wavePowerDown</name>
+                <value>wpd</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307790'>
+                <name>wavePowerUp</name>
+                <value>wpu</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307791'>
+                <name>waveSine</name>
+                <value>ws</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307792'>
+                <name>waveSawDown</name>
+                <value>wsd</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307793'>
+                <name>waveSawUp</name>
+                <value>wsu</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307794'>
+                <name>waveTriangle</name>
+                <value>wt</value>
+              </bsbDropdownItem>
+            </bsbDropdownItemList>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+            <objectName></objectName>
+            <x>15</x>
+            <y>10</y>
+            <label>status</label>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>1</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+            <objectName>variable name5</objectName>
+            <x>750</x>
+            <y>130</y>
+            <value></value>
+            <textFieldWidth>100</textFieldWidth>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+            <objectName></objectName>
+            <x>865</x>
+            <y>10</y>
+            <label>description</label>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>1</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBDropdown' version='2'>
+            <objectName>stepString4</objectName>
+            <x>255</x>
+            <y>105</y>
+            <automationAllowed>false</automationAllowed>
+            <selectedIndex>0</selectedIndex>
+            <fontSize>12</fontSize>
+            <randomizable>true</randomizable>
+            <bsbDropdownItemList>
+              <bsbDropdownItem uniqueId='411438894'>
+                <name>---</name>
+                <value></value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='411438895'>
+                <name>time</name>
+                <value> &quot;time&quot;,</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='411438896'>
+                <name>event</name>
+                <value> &quot;event&quot;,</value>
+              </bsbDropdownItem>
+            </bsbDropdownItemList>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+            <objectName>ParameterObject2</objectName>
+            <x>335</x>
+            <y>55</y>
+            <comment>enter values for ParameterObject</comment>
+            <value>&quot;ud&quot;, 0, 1, 0.13</value>
+            <textFieldWidth>400</textFieldWidth>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+            <objectName>ParameterObject1</objectName>
+            <x>335</x>
+            <y>30</y>
+            <comment>enter values for ParameterObject. Text must be entered as strings: &quot;xx&quot;, but numbers as they are.</comment>
+            <value>((&quot;ru&quot;,0,1),(&quot;wt&quot;,&quot;e&quot;,3000,0,0,.012)), (&quot;bg&quot;,&quot;oc&quot;,(8,4,-20)), &quot;oc&quot;</value>
+            <textFieldWidth>400</textFieldWidth>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+            <objectName>variable name3</objectName>
+            <x>750</x>
+            <y>80</y>
+            <value></value>
+            <textFieldWidth>100</textFieldWidth>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+            <objectName></objectName>
+            <x>865</x>
+            <y>30</y>
+            <value>frequency</value>
+            <textFieldWidth>100</textFieldWidth>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBDropdown' version='2'>
+            <objectName>active3</objectName>
+            <x>15</x>
+            <y>80</y>
+            <automationAllowed>false</automationAllowed>
+            <selectedIndex>1</selectedIndex>
+            <fontSize>12</fontSize>
+            <randomizable>true</randomizable>
+            <bsbDropdownItemList>
+              <bsbDropdownItem uniqueId='411448547'>
+                <name>ON</name>
+                <value></value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='411448548'>
+                <name>OFF</name>
+                <value>#</value>
+              </bsbDropdownItem>
+            </bsbDropdownItemList>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+            <objectName></objectName>
+            <x>865</x>
+            <y>80</y>
+            <value></value>
+            <textFieldWidth>100</textFieldWidth>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBDropdown' version='2'>
+            <objectName>stepString5</objectName>
+            <x>255</x>
+            <y>130</y>
+            <automationAllowed>false</automationAllowed>
+            <selectedIndex>1</selectedIndex>
+            <fontSize>12</fontSize>
+            <randomizable>true</randomizable>
+            <bsbDropdownItemList>
+              <bsbDropdownItem uniqueId='411438900'>
+                <name>---</name>
+                <value></value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='411438901'>
+                <name>time</name>
+                <value> &quot;time&quot;,</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='411438902'>
+                <name>event</name>
+                <value> &quot;event&quot;,</value>
+              </bsbDropdownItem>
+            </bsbDropdownItemList>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+            <objectName></objectName>
+            <x>85</x>
+            <y>10</y>
+            <label>name</label>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>1</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBDropdown' version='2'>
+            <objectName>stepString1</objectName>
+            <x>255</x>
+            <y>30</y>
+            <automationAllowed>false</automationAllowed>
+            <selectedIndex>0</selectedIndex>
+            <fontSize>12</fontSize>
+            <randomizable>true</randomizable>
+            <bsbDropdownItemList>
+              <bsbDropdownItem uniqueId='411396445'>
+                <name>---</name>
+                <value></value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='411396446'>
+                <name>time</name>
+                <value> &quot;time&quot;,</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='411396447'>
+                <name>event</name>
+                <value> &quot;event&quot;,</value>
+              </bsbDropdownItem>
+            </bsbDropdownItemList>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBDropdown' version='2'>
+            <objectName>stepString2</objectName>
+            <x>255</x>
+            <y>55</y>
+            <automationAllowed>false</automationAllowed>
+            <selectedIndex>0</selectedIndex>
+            <fontSize>12</fontSize>
+            <randomizable>true</randomizable>
+            <bsbDropdownItemList>
+              <bsbDropdownItem uniqueId='411396448'>
+                <name>---</name>
+                <value></value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='411396449'>
+                <name>time</name>
+                <value> &quot;time&quot;,</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='411396450'>
+                <name>event</name>
+                <value> &quot;event&quot;,</value>
+              </bsbDropdownItem>
+            </bsbDropdownItemList>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBDropdown' version='2'>
+            <objectName>name3</objectName>
+            <x>85</x>
+            <y>80</y>
+            <comment>Generator ParameterObjects</comment>
+            <automationAllowed>false</automationAllowed>
+            <selectedIndex>13</selectedIndex>
+            <fontSize>12</fontSize>
+            <randomizable>false</randomizable>
+            <bsbDropdownItemList>
+              <bsbDropdownItem uniqueId='243307365'>
+                <name>accumulator</name>
+                <value>a</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307366'>
+                <name>basketFill</name>
+                <value>bf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307367'>
+                <name>basketFillSelect</name>
+                <value>bfs</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307368'>
+                <name>basketGen</name>
+                <value>bg</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307369'>
+                <name>breakGraphFlat</name>
+                <value>bgf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307370'>
+                <name>breakGraphHalfCosine</name>
+                <value>bghc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307371'>
+                <name>breakGraphLinear</name>
+                <value>bgl</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307372'>
+                <name>breakGraphPower</name>
+                <value>bgp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307373'>
+                <name>breakPointFlat</name>
+                <value>bpf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307374'>
+                <name>breakPointHalfCosine</name>
+                <value>bphc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307375'>
+                <name>breakPointLinear</name>
+                <value>bpl</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307376'>
+                <name>breakPointPower</name>
+                <value>bpp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307377'>
+                <name>basketSelect</name>
+                <value>bs</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307378'>
+                <name>constant</name>
+                <value>c</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307379'>
+                <name>constantFile</name>
+                <value>cf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307380'>
+                <name>cyclicGen</name>
+                <value>cg</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307381'>
+                <name>caList</name>
+                <value>cl</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307382'>
+                <name>caValue</name>
+                <value>cv</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307383'>
+                <name>directorySelect</name>
+                <value>ds</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307384'>
+                <name>envelopeGen.Adsr</name>
+                <value>ega</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307385'>
+                <name>envelopeGen.Trapezoid</name>
+                <value>egt</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307386'>
+                <name>envelopeGeneratorUnit</name>
+                <value>egu</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307387'>
+                <name>funnelBinary</name>
+                <value>fb</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307388'>
+                <name>feedbackModelLibrary</name>
+                <value>fml</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307389'>
+                <name>fibonacciSeries</name>
+                <value>fs</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307390'>
+                <name>grammarTerminus</name>
+                <value>gt</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307391'>
+                <name>henonBasket</name>
+                <value>hb</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307392'>
+                <name>iterateCross</name>
+                <value>ic</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307393'>
+                <name>iterateGroup</name>
+                <value>ig</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307394'>
+                <name>iterateHold</name>
+                <value>ih</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307395'>
+                <name>iterateSelect</name>
+                <value>is</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307396'>
+                <name>iterateWindow</name>
+                <value>iw</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307397'>
+                <name>lorenzBasket</name>
+                <value>lb</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307398'>
+                <name>logisticMap</name>
+                <value>lm</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307399'>
+                <name>listPrime</name>
+                <value>lp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307400'>
+                <name>lineSegment</name>
+                <value>ls</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307401'>
+                <name>mask</name>
+                <value>m</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307402'>
+                <name>markovGeneratorAnal.</name>
+                <value>mga</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307403'>
+                <name>maskReject</name>
+                <value>mr</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307404'>
+                <name>maskScale</name>
+                <value>ms</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307405'>
+                <name>markovValue</name>
+                <value>mv</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307406'>
+                <name>noise</name>
+                <value>n</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307407'>
+                <name>operatorAdd</name>
+                <value>oa</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307408'>
+                <name>operatorCongruence</name>
+                <value>oc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307409'>
+                <name>operatorDivide</name>
+                <value>od</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307410'>
+                <name>operatorMultiply</name>
+                <value>om</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307411'>
+                <name>oneOver</name>
+                <value>oo</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307412'>
+                <name>operatorPower</name>
+                <value>op</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307413'>
+                <name>operatorSubtract</name>
+                <value>os</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307414'>
+                <name>pathRead --&gt; freq.</name>
+                <value>pr, fq</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307415'>
+                <name>pathRead --&gt; psReal</name>
+                <value>pr, ps</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307416'>
+                <name>pathRead --&gt; midi</name>
+                <value>pr, midi</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307417'>
+                <name>pathRead --&gt; pch</name>
+                <value>pr, pch</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307418'>
+                <name>pathRead --&gt; name</name>
+                <value>pr, name</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307419'>
+                <name>quantize</name>
+                <value>q</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307420'>
+                <name>randomBeta</name>
+                <value>rb</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307421'>
+                <name>randomBilateralExp.</name>
+                <value>rbe</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307422'>
+                <name>randomCauchy</name>
+                <value>rc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307423'>
+                <name>randomExponential</name>
+                <value>re</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307424'>
+                <name>randomGauss</name>
+                <value>rg</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307425'>
+                <name>randomInverseExp.</name>
+                <value>rie</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307426'>
+                <name>randomInverseLinear</name>
+                <value>ril</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307427'>
+                <name>randomInverseTriang.</name>
+                <value>rit</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307428'>
+                <name>randomLinear</name>
+                <value>rl</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307429'>
+                <name>randomTriangular</name>
+                <value>rt</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307430'>
+                <name>randomUniform</name>
+                <value>ru</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307431'>
+                <name>randomWeibull</name>
+                <value>rw</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307432'>
+                <name>sampleAndHold</name>
+                <value>sah</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307433'>
+                <name>sieveFunnel</name>
+                <value>sf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307434'>
+                <name>sieveList</name>
+                <value>sl</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307435'>
+                <name>sampleSelect</name>
+                <value>ss</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307436'>
+                <name>typeFormat</name>
+                <value>tf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307437'>
+                <name>valuePrime</name>
+                <value>vp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307438'>
+                <name>valueSieve</name>
+                <value>vs</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307439'>
+                <name>waveCosine</name>
+                <value>wc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307440'>
+                <name>waveHalfPeriodCosine</name>
+                <value>whpc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307441'>
+                <name>waveHalfPeriodPulse</name>
+                <value>whpp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307442'>
+                <name>waveHalfPeriodSine</name>
+                <value>whps</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307443'>
+                <name>waveHalfPeriodTriang.</name>
+                <value>whpt</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307444'>
+                <name>wavePulse</name>
+                <value>wp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307445'>
+                <name>wavePowerDown</name>
+                <value>wpd</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307446'>
+                <name>wavePowerUp</name>
+                <value>wpu</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307447'>
+                <name>waveSine</name>
+                <value>ws</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307448'>
+                <name>waveSawDown</name>
+                <value>wsd</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307449'>
+                <name>waveSawUp</name>
+                <value>wsu</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307450'>
+                <name>waveTriangle</name>
+                <value>wt</value>
+              </bsbDropdownItem>
+            </bsbDropdownItemList>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBDropdown' version='2'>
+            <objectName>active1</objectName>
+            <x>15</x>
+            <y>30</y>
+            <comment>set to OFF when not in use; to save CPU</comment>
+            <automationAllowed>false</automationAllowed>
+            <selectedIndex>0</selectedIndex>
+            <fontSize>12</fontSize>
+            <randomizable>true</randomizable>
+            <bsbDropdownItemList>
+              <bsbDropdownItem uniqueId='411448539'>
+                <name>ON</name>
+                <value></value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='411448540'>
+                <name>OFF</name>
+                <value>#</value>
+              </bsbDropdownItem>
+            </bsbDropdownItemList>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBDropdown' version='2'>
+            <objectName>stepString3</objectName>
+            <x>255</x>
+            <y>80</y>
+            <automationAllowed>false</automationAllowed>
+            <selectedIndex>0</selectedIndex>
+            <fontSize>12</fontSize>
+            <randomizable>true</randomizable>
+            <bsbDropdownItemList>
+              <bsbDropdownItem uniqueId='411438888'>
+                <name>---</name>
+                <value></value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='411438889'>
+                <name>time</name>
+                <value> &quot;time&quot;,</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='411438890'>
+                <name>event</name>
+                <value> &quot;event&quot;,</value>
+              </bsbDropdownItem>
+            </bsbDropdownItemList>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+            <objectName>variable name4</objectName>
+            <x>750</x>
+            <y>105</y>
+            <value></value>
+            <textFieldWidth>100</textFieldWidth>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBDropdown' version='2'>
+            <objectName>active2</objectName>
+            <x>15</x>
+            <y>55</y>
+            <automationAllowed>false</automationAllowed>
+            <selectedIndex>1</selectedIndex>
+            <fontSize>12</fontSize>
+            <randomizable>true</randomizable>
+            <bsbDropdownItemList>
+              <bsbDropdownItem uniqueId='411448543'>
+                <name>ON</name>
+                <value></value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='411448544'>
+                <name>OFF</name>
+                <value>#</value>
+              </bsbDropdownItem>
+            </bsbDropdownItemList>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+            <objectName></objectName>
+            <x>865</x>
+            <y>105</y>
+            <value></value>
+            <textFieldWidth>100</textFieldWidth>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBDropdown' version='2'>
+            <objectName>name4</objectName>
+            <x>85</x>
+            <y>105</y>
+            <comment>Generator ParameterObjects</comment>
+            <automationAllowed>false</automationAllowed>
+            <selectedIndex>15</selectedIndex>
+            <fontSize>12</fontSize>
+            <randomizable>false</randomizable>
+            <bsbDropdownItemList>
+              <bsbDropdownItem uniqueId='243307537'>
+                <name>accumulator</name>
+                <value>a</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307538'>
+                <name>basketFill</name>
+                <value>bf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307539'>
+                <name>basketFillSelect</name>
+                <value>bfs</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307540'>
+                <name>basketGen</name>
+                <value>bg</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307541'>
+                <name>breakGraphFlat</name>
+                <value>bgf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307542'>
+                <name>breakGraphHalfCosine</name>
+                <value>bghc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307543'>
+                <name>breakGraphLinear</name>
+                <value>bgl</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307544'>
+                <name>breakGraphPower</name>
+                <value>bgp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307545'>
+                <name>breakPointFlat</name>
+                <value>bpf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307546'>
+                <name>breakPointHalfCosine</name>
+                <value>bphc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307547'>
+                <name>breakPointLinear</name>
+                <value>bpl</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307548'>
+                <name>breakPointPower</name>
+                <value>bpp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307549'>
+                <name>basketSelect</name>
+                <value>bs</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307550'>
+                <name>constant</name>
+                <value>c</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307551'>
+                <name>constantFile</name>
+                <value>cf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307552'>
+                <name>cyclicGen</name>
+                <value>cg</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307553'>
+                <name>caList</name>
+                <value>cl</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307554'>
+                <name>caValue</name>
+                <value>cv</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307555'>
+                <name>directorySelect</name>
+                <value>ds</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307556'>
+                <name>envelopeGen.Adsr</name>
+                <value>ega</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307557'>
+                <name>envelopeGen.Trapezoid</name>
+                <value>egt</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307558'>
+                <name>envelopeGeneratorUnit</name>
+                <value>egu</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307559'>
+                <name>funnelBinary</name>
+                <value>fb</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307560'>
+                <name>feedbackModelLibrary</name>
+                <value>fml</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307561'>
+                <name>fibonacciSeries</name>
+                <value>fs</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307562'>
+                <name>grammarTerminus</name>
+                <value>gt</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307563'>
+                <name>henonBasket</name>
+                <value>hb</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307564'>
+                <name>iterateCross</name>
+                <value>ic</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307565'>
+                <name>iterateGroup</name>
+                <value>ig</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307566'>
+                <name>iterateHold</name>
+                <value>ih</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307567'>
+                <name>iterateSelect</name>
+                <value>is</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307568'>
+                <name>iterateWindow</name>
+                <value>iw</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307569'>
+                <name>lorenzBasket</name>
+                <value>lb</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307570'>
+                <name>logisticMap</name>
+                <value>lm</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307571'>
+                <name>listPrime</name>
+                <value>lp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307572'>
+                <name>lineSegment</name>
+                <value>ls</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307573'>
+                <name>mask</name>
+                <value>m</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307574'>
+                <name>markovGeneratorAnal.</name>
+                <value>mga</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307575'>
+                <name>maskReject</name>
+                <value>mr</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307576'>
+                <name>maskScale</name>
+                <value>ms</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307577'>
+                <name>markovValue</name>
+                <value>mv</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307578'>
+                <name>noise</name>
+                <value>n</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307579'>
+                <name>operatorAdd</name>
+                <value>oa</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307580'>
+                <name>operatorCongruence</name>
+                <value>oc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307581'>
+                <name>operatorDivide</name>
+                <value>od</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307582'>
+                <name>operatorMultiply</name>
+                <value>om</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307583'>
+                <name>oneOver</name>
+                <value>oo</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307584'>
+                <name>operatorPower</name>
+                <value>op</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307585'>
+                <name>operatorSubtract</name>
+                <value>os</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307586'>
+                <name>pathRead --&gt; freq.</name>
+                <value>pr, fq</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307587'>
+                <name>pathRead --&gt; psReal</name>
+                <value>pr, ps</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307588'>
+                <name>pathRead --&gt; midi</name>
+                <value>pr, midi</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307589'>
+                <name>pathRead --&gt; pch</name>
+                <value>pr, pch</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307590'>
+                <name>pathRead --&gt; name</name>
+                <value>pr, name</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307591'>
+                <name>quantize</name>
+                <value>q</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307592'>
+                <name>randomBeta</name>
+                <value>rb</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307593'>
+                <name>randomBilateralExp.</name>
+                <value>rbe</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307594'>
+                <name>randomCauchy</name>
+                <value>rc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307595'>
+                <name>randomExponential</name>
+                <value>re</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307596'>
+                <name>randomGauss</name>
+                <value>rg</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307597'>
+                <name>randomInverseExp.</name>
+                <value>rie</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307598'>
+                <name>randomInverseLinear</name>
+                <value>ril</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307599'>
+                <name>randomInverseTriang.</name>
+                <value>rit</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307600'>
+                <name>randomLinear</name>
+                <value>rl</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307601'>
+                <name>randomTriangular</name>
+                <value>rt</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307602'>
+                <name>randomUniform</name>
+                <value>ru</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307603'>
+                <name>randomWeibull</name>
+                <value>rw</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307604'>
+                <name>sampleAndHold</name>
+                <value>sah</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307605'>
+                <name>sieveFunnel</name>
+                <value>sf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307606'>
+                <name>sieveList</name>
+                <value>sl</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307607'>
+                <name>sampleSelect</name>
+                <value>ss</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307608'>
+                <name>typeFormat</name>
+                <value>tf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307609'>
+                <name>valuePrime</name>
+                <value>vp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307610'>
+                <name>valueSieve</name>
+                <value>vs</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307611'>
+                <name>waveCosine</name>
+                <value>wc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307612'>
+                <name>waveHalfPeriodCosine</name>
+                <value>whpc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307613'>
+                <name>waveHalfPeriodPulse</name>
+                <value>whpp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307614'>
+                <name>waveHalfPeriodSine</name>
+                <value>whps</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307615'>
+                <name>waveHalfPeriodTriang.</name>
+                <value>whpt</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307616'>
+                <name>wavePulse</name>
+                <value>wp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307617'>
+                <name>wavePowerDown</name>
+                <value>wpd</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307618'>
+                <name>wavePowerUp</name>
+                <value>wpu</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307619'>
+                <name>waveSine</name>
+                <value>ws</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307620'>
+                <name>waveSawDown</name>
+                <value>wsd</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307621'>
+                <name>waveSawUp</name>
+                <value>wsu</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243307622'>
+                <name>waveTriangle</name>
+                <value>wt</value>
+              </bsbDropdownItem>
+            </bsbDropdownItemList>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+            <objectName>ParameterObject3</objectName>
+            <x>335</x>
+            <y>80</y>
+            <comment>enter values for ParameterObject</comment>
+            <value>4.0</value>
+            <textFieldWidth>400</textFieldWidth>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+            <objectName></objectName>
+            <x>335</x>
+            <y>10</y>
+            <label>ParameterObject</label>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>1</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+            <objectName></objectName>
+            <x>865</x>
+            <y>55</y>
+            <value>frequency2</value>
+            <textFieldWidth>100</textFieldWidth>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+            <objectName>variable name1</objectName>
+            <x>750</x>
+            <y>30</y>
+            <comment>assign a variable name, at k-rate</comment>
+            <value>frequencyCL</value>
+            <textFieldWidth>100</textFieldWidth>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBDropdown' version='2'>
+            <objectName>active5</objectName>
+            <x>15</x>
+            <y>130</y>
+            <automationAllowed>false</automationAllowed>
+            <selectedIndex>1</selectedIndex>
+            <fontSize>12</fontSize>
+            <randomizable>true</randomizable>
+            <bsbDropdownItemList>
+              <bsbDropdownItem uniqueId='411448555'>
+                <name>ON</name>
+                <value></value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='411448556'>
+                <name>OFF</name>
+                <value>#</value>
+              </bsbDropdownItem>
+            </bsbDropdownItemList>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBDropdown' version='2'>
+            <objectName>name1</objectName>
+            <x>85</x>
+            <y>30</y>
+            <comment>Generator ParameterObjects</comment>
+            <automationAllowed>false</automationAllowed>
+            <selectedIndex>31</selectedIndex>
+            <fontSize>12</fontSize>
+            <randomizable>false</randomizable>
+            <bsbDropdownItemList>
+              <bsbDropdownItem uniqueId='243306333'>
+                <name>accumulator</name>
+                <value>a</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306334'>
+                <name>basketFill</name>
+                <value>bf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306335'>
+                <name>basketFillSelect</name>
+                <value>bfs</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306336'>
+                <name>basketGen</name>
+                <value>bg</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306337'>
+                <name>breakGraphFlat</name>
+                <value>bgf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306338'>
+                <name>breakGraphHalfCosine</name>
+                <value>bghc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306339'>
+                <name>breakGraphLinear</name>
+                <value>bgl</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306340'>
+                <name>breakGraphPower</name>
+                <value>bgp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306341'>
+                <name>breakPointFlat</name>
+                <value>bpf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306342'>
+                <name>breakPointHalfCosine</name>
+                <value>bphc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306343'>
+                <name>breakPointLinear</name>
+                <value>bpl</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306344'>
+                <name>breakPointPower</name>
+                <value>bpp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306345'>
+                <name>basketSelect</name>
+                <value>bs</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306346'>
+                <name>constant</name>
+                <value>c</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306347'>
+                <name>constantFile</name>
+                <value>cf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306348'>
+                <name>cyclicGen</name>
+                <value>cg</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306349'>
+                <name>caList</name>
+                <value>cl</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306350'>
+                <name>caValue</name>
+                <value>cv</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306351'>
+                <name>directorySelect</name>
+                <value>ds</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306352'>
+                <name>envelopeGen.Adsr</name>
+                <value>ega</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306353'>
+                <name>envelopeGen.Trapezoid</name>
+                <value>egt</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306354'>
+                <name>envelopeGeneratorUnit</name>
+                <value>egu</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306355'>
+                <name>funnelBinary</name>
+                <value>fb</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306356'>
+                <name>feedbackModelLibrary</name>
+                <value>fml</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306357'>
+                <name>fibonacciSeries</name>
+                <value>fs</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306358'>
+                <name>grammarTerminus</name>
+                <value>gt</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306359'>
+                <name>henonBasket</name>
+                <value>hb</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306360'>
+                <name>iterateCross</name>
+                <value>ic</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306361'>
+                <name>iterateGroup</name>
+                <value>ig</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306362'>
+                <name>iterateHold</name>
+                <value>ih</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306363'>
+                <name>iterateSelect</name>
+                <value>is</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306364'>
+                <name>iterateWindow</name>
+                <value>iw</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306365'>
+                <name>lorenzBasket</name>
+                <value>lb</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306366'>
+                <name>logisticMap</name>
+                <value>lm</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306367'>
+                <name>listPrime</name>
+                <value>lp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306368'>
+                <name>lineSegment</name>
+                <value>ls</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306369'>
+                <name>mask</name>
+                <value>m</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306370'>
+                <name>markovGeneratorAnal.</name>
+                <value>mga</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306371'>
+                <name>maskReject</name>
+                <value>mr</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306372'>
+                <name>maskScale</name>
+                <value>ms</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306373'>
+                <name>markovValue</name>
+                <value>mv</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306374'>
+                <name>noise</name>
+                <value>n</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306375'>
+                <name>operatorAdd</name>
+                <value>oa</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306376'>
+                <name>operatorCongruence</name>
+                <value>oc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306377'>
+                <name>operatorDivide</name>
+                <value>od</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306378'>
+                <name>operatorMultiply</name>
+                <value>om</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306379'>
+                <name>oneOver</name>
+                <value>oo</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306380'>
+                <name>operatorPower</name>
+                <value>op</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306381'>
+                <name>operatorSubtract</name>
+                <value>os</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306382'>
+                <name>pathRead --&gt; freq.</name>
+                <value>pr, fq</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306383'>
+                <name>pathRead --&gt; psReal</name>
+                <value>pr, ps</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306384'>
+                <name>pathRead --&gt; midi</name>
+                <value>pr, midi</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306385'>
+                <name>pathRead --&gt; pch</name>
+                <value>pr, pch</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306386'>
+                <name>pathRead --&gt; name</name>
+                <value>pr, name</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306387'>
+                <name>quantize</name>
+                <value>q</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306388'>
+                <name>randomBeta</name>
+                <value>rb</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306389'>
+                <name>randomBilateralExp.</name>
+                <value>rbe</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306390'>
+                <name>randomCauchy</name>
+                <value>rc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306391'>
+                <name>randomExponential</name>
+                <value>re</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306392'>
+                <name>randomGauss</name>
+                <value>rg</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306393'>
+                <name>randomInverseExp.</name>
+                <value>rie</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306394'>
+                <name>randomInverseLinear</name>
+                <value>ril</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306395'>
+                <name>randomInverseTriang.</name>
+                <value>rit</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306396'>
+                <name>randomLinear</name>
+                <value>rl</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306397'>
+                <name>randomTriangular</name>
+                <value>rt</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306398'>
+                <name>randomUniform</name>
+                <value>ru</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306399'>
+                <name>randomWeibull</name>
+                <value>rw</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306400'>
+                <name>sampleAndHold</name>
+                <value>sah</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306401'>
+                <name>sieveFunnel</name>
+                <value>sf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306402'>
+                <name>sieveList</name>
+                <value>sl</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306403'>
+                <name>sampleSelect</name>
+                <value>ss</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306404'>
+                <name>typeFormat</name>
+                <value>tf</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306405'>
+                <name>valuePrime</name>
+                <value>vp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306406'>
+                <name>valueSieve</name>
+                <value>vs</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306407'>
+                <name>waveCosine</name>
+                <value>wc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306408'>
+                <name>waveHalfPeriodCosine</name>
+                <value>whpc</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306409'>
+                <name>waveHalfPeriodPulse</name>
+                <value>whpp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306410'>
+                <name>waveHalfPeriodSine</name>
+                <value>whps</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306411'>
+                <name>waveHalfPeriodTriang.</name>
+                <value>whpt</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306412'>
+                <name>wavePulse</name>
+                <value>wp</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306413'>
+                <name>wavePowerDown</name>
+                <value>wpd</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306414'>
+                <name>wavePowerUp</name>
+                <value>wpu</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306415'>
+                <name>waveSine</name>
+                <value>ws</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306416'>
+                <name>waveSawDown</name>
+                <value>wsd</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306417'>
+                <name>waveSawUp</name>
+                <value>wsu</value>
+              </bsbDropdownItem>
+              <bsbDropdownItem uniqueId='243306418'>
+                <name>waveTriangle</name>
+                <value>wt</value>
+              </bsbDropdownItem>
+            </bsbDropdownItemList>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+            <objectName>ParameterObject5</objectName>
+            <x>335</x>
+            <y>130</y>
+            <comment>enter values for ParameterObject</comment>
+            <value>.5, 0, 100, 400</value>
+            <textFieldWidth>400</textFieldWidth>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+            <objectName></objectName>
+            <x>865</x>
+            <y>130</y>
+            <value></value>
+            <textFieldWidth>100</textFieldWidth>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+            <objectName></objectName>
+            <x>750</x>
+            <y>10</y>
+            <label>variable name</label>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>1</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+            <objectName></objectName>
+            <x>255</x>
+            <y>10</y>
+            <label>step</label>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>1</style>
+            </font>
+          </bsbObject>
+        </bsbObject>
+      </bsbObject>
+    </bsbObject>
+  </graphicInterface>
+  <parameterList/>
+  <presetGroup name='Presets'/>
+  <opcodeList/>
+</instrument>
