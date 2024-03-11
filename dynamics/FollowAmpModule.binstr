@@ -1,0 +1,398 @@
+<instrument type='blue.orchestra.BlueSynthBuilder' editEnabled='true'>
+  <name>FollowAmpModule</name>
+  <comment>
+DESCRIPTION:
+
+FollowAmpModule needs to get its input signal from the FollowMe effect. The effect sends the data over the named channel, whereas FollowAmp receives it 
+(if the channel name it the same AND the Sending is done before the Receiving. Else the system will not work).
+
+
+---
+
+version 1, March 2024
+- initial version</comment>
+  <globalOrc/>
+  <globalSco/>
+  <instrumentText>;--------------------------------- FollowAmpModule ------------------------------
+if (&lt;FollowAmpON&gt; == 1) then
+    if (&lt;input channel FA&gt; == 0) then
+        ainFAL, ainFAR ins
+        ainFAL  *=  50
+        ainFAR  *=  50
+    else
+        ainFAL    chnget  &quot;&lt;name Channel1&gt;&quot;
+        ainFAR    chnget  &quot;&lt;name Channel2&gt;&quot;
+    endif
+
+    if &lt;channel1&gt; == 1 then
+        ainFAR    =   ainFAL
+    endif
+
+    aoutFAL  follow2 ainFAL, &lt;attack time&gt;, &lt;release time&gt;
+    aoutFAR  follow2 ainFAR, &lt;attack time&gt;, &lt;release time&gt;
+
+    ampFA    xadsr     i(&lt;expADSR_attackFA&gt;)+0.00001, i(&lt;expADSR_decayFA&gt;)+0.00001, i(&lt;expADSR_sustainFA&gt;)+0.00001, i(&lt;expADSR_releaseFA&gt;)*5 +0.00001
+    ampFA -= 0.00001 
+
+    aoutFAL  *=  ampFA * 10
+    aoutFAR  *=  ampFA * 10
+else
+    aoutFAL  =   1
+    aoutFAR  =   1
+endif
+
+; instrument 
+krand   randomh 1000, 1100, 20  
+a3 poscil 1, 1250+krand
+; outs                    
+blueMixerOut a1*a3*aampdsr,a2*a3*aampdsr</instrumentText>
+  <alwaysOnInstrumentText></alwaysOnInstrumentText>
+  <graphicInterface editEnabled='false'>
+    <gridSettings>
+      <width>10</width>
+      <height>10</height>
+      <gridStyle>DOT</gridStyle>
+      <snapGridEnabled>true</snapGridEnabled>
+    </gridSettings>
+    <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+      <objectName></objectName>
+      <x>0</x>
+      <y>0</y>
+      <groupName>Group</groupName>
+      <backgroundColor>0x00000033</backgroundColor>
+      <borderColor>0x000000ff</borderColor>
+      <labelTextColor>0xffffffff</labelTextColor>
+      <titleEnabled>true</titleEnabled>
+      <width>20</width>
+      <height>20</height>
+      <font>
+        <name>Roboto</name>
+        <size>12.0</size>
+        <style>0</style>
+      </font>
+      <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+        <objectName></objectName>
+        <x>0</x>
+        <y>0</y>
+        <groupName>FollowAmp</groupName>
+        <backgroundColor>0x282828ff</backgroundColor>
+        <borderColor>0x000000ff</borderColor>
+        <labelTextColor>0xffffffff</labelTextColor>
+        <titleEnabled>true</titleEnabled>
+        <width>228</width>
+        <height>100</height>
+        <font>
+          <name>Roboto</name>
+          <size>12.0</size>
+          <style>2</style>
+        </font>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>205</x>
+          <y>30</y>
+          <label>1</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+          <objectName>FollowAmpON</objectName>
+          <x>5</x>
+          <y>5</y>
+          <automationAllowed>true</automationAllowed>
+          <label/>
+          <selected>true</selected>
+          <randomizable>true</randomizable>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBDropdown' version='2'>
+          <objectName>input channel FA</objectName>
+          <x>105</x>
+          <y>70</y>
+          <automationAllowed>true</automationAllowed>
+          <selectedIndex>0</selectedIndex>
+          <fontSize>12</fontSize>
+          <randomizable>true</randomizable>
+          <bsbDropdownItemList>
+            <bsbDropdownItem uniqueId='748642947'>
+              <name>line in</name>
+              <value>0</value>
+            </bsbDropdownItem>
+            <bsbDropdownItem uniqueId='748642948'>
+              <name>instrument</name>
+              <value>1</value>
+            </bsbDropdownItem>
+          </bsbDropdownItemList>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+          <objectName>name Channel1</objectName>
+          <x>105</x>
+          <y>30</y>
+          <value>amplitudeL</value>
+          <textFieldWidth>100</textFieldWidth>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+          <objectName>name Channel2</objectName>
+          <x>105</x>
+          <y>50</y>
+          <value>amplitudeL</value>
+          <textFieldWidth>100</textFieldWidth>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>80</x>
+          <y>160</y>
+          <label>release</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>80</x>
+          <y>135</y>
+          <label>attack</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>55</x>
+          <y>70</y>
+          <label>source:</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>205</x>
+          <y>50</y>
+          <label>2</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+          <objectName></objectName>
+          <x>225</x>
+          <y>10</y>
+          <comment>4 envelopes for amplitude</comment>
+          <groupName>expADSR</groupName>
+          <backgroundColor>0x282828ff</backgroundColor>
+          <borderColor>0x000000ff</borderColor>
+          <labelTextColor>0xffffffff</labelTextColor>
+          <titleEnabled>true</titleEnabled>
+          <width>20</width>
+          <height>99</height>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>2</style>
+          </font>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBVSlider' version='2'>
+            <objectName>expADSR_sustainFA</objectName>
+            <x>110</x>
+            <y>5</y>
+            <automationAllowed>true</automationAllowed>
+            <minimum>0.0</minimum>
+            <maximum>1.0</maximum>
+            <bdresolution>0.001</bdresolution>
+            <value>1.0</value>
+            <sliderHeight>150</sliderHeight>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>false</valueDisplayEnabled>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+            <objectName></objectName>
+            <x>130</x>
+            <y>145</y>
+            <label>S</label>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBVSlider' version='2'>
+            <objectName>expADSR_attackFA</objectName>
+            <x>10</x>
+            <y>5</y>
+            <automationAllowed>true</automationAllowed>
+            <minimum>0.0</minimum>
+            <maximum>1.0</maximum>
+            <bdresolution>0.001</bdresolution>
+            <value>0.0</value>
+            <sliderHeight>150</sliderHeight>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>false</valueDisplayEnabled>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBVSlider' version='2'>
+            <objectName>expADSR_releaseFA</objectName>
+            <x>160</x>
+            <y>5</y>
+            <automationAllowed>true</automationAllowed>
+            <minimum>0.0</minimum>
+            <maximum>1.0</maximum>
+            <bdresolution>0.001</bdresolution>
+            <value>0.38</value>
+            <sliderHeight>150</sliderHeight>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>false</valueDisplayEnabled>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+            <objectName></objectName>
+            <x>80</x>
+            <y>145</y>
+            <label>D</label>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBVSlider' version='2'>
+            <objectName>expADSR_decayFA</objectName>
+            <x>60</x>
+            <y>5</y>
+            <automationAllowed>true</automationAllowed>
+            <minimum>0.0</minimum>
+            <maximum>1.0</maximum>
+            <bdresolution>0.001</bdresolution>
+            <value>0.0</value>
+            <sliderHeight>150</sliderHeight>
+            <randomizable>true</randomizable>
+            <valueDisplayEnabled>false</valueDisplayEnabled>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+            <objectName></objectName>
+            <x>30</x>
+            <y>145</y>
+            <label>A</label>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+            <objectName></objectName>
+            <x>180</x>
+            <y>145</y>
+            <label>R</label>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
+          <objectName>attack time</objectName>
+          <x>10</x>
+          <y>135</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.001</minimum>
+          <maximum>0.2</maximum>
+          <bdresolution>0.001</bdresolution>
+          <value>0.021</value>
+          <sliderWidth>150</sliderWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>15</x>
+          <y>30</y>
+          <label>name Channel:</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+          <objectName>channel1</objectName>
+          <x>15</x>
+          <y>105</y>
+          <automationAllowed>true</automationAllowed>
+          <label>make  input mono</label>
+          <selected>true</selected>
+          <randomizable>true</randomizable>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
+          <objectName>release time</objectName>
+          <x>10</x>
+          <y>160</y>
+          <automationAllowed>true</automationAllowed>
+          <minimum>0.001</minimum>
+          <maximum>0.2</maximum>
+          <bdresolution>0.001</bdresolution>
+          <value>0.021</value>
+          <sliderWidth>150</sliderWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+        </bsbObject>
+      </bsbObject>
+    </bsbObject>
+  </graphicInterface>
+  <parameterList>
+    <parameter uniqueId='748642950' name='FollowAmpON' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='1.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='1.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='748642952' name='input channel FA' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='0.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='748642954' name='expADSR_sustainFA' label='' min='0.0' max='1.0' bdresolution='0.001' automationEnabled='false' value='1.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='0.001' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='1.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='748642956' name='expADSR_attackFA' label='' min='0.0' max='1.0' bdresolution='0.001' automationEnabled='false' value='0.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='0.001' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='748642958' name='expADSR_releaseFA' label='' min='0.0' max='1.0' bdresolution='0.001' automationEnabled='false' value='0.38'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='0.001' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.38'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='748642960' name='expADSR_decayFA' label='' min='0.0' max='1.0' bdresolution='0.001' automationEnabled='false' value='0.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='0.001' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='748642962' name='attack time' label='' min='0.001' max='0.2' bdresolution='0.001' automationEnabled='false' value='0.021'>
+      <line name='' version='2' max='0.2' min='0.001' bdresolution='0.001' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.021'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='748642964' name='channel1' label='' min='0.0' max='1.0' bdresolution='1' automationEnabled='false' value='1.0'>
+      <line name='' version='2' max='1.0' min='0.0' bdresolution='1' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='1.0'/>
+      </line>
+    </parameter>
+    <parameter uniqueId='748642966' name='release time' label='' min='0.001' max='0.2' bdresolution='0.001' automationEnabled='false' value='0.021'>
+      <line name='' version='2' max='0.2' min='0.001' bdresolution='0.001' color='-8355712' rightBound='false' endPointsLinked='false'>
+        <linePoint x='0.0' y='0.021'/>
+      </line>
+    </parameter>
+  </parameterList>
+  <presetGroup name='Presets'/>
+  <opcodeList/>
+</instrument>
