@@ -1,0 +1,395 @@
+<soundObject type='blue.soundObject.Sound'>
+  <subjectiveDuration>9.0</subjectiveDuration>
+  <startTime>125.0</startTime>
+  <name>Joystick Controller </name>
+  <backgroundColor>-12566464</backgroundColor>
+  <instrument type='blue.orchestra.BlueSynthBuilder' editEnabled='true'>
+    <name>untitled</name>
+    <comment></comment>
+    <globalOrc/>
+    <globalSco/>
+    <instrumentText>ijoy	ftgen 0, 0, 32, 7, 0, 7, 0                                              ; save number of axes and buttons
+
+idevicerange  = 1/&lt;controller device range&gt;                                     ; divide by 65534
+iresolution =   &lt;resolution&gt;
+inewresolution  =    (1/&lt;length&gt; * p3) * &lt;resolution&gt;  * 0.333333               ; set resoltion to desired length in seconds
+
+kmask    joystick   0, ijoy
+kidx     =  2
+kaxes    tab 0, ijoy                                                            ; number of axes has been stored in position 0
+kbuttons tab 1, ijoy                                                            ; number of buttons has been stored in position 1
+
+;;;;;;;;;;;;;;;;;;;;;;;;;write joystick data;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+if (&lt;axes_buttons&gt; == 1) then
+    printf &quot;\n***this joystick has %d axes, %d buttons***\n\n&quot;, kidx, kaxes, kbuttons
+endif
+
+if (&lt;writeread&gt; == 0) then
+while kidx &lt; (kaxes+2) do
+    kres    tab kidx, ijoy
+
+    if ((kidx-2) == 0) then                                                     ; check for different axes
+        kx    =   kres  
+    elseif ((kidx-2) == 1) then
+        ky    =   kres
+    elseif ((kidx-2) == 2) then
+        kz    =   kres
+    endif
+
+    dumpk3   kx, ky, kz, &quot;&lt;writefile&gt;_sec=&lt;length&gt;_res=&lt;resolution&gt;.tsv&quot;, 8, &lt;resolution&gt; ; write axes values to file
+    kidx      =  kidx+1
+od
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;read joystick data;;;;;;;;;;;;;;;;;;;;;;;;
+elseif (&lt;writeread&gt; == 1) then
+   
+    kx, ky, kz    readk3  &quot;&lt;readfile&gt;&quot;, 8, inewresolution   ; read back controller data
+    if (&lt;plot&gt; == 1) then    
+        ires    system_i    1, {{gnuplot -persist -e &quot;plot &apos;&lt;readfile&gt;&apos; using 0:1 with fillsteps lw 3, &apos;&lt;readfile&gt;&apos; using 0:2 with fillsteps lw 3, &apos;&lt;readfile&gt;&apos; using 0:3 with fillsteps lw 3&quot;}}, 1       ; show data image
+    endif    
+endif
+
+;;;;;;;;;;;;;;;;;;;;;;scale, smooth and print;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+gkx =   kx
+gky =   ky
+gkz =   kz
+
+if (&lt;verbose&gt; == 1) then
+    printks2    &quot;X axis %d\n&quot;, kx 
+    printks2    &quot;\t\tY axis %d\n&quot;, ky 
+    printks2    &quot;\t\t\t\tZ axis %d\n&quot;, kz 
+endif
+
+;reportbutton: ; now we check for any buttons pressed
+;	kcheck    =  kmask &amp; 1&lt;&lt;kidx
+;	if kcheck == 0 kgoto nextb
+;	kres      tab       kidx, 1 ; a button has been pressed, get from table
+;		  printf    &quot;button %d, pushed\n&quot;, kidx*kres, (kidx-(kaxes+2))
+;		  printf    &quot;button %d, released\n&quot;, kidx*(1-kres), (kidx-(kaxes+2))
+;
+;nextb:
+;	kidx      =  kidx+1
+;	if kidx &lt; (kaxes+kbuttons+2) kgoto reportbutton</instrumentText>
+    <alwaysOnInstrumentText></alwaysOnInstrumentText>
+    <graphicInterface editEnabled='false'>
+      <gridSettings>
+        <width>10</width>
+        <height>10</height>
+        <gridStyle>DOT</gridStyle>
+        <snapGridEnabled>true</snapGridEnabled>
+      </gridSettings>
+      <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+        <objectName></objectName>
+        <x>0</x>
+        <y>0</y>
+        <groupName>Group</groupName>
+        <backgroundColor>0x00000033</backgroundColor>
+        <borderColor>0x000000ff</borderColor>
+        <labelTextColor>0xffffffff</labelTextColor>
+        <titleEnabled>true</titleEnabled>
+        <width>20</width>
+        <height>20</height>
+        <font>
+          <name>Roboto</name>
+          <size>12.0</size>
+          <style>0</style>
+        </font>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+          <objectName></objectName>
+          <x>0</x>
+          <y>0</y>
+          <groupName>joystick controller</groupName>
+          <backgroundColor>0x666666ff</backgroundColor>
+          <borderColor>0x000000ff</borderColor>
+          <labelTextColor>0xffffffff</labelTextColor>
+          <titleEnabled>true</titleEnabled>
+          <width>20</width>
+          <height>20</height>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+            <objectName></objectName>
+            <x>0</x>
+            <y>20</y>
+            <groupName>files
+</groupName>
+            <backgroundColor>0x666666ff</backgroundColor>
+            <borderColor>0x000000ff</borderColor>
+            <labelTextColor>0xffffffff</labelTextColor>
+            <titleEnabled>false</titleEnabled>
+            <width>489</width>
+            <height>100</height>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+              <objectName></objectName>
+              <x>300</x>
+              <y>55</y>
+              <groupName>1</groupName>
+              <backgroundColor>0x00000033</backgroundColor>
+              <borderColor>0x000000ff</borderColor>
+              <labelTextColor>0xffffffff</labelTextColor>
+              <titleEnabled>false</titleEnabled>
+              <width>191</width>
+              <height>20</height>
+              <font>
+                <name>Roboto</name>
+                <size>12.0</size>
+                <style>0</style>
+              </font>
+              <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+                <objectName>1</objectName>
+                <x>10</x>
+                <y>10</y>
+                <comment>enter a name for the controller</comment>
+                <value>poepje</value>
+                <textFieldWidth>116</textFieldWidth>
+              </bsbObject>
+              <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+                <objectName></objectName>
+                <x>130</x>
+                <y>10</y>
+                <label>CC name</label>
+                <font>
+                  <name>Roboto</name>
+                  <size>12.0</size>
+                  <style>0</style>
+                </font>
+              </bsbObject>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBVSlider' version='2'>
+              <objectName>writeread</objectName>
+              <x>20</x>
+              <y>20</y>
+              <comment>set to write or to read controller data file, using extension .ctr</comment>
+              <automationAllowed>false</automationAllowed>
+              <minimum>0.0</minimum>
+              <maximum>1.0</maximum>
+              <bdresolution>1</bdresolution>
+              <value>0.0</value>
+              <sliderHeight>60</sliderHeight>
+              <randomizable>true</randomizable>
+              <valueDisplayEnabled>false</valueDisplayEnabled>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBFileSelector'>
+              <objectName>readfile</objectName>
+              <x>55</x>
+              <y>10</y>
+              <comment>first read back file of 4 values</comment>
+              <fileName>/home/tjingboem/joy105_sec=10_res=.01.tsv</fileName>
+              <textFieldWidth>405</textFieldWidth>
+              <stringChannelEnabled>false</stringChannelEnabled>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>10</x>
+              <y>60</y>
+              <label>write</label>
+              <font>
+                <name>Roboto</name>
+                <size>12.0</size>
+                <style>1</style>
+              </font>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+              <objectName></objectName>
+              <x>55</x>
+              <y>60</y>
+              <groupName>WRITE</groupName>
+              <backgroundColor>0x00000033</backgroundColor>
+              <borderColor>0x000000ff</borderColor>
+              <labelTextColor>0xffffffff</labelTextColor>
+              <titleEnabled>false</titleEnabled>
+              <width>235</width>
+              <height>44</height>
+              <font>
+                <name>Roboto</name>
+                <size>12.0</size>
+                <style>0</style>
+              </font>
+              <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+                <objectName>resolution</objectName>
+                <x>165</x>
+                <y>5</y>
+                <comment>resolution in seconds</comment>
+                <value>.01</value>
+                <textFieldWidth>30</textFieldWidth>
+              </bsbObject>
+              <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+                <objectName></objectName>
+                <x>5</x>
+                <y>23</y>
+                <label>outputfile</label>
+                <font>
+                  <name>Roboto</name>
+                  <size>12.0</size>
+                  <style>0</style>
+                </font>
+              </bsbObject>
+              <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+                <objectName></objectName>
+                <x>195</x>
+                <y>5</y>
+                <label>.tsv</label>
+                <font>
+                  <name>Roboto</name>
+                  <size>12.0</size>
+                  <style>0</style>
+                </font>
+              </bsbObject>
+              <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+                <objectName></objectName>
+                <x>125</x>
+                <y>23</y>
+                <label>sec.</label>
+                <font>
+                  <name>Roboto</name>
+                  <size>12.0</size>
+                  <style>0</style>
+                </font>
+              </bsbObject>
+              <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+                <objectName></objectName>
+                <x>160</x>
+                <y>23</y>
+                <label>resolution</label>
+                <font>
+                  <name>Roboto</name>
+                  <size>12.0</size>
+                  <style>0</style>
+                </font>
+              </bsbObject>
+              <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+                <objectName>length</objectName>
+                <x>125</x>
+                <y>5</y>
+                <comment>length of original Object with recorded controller data</comment>
+                <value>10</value>
+                <textFieldWidth>30</textFieldWidth>
+              </bsbObject>
+              <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+                <objectName>writefile</objectName>
+                <x>5</x>
+                <y>5</y>
+                <comment>files to be saved.
+First file of 4 values  gets added (a), second file gets added (b) to its name</comment>
+                <value>joy106</value>
+                <textFieldWidth>115</textFieldWidth>
+              </bsbObject>
+            </bsbObject>
+            <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+              <objectName></objectName>
+              <x>10</x>
+              <y>20</y>
+              <label>read</label>
+              <font>
+                <name>Roboto</name>
+                <size>12.0</size>
+                <style>1</style>
+              </font>
+            </bsbObject>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+            <objectName>verbose</objectName>
+            <x>150</x>
+            <y>0</y>
+            <automationAllowed>false</automationAllowed>
+            <label>verbose</label>
+            <selected>true</selected>
+            <randomizable>true</randomizable>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+            <objectName></objectName>
+            <x>330</x>
+            <y>0</y>
+            <label>device data range</label>
+            <font>
+              <name>Roboto</name>
+              <size>12.0</size>
+              <style>0</style>
+            </font>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+            <objectName>axes_buttons</objectName>
+            <x>10</x>
+            <y>0</y>
+            <automationAllowed>false</automationAllowed>
+            <label>info on joystick</label>
+            <selected>false</selected>
+            <randomizable>true</randomizable>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBCheckBox'>
+            <objectName>plot</objectName>
+            <x>250</x>
+            <y>0</y>
+            <automationAllowed>false</automationAllowed>
+            <label>plot</label>
+            <selected>false</selected>
+            <randomizable>true</randomizable>
+          </bsbObject>
+          <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+            <objectName>controller device range</objectName>
+            <x>430</x>
+            <y>0</y>
+            <value>65536</value>
+            <textFieldWidth>50</textFieldWidth>
+          </bsbObject>
+        </bsbObject>
+      </bsbObject>
+    </graphicInterface>
+    <parameterList/>
+    <presetGroup name='Presets'/>
+    <opcodeList/>
+  </instrument>
+  <comment>
+DESCRIPTION:
+
+This is a Joystick Controller data recorder and player. Joystick Controller2 records and plays 3 different Joystick Controller Data. You can set the resolution of this device in Device Data Range, this is 65536 for my Joystick.
+CC number and start/initialization values should be given.
+A name should be entered; this name is used to send the Joystick data globally, i.e. as gkxxxx signal.
+Other, higher numbered Instruments can pick this Global data up. In that particular Instrument, the range of the Joystick data (0-127) can be scaled at will and, if needed, interpolated.
+
+When recording the midi controller data, set the length of the SoundObject and the resolution you want to record in; both are in seconds. Length and resultion go hand in hand. These values are needed so that, on playback, 
+the SoundObject&apos;s length and resolution can be used to scale. 
+Be sure to have the Joystick Controller on the Timeline above the ScoreObjects of the Instruments you want to influence with the Joystick Controller.
+
+Joystick CC data are global: they have an influence on ALL notes of that Instrument as they are used to control the parameters of the Instrument. 
+
+Most of the time, Joystick Controller and the ScoreObject make up a pair; moving and scaling them together ensures the expected behavior.
+
+When setting a name as outputfile for recording, the format of the name is as follows:
+NAME + LENGTH OF SOUNDOBJECT JOYSTICK CONTROLLER + RESOLUTION
+length of SoundObject and resolution are in seconds.
+
+In the Instrument you want to influence with controller data, here is basic example to add the Smooth Joystick Data Module to the Instrument:
+
+        idevicerange =   1/65536                                                        ; joystickrsolution
+        kmass_scl        scale gkxxxx,        2*imiditotal,  .02*imiditotal             ; scale midi values to usable range and let it influence the .02-2 range
+        kPortTime       linseg 0,0.001,i(&lt;smooth&gt;)                                      ; if needed, create a value that quickly ramps up to .01 for better response and interpolate the controller values
+        kmassscl        portk    kmass_scl, kPortTime                                   ; range 0.02 - 2
+
+        a1  poscil3 1, kmassscl*200                                                     ; make some noise
+
+
+First set the switch to &apos;write&apos;. Run Blue. Then set switch to &apos;play&apos; and the controller data are played back. There is an optional printing to see what is happening.
+Plotting the controller data can be used if you have GNUPLOT installed.
+
+Portamento can be set in your instrument but is optional. It does help to smooth out the poor resolution of the Joystick Controller and avoid sudden jumps between controller data values.
+
+Be aware that the output values of a joystick move around value 0, so a range of -x to x. In my case, the &apos;raw&apos;value range is from -32768 to 32768, where 0 is the joystick X and Y axes in restposition.
+
+CONTROLLERS:
+
+see the help balloon when hovering over the controllers in the instrument. Help can be turned off by pressing the &apos;I&apos; button next to the play bar.
+
+---
+
+version 1, November 2024
+- initial version</comment>
+</soundObject>
