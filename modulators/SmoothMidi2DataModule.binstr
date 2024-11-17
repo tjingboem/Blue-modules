@@ -1,0 +1,205 @@
+<instrument type='blue.orchestra.BlueSynthBuilder' editEnabled='true'>
+  <name>SmoothMidi2DataModule</name>
+  <comment></comment>
+  <globalOrc/>
+  <globalSco/>
+  <instrumentText>
+idevicerange =   1/&lt;devicerange&gt;                                                ; scale
+kxx  =   gk&lt;controller name&gt; * idevicerange
+kyy  =   gk&lt;controller name2&gt; * idevicerange
+
+kx, ky  SmoothMidi2  &lt;smooth&gt;, kxx, kyy, &lt;ksmps&gt;    
+;===============================
+kenv    madsr   1, 0, 1, 2
+asig 	vco2	 p5, 1000*kx
+ares    moogvcf asig, 1600*ky, .1
+blueMixerOut ares*kenv, ares*kenv
+</instrumentText>
+  <alwaysOnInstrumentText></alwaysOnInstrumentText>
+  <graphicInterface editEnabled='false'>
+    <gridSettings>
+      <width>10</width>
+      <height>10</height>
+      <gridStyle>DOT</gridStyle>
+      <snapGridEnabled>true</snapGridEnabled>
+    </gridSettings>
+    <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+      <objectName></objectName>
+      <x>0</x>
+      <y>0</y>
+      <groupName>Group</groupName>
+      <backgroundColor>0x00000033</backgroundColor>
+      <borderColor>0x000000ff</borderColor>
+      <labelTextColor>0xffffffff</labelTextColor>
+      <titleEnabled>true</titleEnabled>
+      <width>20</width>
+      <height>20</height>
+      <font>
+        <name>Roboto</name>
+        <size>12.0</size>
+        <style>0</style>
+      </font>
+      <bsbObject type='blue.orchestra.blueSynthBuilder.BSBGroup'>
+        <objectName></objectName>
+        <x>0</x>
+        <y>0</y>
+        <comment>4 envelopes for amplitude</comment>
+        <groupName>smooth midi1 data</groupName>
+        <backgroundColor>0x282828ff</backgroundColor>
+        <borderColor>0x000000ff</borderColor>
+        <labelTextColor>0xffffffff</labelTextColor>
+        <titleEnabled>true</titleEnabled>
+        <width>20</width>
+        <height>80</height>
+        <font>
+          <name>Roboto</name>
+          <size>12.0</size>
+          <style>2</style>
+        </font>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+          <objectName>controller name2</objectName>
+          <x>320</x>
+          <y>50</y>
+          <value>filter</value>
+          <textFieldWidth>100</textFieldWidth>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+          <objectName>devicerange</objectName>
+          <x>110</x>
+          <y>10</y>
+          <value>128</value>
+          <textFieldWidth>60</textFieldWidth>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBDropdown' version='2'>
+          <objectName>ksmps</objectName>
+          <x>250</x>
+          <y>10</y>
+          <automationAllowed>false</automationAllowed>
+          <selectedIndex>5</selectedIndex>
+          <fontSize>12</fontSize>
+          <randomizable>true</randomizable>
+          <bsbDropdownItemList>
+            <bsbDropdownItem uniqueId='825937610'>
+              <name>1</name>
+              <value>1</value>
+            </bsbDropdownItem>
+            <bsbDropdownItem uniqueId='825937611'>
+              <name>2</name>
+              <value>2</value>
+            </bsbDropdownItem>
+            <bsbDropdownItem uniqueId='825937612'>
+              <name>4</name>
+              <value>4</value>
+            </bsbDropdownItem>
+            <bsbDropdownItem uniqueId='825937613'>
+              <name>8</name>
+              <value>8</value>
+            </bsbDropdownItem>
+            <bsbDropdownItem uniqueId='825937614'>
+              <name>16</name>
+              <value>16</value>
+            </bsbDropdownItem>
+            <bsbDropdownItem uniqueId='825937615'>
+              <name>32</name>
+              <value>32</value>
+            </bsbDropdownItem>
+            <bsbDropdownItem uniqueId='825937616'>
+              <name>64</name>
+              <value>64</value>
+            </bsbDropdownItem>
+            <bsbDropdownItem uniqueId='825937617'>
+              <name>128</name>
+              <value>128</value>
+            </bsbDropdownItem>
+            <bsbDropdownItem uniqueId='825937618'>
+              <name>256</name>
+              <value>256</value>
+            </bsbDropdownItem>
+          </bsbDropdownItemList>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>20</x>
+          <y>10</y>
+          <label>controller range</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>190</x>
+          <y>10</y>
+          <label>resolution</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBTextField'>
+          <objectName>controller name</objectName>
+          <x>320</x>
+          <y>30</y>
+          <value>freq</value>
+          <textFieldWidth>100</textFieldWidth>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>110</x>
+          <y>40</y>
+          <label>smoothing</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBHSlider' version='2'>
+          <objectName>smooth</objectName>
+          <x>10</x>
+          <y>40</y>
+          <comment>higher = more smoothing but losing transients</comment>
+          <automationAllowed>false</automationAllowed>
+          <minimum>0.0</minimum>
+          <maximum>0.2</maximum>
+          <bdresolution>0.01</bdresolution>
+          <value>0.02</value>
+          <sliderWidth>240</sliderWidth>
+          <randomizable>true</randomizable>
+          <valueDisplayEnabled>true</valueDisplayEnabled>
+        </bsbObject>
+        <bsbObject type='blue.orchestra.blueSynthBuilder.BSBLabel' version='2'>
+          <objectName></objectName>
+          <x>320</x>
+          <y>10</y>
+          <label>controller name</label>
+          <font>
+            <name>Roboto</name>
+            <size>12.0</size>
+            <style>0</style>
+          </font>
+        </bsbObject>
+      </bsbObject>
+    </bsbObject>
+  </graphicInterface>
+  <parameterList/>
+  <presetGroup name='Presets'/>
+  <opcodeList>
+    <udo>
+      <opcodeName>SmoothMidi2</opcodeName>
+      <outTypes>kk</outTypes>
+      <inTypes>ikki</inTypes>
+      <codeBody>ismooth, kxx, kyy, iksmps  xin
+
+setksmps    iksmps                                                                   ; resolution of k rate
+kPortTime   linseg  0, 0.001, ismooth                                           ; create a value that quickly ramps up to .01
+kx  portk    kxx, kPortTime    
+ky  portk    kyy, kPortTime   
+xout    kx, ky</codeBody>
+      <comments></comments>
+    </udo>
+  </opcodeList>
+</instrument>
